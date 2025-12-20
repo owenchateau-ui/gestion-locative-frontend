@@ -3,18 +3,18 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
-function Tenants() {
-  const [tenants, setTenants] = useState([])
+function Leases() {
+  const [leases, setLeases] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
   const { user } = useAuth()
 
   useEffect(() => {
-    fetchTenants()
+    fetchLeases()
   }, [user])
 
-  const fetchTenants = async () => {
+  const fetchLeases = async () => {
     if (!user) return
 
     try {
@@ -30,16 +30,20 @@ function Tenants() {
 
       if (userError) throw userError
 
-      // Récupérer les locataires du bailleur
-      const { data, error: tenantsError } = await supabase
-        .from('tenants')
-        .select('*')
-        .eq('landlord_id', userData.id)
+      // Récupérer les baux avec les relations property et tenant
+      const { data, error: leasesError } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          property:properties!inner(id, name, owner_id),
+          tenant:tenants!inner(id, first_name, last_name, landlord_id)
+        `)
+        .eq('property.owner_id', userData.id)
         .order('created_at', { ascending: false })
 
-      if (tenantsError) throw tenantsError
+      if (leasesError) throw leasesError
 
-      setTenants(data || [])
+      setLeases(data || [])
     } catch (error) {
       setError(error.message)
     } finally {
@@ -48,29 +52,53 @@ function Tenants() {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce locataire ?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce bail ?')) {
       return
     }
 
     try {
       const { error } = await supabase
-        .from('tenants')
+        .from('leases')
         .delete()
         .eq('id', id)
 
       if (error) throw error
 
       // Rafraîchir la liste
-      fetchTenants()
+      fetchLeases()
     } catch (error) {
       alert('Erreur lors de la suppression : ' + error.message)
     }
   }
 
   const formatDate = (dateString) => {
-    if (!dateString) return '-'
+    if (!dateString) return 'Reconduction tacite'
     const date = new Date(dateString)
     return date.toLocaleDateString('fr-FR')
+  }
+
+  const getStatusBadge = (status) => {
+    const badges = {
+      draft: 'bg-gray-100 text-gray-800',
+      active: 'bg-green-100 text-green-800',
+      terminated: 'bg-red-100 text-red-800',
+      archived: 'bg-yellow-100 text-yellow-800'
+    }
+    const labels = {
+      draft: 'Brouillon',
+      active: 'Actif',
+      terminated: 'Résilié',
+      archived: 'Archivé'
+    }
+    return (
+      <span className={`px-2 py-1 rounded text-sm ${badges[status]}`}>
+        {labels[status]}
+      </span>
+    )
+  }
+
+  const getLeaseTypeLabel = (type) => {
+    return type === 'empty' ? 'Vide' : 'Meublé'
   }
 
   if (loading) {
@@ -94,10 +122,10 @@ function Tenants() {
             <Link to="/properties" className="text-gray-600 hover:text-blue-600">
               Mes biens
             </Link>
-            <Link to="/tenants" className="text-blue-600 font-semibold">
+            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
               Mes locataires
             </Link>
-            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
+            <Link to="/leases" className="text-blue-600 font-semibold">
               Mes baux
             </Link>
           </div>
@@ -120,16 +148,16 @@ function Tenants() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-3xl font-bold">Mes locataires</h2>
+            <h2 className="text-3xl font-bold">Mes baux</h2>
             <p className="text-sm text-gray-600 mt-2">
-              {tenants.length} locataire{tenants.length > 1 ? 's' : ''}
+              {leases.length} bail{leases.length > 1 ? 'x' : ''}
             </p>
           </div>
           <button
-            onClick={() => navigate('/tenants/new')}
+            onClick={() => navigate('/leases/new')}
             className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
           >
-            + Ajouter un locataire
+            + Créer un bail
           </button>
         </div>
 
@@ -139,16 +167,16 @@ function Tenants() {
           </div>
         )}
 
-        {tenants.length === 0 ? (
+        {leases.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <p className="text-gray-600 text-lg mb-4">
-              Vous n'avez pas encore de locataire
+              Vous n'avez pas encore de bail
             </p>
             <button
-              onClick={() => navigate('/tenants/new')}
+              onClick={() => navigate('/leases/new')}
               className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
             >
-              Ajouter votre premier locataire
+              Créer votre premier bail
             </button>
           </div>
         ) : (
@@ -157,16 +185,22 @@ function Tenants() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom complet
+                    Bien
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
+                    Locataire
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Téléphone
+                    Période
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date de naissance
+                    Loyer total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Statut
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -174,43 +208,60 @@ function Tenants() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {tenants.map((tenant) => (
-                  <tr key={tenant.id} className="hover:bg-gray-50">
+                {leases.map((lease) => (
+                  <tr key={lease.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {tenant.first_name} {tenant.last_name}
-                      </div>
-                      {tenant.place_of_birth && (
-                        <div className="text-sm text-gray-500">
-                          Né(e) à {tenant.place_of_birth}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{tenant.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {tenant.phone || '-'}
+                        {lease.property.name}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {formatDate(tenant.date_of_birth)}
+                        {lease.tenant.first_name} {lease.tenant.last_name}
                       </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900">
+                        Du {formatDate(lease.start_date)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Au {formatDate(lease.end_date)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-gray-900">
+                        {(parseFloat(lease.rent_amount) + parseFloat(lease.charges_amount)).toFixed(2)} €
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        Loyer: {parseFloat(lease.rent_amount).toFixed(2)} € + Charges: {parseFloat(lease.charges_amount).toFixed(2)} €
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {getLeaseTypeLabel(lease.lease_type)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getStatusBadge(lease.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Link
-                        to={`/tenants/${tenant.id}/edit`}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
+                        to={`/leases/${lease.id}/edit`}
+                        className="text-blue-600 hover:text-blue-900 mr-3"
                       >
                         Modifier
                       </Link>
                       <button
-                        onClick={() => handleDelete(tenant.id)}
-                        className="text-red-600 hover:text-red-900"
+                        onClick={() => handleDelete(lease.id)}
+                        className="text-red-600 hover:text-red-900 mr-3"
                       >
                         Supprimer
+                      </button>
+                      <button
+                        className="text-green-600 hover:text-green-900"
+                        onClick={() => alert('Génération PDF à venir')}
+                      >
+                        PDF
                       </button>
                     </td>
                   </tr>
@@ -224,4 +275,4 @@ function Tenants() {
   )
 }
 
-export default Tenants
+export default Leases

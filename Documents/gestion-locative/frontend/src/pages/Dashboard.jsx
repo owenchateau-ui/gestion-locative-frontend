@@ -8,7 +8,8 @@ function Dashboard() {
   const { user, signOut } = useAuth()
   const [stats, setStats] = useState({
     properties: 0,
-    tenants: 0
+    tenants: 0,
+    activeLeases: 0
   })
 
   useEffect(() => {
@@ -44,9 +45,19 @@ function Dashboard() {
 
       if (tenantsError) throw tenantsError
 
+      // Compter les baux actifs
+      const { count: leasesCount, error: leasesError } = await supabase
+        .from('leases')
+        .select('*, property:properties!inner(owner_id)', { count: 'exact', head: true })
+        .eq('property.owner_id', userData.id)
+        .eq('status', 'active')
+
+      if (leasesError) throw leasesError
+
       setStats({
         properties: propertiesCount || 0,
-        tenants: tenantsCount || 0
+        tenants: tenantsCount || 0,
+        activeLeases: leasesCount || 0
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -76,6 +87,9 @@ function Dashboard() {
             </Link>
             <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
               Mes locataires
+            </Link>
+            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
+              Mes baux
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -112,10 +126,14 @@ function Dashboard() {
               <p className="text-3xl font-bold text-green-600">{stats.tenants}</p>
               <p className="text-sm text-green-600 mt-2">Gérer mes locataires →</p>
             </Link>
-            <div className="bg-purple-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-purple-800 mb-2">Paiements en attente</h3>
-              <p className="text-3xl font-bold text-purple-600">0</p>
-            </div>
+            <Link
+              to="/leases"
+              className="bg-purple-50 p-6 rounded-lg hover:bg-purple-100 transition cursor-pointer"
+            >
+              <h3 className="text-xl font-semibold text-purple-800 mb-2">Baux actifs</h3>
+              <p className="text-3xl font-bold text-purple-600">{stats.activeLeases}</p>
+              <p className="text-sm text-purple-600 mt-2">Gérer mes baux →</p>
+            </Link>
           </div>
         </div>
       </div>
