@@ -81,7 +81,7 @@ function Dashboard() {
           )
         `)
         .eq('lease.property.owner_id', userData.id)
-        .eq('status', 'en_retard')
+        .eq('status', 'late')
 
       if (latePaymentsError) throw latePaymentsError
 

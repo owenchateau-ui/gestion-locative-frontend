@@ -15,12 +15,10 @@ function PaymentForm() {
   const [formData, setFormData] = useState({
     lease_id: '',
     amount: '',
-    rent_amount: '',
-    charges_amount: '',
     due_date: '',
     payment_date: '',
-    payment_method: 'virement',
-    status: 'en_attente',
+    payment_method: 'bank_transfer',
+    status: 'pending',
     notes: ''
   })
 
@@ -78,12 +76,10 @@ function PaymentForm() {
       setFormData({
         lease_id: data.lease_id || '',
         amount: data.amount || '',
-        rent_amount: data.rent_amount || '',
-        charges_amount: data.charges_amount || '',
         due_date: data.due_date || '',
         payment_date: data.payment_date || '',
-        payment_method: data.payment_method || 'virement',
-        status: data.status || 'en_attente',
+        payment_method: data.payment_method || 'bank_transfer',
+        status: data.status || 'pending',
         notes: data.notes || ''
       })
     } catch (error) {
@@ -103,12 +99,8 @@ function PaymentForm() {
 
   const handleLeaseChange = (e) => {
     const leaseId = e.target.value
-    setFormData(prev => ({
-      ...prev,
-      lease_id: leaseId
-    }))
 
-    // Pré-remplir les montants avec le bail sélectionné
+    // Pré-remplir le montant avec le bail sélectionné
     if (leaseId) {
       const selectedLease = leases.find(l => l.id === leaseId)
       if (selectedLease) {
@@ -119,11 +111,15 @@ function PaymentForm() {
         setFormData(prev => ({
           ...prev,
           lease_id: leaseId,
-          rent_amount: rentAmount,
-          charges_amount: chargesAmount,
           amount: totalAmount
         }))
       }
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        lease_id: '',
+        amount: ''
+      }))
     }
   }
 
@@ -137,8 +133,6 @@ function PaymentForm() {
       const paymentData = {
         lease_id: formData.lease_id,
         amount: parseFloat(formData.amount),
-        rent_amount: parseFloat(formData.rent_amount) || 0,
-        charges_amount: parseFloat(formData.charges_amount) || 0,
         due_date: formData.due_date,
         payment_date: formData.payment_date || null,
         payment_method: formData.payment_method || null,
@@ -258,56 +252,25 @@ function PaymentForm() {
               )}
             </div>
 
-            {/* Montants */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Loyer (€) *
-                </label>
-                <input
-                  type="number"
-                  name="rent_amount"
-                  value={formData.rent_amount}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="950.00"
-                  step="0.01"
-                  min="0"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Charges (€) *
-                </label>
-                <input
-                  type="number"
-                  name="charges_amount"
-                  value={formData.charges_amount}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="80.00"
-                  step="0.01"
-                  min="0"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Montant total (€) *
-                </label>
-                <input
-                  type="number"
-                  name="amount"
-                  value={formData.amount}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="1030.00"
-                  step="0.01"
-                  min="0"
-                  required
-                />
-              </div>
+            {/* Montant */}
+            <div className="mb-6">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Montant total (€) *
+              </label>
+              <input
+                type="number"
+                name="amount"
+                value={formData.amount}
+                onChange={handleChange}
+                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="1030.00"
+                step="0.01"
+                min="0"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Montant pré-rempli avec loyer + charges du bail sélectionné
+              </p>
             </div>
 
             {/* Dates */}
@@ -351,10 +314,11 @@ function PaymentForm() {
                 className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Non spécifié</option>
-                <option value="virement">Virement</option>
-                <option value="cheque">Chèque</option>
-                <option value="especes">Espèces</option>
-                <option value="prelevement">Prélèvement</option>
+                <option value="bank_transfer">Virement</option>
+                <option value="check">Chèque</option>
+                <option value="cash">Espèces</option>
+                <option value="direct_debit">Prélèvement</option>
+                <option value="other">Autre</option>
               </select>
             </div>
 
@@ -370,10 +334,10 @@ function PaymentForm() {
                 className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="en_attente">En attente</option>
-                <option value="paye">Payé</option>
-                <option value="en_retard">En retard</option>
-                <option value="partiel">Partiel</option>
+                <option value="pending">En attente</option>
+                <option value="paid">Payé</option>
+                <option value="late">En retard</option>
+                <option value="partial">Partiel</option>
               </select>
             </div>
 

@@ -145,9 +145,13 @@ function Payments() {
 
       doc.text(`Période : ${month}`, 20, 110)
 
+      // Récupérer les montants du bail
+      const rentAmount = parseFloat(leaseData.rent_amount) || 0
+      const chargesAmount = parseFloat(leaseData.charges_amount) || 0
+
       doc.text('Détail des paiements :', 20, 125)
-      doc.text(`Loyer : ${payment.rent_amount.toFixed(2)} €`, 30, 135)
-      doc.text(`Charges : ${payment.charges_amount.toFixed(2)} €`, 30, 141)
+      doc.text(`Loyer : ${rentAmount.toFixed(2)} €`, 30, 135)
+      doc.text(`Charges : ${chargesAmount.toFixed(2)} €`, 30, 141)
       doc.setFontSize(12)
       doc.text(`Total : ${payment.amount.toFixed(2)} €`, 30, 150)
 
@@ -156,10 +160,11 @@ function Payments() {
       doc.text(`Payé le : ${paymentDate.toLocaleDateString('fr-FR')}`, 20, 165)
       if (payment.payment_method) {
         const methods = {
-          virement: 'Virement',
-          cheque: 'Chèque',
-          especes: 'Espèces',
-          prelevement: 'Prélèvement'
+          bank_transfer: 'Virement',
+          check: 'Chèque',
+          cash: 'Espèces',
+          direct_debit: 'Prélèvement',
+          other: 'Autre'
         }
         doc.text(`Mode de paiement : ${methods[payment.payment_method] || payment.payment_method}`, 20, 171)
       }
@@ -185,16 +190,16 @@ function Payments() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      'en_attente': 'bg-yellow-100 text-yellow-800',
-      'paye': 'bg-green-100 text-green-800',
-      'en_retard': 'bg-red-100 text-red-800',
-      'partiel': 'bg-orange-100 text-orange-800'
+      'pending': 'bg-yellow-100 text-yellow-800',
+      'paid': 'bg-green-100 text-green-800',
+      'late': 'bg-red-100 text-red-800',
+      'partial': 'bg-orange-100 text-orange-800'
     }
     const labels = {
-      'en_attente': 'En attente',
-      'paye': 'Payé',
-      'en_retard': 'En retard',
-      'partiel': 'Partiel'
+      'pending': 'En attente',
+      'paid': 'Payé',
+      'late': 'En retard',
+      'partial': 'Partiel'
     }
     return (
       <span className={`px-2 py-1 rounded text-sm ${badges[status]}`}>
@@ -282,10 +287,10 @@ function Payments() {
               className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="tous">Tous</option>
-              <option value="en_attente">En attente</option>
-              <option value="paye">Payés</option>
-              <option value="en_retard">En retard</option>
-              <option value="partiel">Partiels</option>
+              <option value="pending">En attente</option>
+              <option value="paid">Payés</option>
+              <option value="late">En retard</option>
+              <option value="partial">Partiels</option>
             </select>
           </div>
         </div>
@@ -356,9 +361,6 @@ function Payments() {
                       <div className="text-sm font-semibold text-gray-900">
                         {payment.amount.toFixed(2)} €
                       </div>
-                      <div className="text-xs text-gray-500">
-                        Loyer: {payment.rent_amount.toFixed(2)} € + Charges: {payment.charges_amount.toFixed(2)} €
-                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
@@ -374,7 +376,7 @@ function Payments() {
                       {getStatusBadge(payment.status)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {payment.status === 'paye' && (
+                      {payment.status === 'paid' && (
                         <button
                           onClick={() => generateReceipt(payment)}
                           className="text-green-600 hover:text-green-900 mr-4"
