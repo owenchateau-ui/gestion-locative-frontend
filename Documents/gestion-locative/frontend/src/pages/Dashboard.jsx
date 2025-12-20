@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 function Dashboard() {
@@ -18,7 +18,15 @@ function Dashboard() {
     <div className="min-h-screen bg-gray-100">
       <nav className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
+          <div className="flex items-center gap-6">
+            <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
+            <Link to="/dashboard" className="text-blue-600 font-semibold">
+              Tableau de bord
+            </Link>
+            <Link to="/properties" className="text-gray-600 hover:text-blue-600">
+              Mes biens
+            </Link>
+          </div>
           <div className="flex items-center gap-4">
             <span className="text-gray-600">{user?.email}</span>
             <button
@@ -37,10 +45,14 @@ function Dashboard() {
           <p className="text-gray-600">Bienvenue sur votre espace de gestion locative.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div className="bg-blue-50 p-6 rounded-lg">
+            <Link
+              to="/properties"
+              className="bg-blue-50 p-6 rounded-lg hover:bg-blue-100 transition cursor-pointer"
+            >
               <h3 className="text-xl font-semibold text-blue-800 mb-2">Proprietes</h3>
               <p className="text-3xl font-bold text-blue-600">0</p>
-            </div>
+              <p className="text-sm text-blue-600 mt-2">Gérer mes biens →</p>
+            </Link>
             <div className="bg-green-50 p-6 rounded-lg">
               <h3 className="text-xl font-semibold text-green-800 mb-2">Locataires</h3>
               <p className="text-3xl font-bold text-green-600">0</p>

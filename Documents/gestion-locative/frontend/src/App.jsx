@@ -3,6 +3,8 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import Properties from './pages/Properties'
+import PropertyForm from './pages/PropertyForm'
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -30,6 +32,30 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/properties"
+        element={
+          <PrivateRoute>
+            <Properties />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/properties/new"
+        element={
+          <PrivateRoute>
+            <PropertyForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/properties/:id/edit"
+        element={
+          <PrivateRoute>
+            <PropertyForm />
           </PrivateRoute>
         }
       />
