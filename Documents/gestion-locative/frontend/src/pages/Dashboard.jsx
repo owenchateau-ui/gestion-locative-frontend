@@ -1,9 +1,57 @@
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { supabase } from '../lib/supabase'
 
 function Dashboard() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
+  const [stats, setStats] = useState({
+    properties: 0,
+    tenants: 0
+  })
+
+  useEffect(() => {
+    if (user) {
+      fetchStats()
+    }
+  }, [user])
+
+  const fetchStats = async () => {
+    try {
+      // Récupérer l'ID de l'utilisateur
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('supabase_uid', user.id)
+        .single()
+
+      if (userError) throw userError
+
+      // Compter les propriétés
+      const { count: propertiesCount, error: propertiesError } = await supabase
+        .from('properties')
+        .select('*', { count: 'exact', head: true })
+        .eq('owner_id', userData.id)
+
+      if (propertiesError) throw propertiesError
+
+      // Compter les locataires
+      const { count: tenantsCount, error: tenantsError } = await supabase
+        .from('tenants')
+        .select('*', { count: 'exact', head: true })
+        .eq('landlord_id', userData.id)
+
+      if (tenantsError) throw tenantsError
+
+      setStats({
+        properties: propertiesCount || 0,
+        tenants: tenantsCount || 0
+      })
+    } catch (error) {
+      console.error('Error fetching stats:', error)
+    }
+  }
 
   const handleLogout = async () => {
     try {
@@ -25,6 +73,9 @@ function Dashboard() {
             </Link>
             <Link to="/properties" className="text-gray-600 hover:text-blue-600">
               Mes biens
+            </Link>
+            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
+              Mes locataires
             </Link>
           </div>
           <div className="flex items-center gap-4">
@@ -50,13 +101,17 @@ function Dashboard() {
               className="bg-blue-50 p-6 rounded-lg hover:bg-blue-100 transition cursor-pointer"
             >
               <h3 className="text-xl font-semibold text-blue-800 mb-2">Proprietes</h3>
-              <p className="text-3xl font-bold text-blue-600">0</p>
+              <p className="text-3xl font-bold text-blue-600">{stats.properties}</p>
               <p className="text-sm text-blue-600 mt-2">Gérer mes biens →</p>
             </Link>
-            <div className="bg-green-50 p-6 rounded-lg">
+            <Link
+              to="/tenants"
+              className="bg-green-50 p-6 rounded-lg hover:bg-green-100 transition cursor-pointer"
+            >
               <h3 className="text-xl font-semibold text-green-800 mb-2">Locataires</h3>
-              <p className="text-3xl font-bold text-green-600">0</p>
-            </div>
+              <p className="text-3xl font-bold text-green-600">{stats.tenants}</p>
+              <p className="text-sm text-green-600 mt-2">Gérer mes locataires →</p>
+            </Link>
             <div className="bg-purple-50 p-6 rounded-lg">
               <h3 className="text-xl font-semibold text-purple-800 mb-2">Paiements en attente</h3>
               <p className="text-3xl font-bold text-purple-600">0</p>

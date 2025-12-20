@@ -3,37 +3,18 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
-function Properties() {
-  const [properties, setProperties] = useState([])
+function Tenants() {
+  const [tenants, setTenants] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [userPlan, setUserPlan] = useState('free')
   const navigate = useNavigate()
   const { user } = useAuth()
 
   useEffect(() => {
-    fetchProperties()
-    fetchUserPlan()
+    fetchTenants()
   }, [user])
 
-  const fetchUserPlan = async () => {
-    if (!user) return
-
-    try {
-      const { data, error } = await supabase
-        .from('users')
-        .select('plan')
-        .eq('supabase_uid', user.id)
-        .single()
-
-      if (error) throw error
-      setUserPlan(data?.plan || 'free')
-    } catch (error) {
-      console.error('Error fetching user plan:', error)
-    }
-  }
-
-  const fetchProperties = async () => {
+  const fetchTenants = async () => {
     if (!user) return
 
     try {
@@ -49,16 +30,16 @@ function Properties() {
 
       if (userError) throw userError
 
-      // Récupérer les biens de l'utilisateur
-      const { data, error: propertiesError } = await supabase
-        .from('properties')
+      // Récupérer les locataires du bailleur
+      const { data, error: tenantsError } = await supabase
+        .from('tenants')
         .select('*')
-        .eq('owner_id', userData.id)
+        .eq('landlord_id', userData.id)
         .order('created_at', { ascending: false })
 
-      if (propertiesError) throw propertiesError
+      if (tenantsError) throw tenantsError
 
-      setProperties(data || [])
+      setTenants(data || [])
     } catch (error) {
       setError(error.message)
     } finally {
@@ -67,62 +48,29 @@ function Properties() {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer ce locataire ?')) {
       return
     }
 
     try {
       const { error } = await supabase
-        .from('properties')
+        .from('tenants')
         .delete()
         .eq('id', id)
 
       if (error) throw error
 
       // Rafraîchir la liste
-      fetchProperties()
+      fetchTenants()
     } catch (error) {
       alert('Erreur lors de la suppression : ' + error.message)
     }
   }
 
-  const handleAddProperty = () => {
-    // Vérifier la limite pour les comptes gratuits
-    if (userPlan === 'free' && properties.length >= 2) {
-      alert('Limite atteinte : les comptes gratuits sont limités à 2 biens. Passez au plan Premium pour ajouter plus de biens.')
-      return
-    }
-    navigate('/properties/new')
-  }
-
-  const getStatusBadge = (status) => {
-    const badges = {
-      vacant: 'bg-green-100 text-green-800',
-      occupied: 'bg-blue-100 text-blue-800',
-      unavailable: 'bg-gray-100 text-gray-800'
-    }
-    const labels = {
-      vacant: 'Vacant',
-      occupied: 'Occupé',
-      unavailable: 'Indisponible'
-    }
-    return (
-      <span className={`px-2 py-1 rounded text-sm ${badges[status]}`}>
-        {labels[status]}
-      </span>
-    )
-  }
-
-  const getPropertyTypeLabel = (type) => {
-    const labels = {
-      apartment: 'Appartement',
-      house: 'Maison',
-      studio: 'Studio',
-      commercial: 'Commercial',
-      parking: 'Parking',
-      other: 'Autre'
-    }
-    return labels[type] || type
+  const formatDate = (dateString) => {
+    if (!dateString) return '-'
+    const date = new Date(dateString)
+    return date.toLocaleDateString('fr-FR')
   }
 
   if (loading) {
@@ -143,10 +91,10 @@ function Properties() {
             <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
               Tableau de bord
             </Link>
-            <Link to="/properties" className="text-blue-600 font-semibold">
+            <Link to="/properties" className="text-gray-600 hover:text-blue-600">
               Mes biens
             </Link>
-            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
+            <Link to="/tenants" className="text-blue-600 font-semibold">
               Mes locataires
             </Link>
           </div>
@@ -169,18 +117,16 @@ function Properties() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-3xl font-bold">Mes biens immobiliers</h2>
-            {userPlan === 'free' && (
-              <p className="text-sm text-gray-600 mt-2">
-                Compte gratuit : {properties.length}/2 biens utilisés
-              </p>
-            )}
+            <h2 className="text-3xl font-bold">Mes locataires</h2>
+            <p className="text-sm text-gray-600 mt-2">
+              {tenants.length} locataire{tenants.length > 1 ? 's' : ''}
+            </p>
           </div>
           <button
-            onClick={handleAddProperty}
+            onClick={() => navigate('/tenants/new')}
             className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
           >
-            + Ajouter un bien
+            + Ajouter un locataire
           </button>
         </div>
 
@@ -190,16 +136,16 @@ function Properties() {
           </div>
         )}
 
-        {properties.length === 0 ? (
+        {tenants.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <p className="text-gray-600 text-lg mb-4">
-              Vous n'avez pas encore de bien immobilier
+              Vous n'avez pas encore de locataire
             </p>
             <button
-              onClick={handleAddProperty}
+              onClick={() => navigate('/tenants/new')}
               className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
             >
-              Ajouter votre premier bien
+              Ajouter votre premier locataire
             </button>
           </div>
         ) : (
@@ -208,19 +154,16 @@ function Properties() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom
+                    Nom complet
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Adresse
+                    Email
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
+                    Téléphone
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Loyer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
+                    Date de naissance
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
@@ -228,46 +171,40 @@ function Properties() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {properties.map((property) => (
-                  <tr key={property.id} className="hover:bg-gray-50">
+                {tenants.map((tenant) => (
+                  <tr key={tenant.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
-                        {property.name}
+                        {tenant.first_name} {tenant.last_name}
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{property.address}</div>
-                      <div className="text-sm text-gray-500">
-                        {property.postal_code} {property.city}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {getPropertyTypeLabel(property.property_type)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {property.rent_amount.toFixed(2)} €
-                      </div>
-                      {property.charges_amount > 0 && (
-                        <div className="text-xs text-gray-500">
-                          + {property.charges_amount.toFixed(2)} € charges
+                      {tenant.place_of_birth && (
+                        <div className="text-sm text-gray-500">
+                          Né(e) à {tenant.place_of_birth}
                         </div>
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(property.status)}
+                      <div className="text-sm text-gray-900">{tenant.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {tenant.phone || '-'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {formatDate(tenant.date_of_birth)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <Link
-                        to={`/properties/${property.id}/edit`}
+                        to={`/tenants/${tenant.id}/edit`}
                         className="text-blue-600 hover:text-blue-900 mr-4"
                       >
                         Modifier
                       </Link>
                       <button
-                        onClick={() => handleDelete(property.id)}
+                        onClick={() => handleDelete(tenant.id)}
                         className="text-red-600 hover:text-red-900"
                       >
                         Supprimer
@@ -284,4 +221,4 @@ function Properties() {
   )
 }
 
-export default Properties
+export default Tenants

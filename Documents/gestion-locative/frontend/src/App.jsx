@@ -5,6 +5,8 @@ import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Properties from './pages/Properties'
 import PropertyForm from './pages/PropertyForm'
+import Tenants from './pages/Tenants'
+import TenantForm from './pages/TenantForm'
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -56,6 +58,30 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <PropertyForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/tenants"
+        element={
+          <PrivateRoute>
+            <Tenants />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/tenants/new"
+        element={
+          <PrivateRoute>
+            <TenantForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/tenants/:id/edit"
+        element={
+          <PrivateRoute>
+            <TenantForm />
           </PrivateRoute>
         }
       />
