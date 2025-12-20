@@ -105,7 +105,9 @@ function Tenants() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-gray-600">{user?.email}</span>
+            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
+              Mon profil
+            </Link>
             <button
               onClick={async () => {
                 await supabase.auth.signOut()

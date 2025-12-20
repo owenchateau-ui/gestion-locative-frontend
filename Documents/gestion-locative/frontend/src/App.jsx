@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
@@ -11,6 +12,7 @@ import Leases from './pages/Leases'
 import LeaseForm from './pages/LeaseForm'
 import Payments from './pages/Payments'
 import PaymentForm from './pages/PaymentForm'
+import Profile from './pages/Profile'
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -30,7 +32,7 @@ function PrivateRoute({ children }) {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route
@@ -134,6 +136,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <PaymentForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Profile />
           </PrivateRoute>
         }
       />

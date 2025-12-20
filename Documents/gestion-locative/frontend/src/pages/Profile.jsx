@@ -1,38 +1,34 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
-function TenantForm() {
-  const { id } = useParams()
+function Profile() {
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const isEditMode = Boolean(id)
-
+  const { user, signOut } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
-    email: '',
     phone: '',
-    date_of_birth: '',
-    place_of_birth: ''
+    email: ''
   })
 
   useEffect(() => {
-    if (isEditMode) {
-      fetchTenant()
+    if (user) {
+      fetchUserProfile()
     }
-  }, [id])
+  }, [user])
 
-  const fetchTenant = async () => {
+  const fetchUserProfile = async () => {
     try {
       setLoading(true)
       const { data, error } = await supabase
-        .from('tenants')
+        .from('users')
         .select('*')
-        .eq('id', id)
+        .eq('supabase_uid', user.id)
         .single()
 
       if (error) throw error
@@ -40,10 +36,8 @@ function TenantForm() {
       setFormData({
         first_name: data.first_name || '',
         last_name: data.last_name || '',
-        email: data.email || '',
         phone: data.phone || '',
-        date_of_birth: data.date_of_birth || '',
-        place_of_birth: data.place_of_birth || ''
+        email: data.email || user.email || ''
       })
     } catch (error) {
       setError(error.message)
@@ -64,52 +58,44 @@ function TenantForm() {
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setSuccess(false)
 
     try {
-      // Récupérer l'ID de l'utilisateur depuis la table users
-      const { data: userData, error: userError } = await supabase
+      const { error } = await supabase
         .from('users')
-        .select('id')
+        .update({
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          phone: formData.phone || null
+        })
         .eq('supabase_uid', user.id)
-        .single()
 
-      if (userError) throw userError
+      if (error) throw error
 
-      // Préparer les données pour l'insertion/mise à jour
-      const tenantData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone || null,
-        date_of_birth: formData.date_of_birth || null,
-        place_of_birth: formData.place_of_birth || null
-      }
-
-      if (isEditMode) {
-        // Mise à jour
-        const { error } = await supabase
-          .from('tenants')
-          .update(tenantData)
-          .eq('id', id)
-
-        if (error) throw error
-      } else {
-        // Création
-        tenantData.landlord_id = userData.id
-
-        const { error } = await supabase
-          .from('tenants')
-          .insert([tenantData])
-
-        if (error) throw error
-      }
-
-      // Rediriger vers la liste des locataires
-      navigate('/tenants')
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
     } catch (error) {
       setError(error.message)
+    } finally {
       setLoading(false)
     }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      navigate('/login')
+    } catch (error) {
+      console.error('Error logging out:', error)
+    }
+  }
+
+  if (loading && !formData.email) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-xl">Chargement...</div>
+      </div>
+    )
   }
 
   return (
@@ -136,14 +122,11 @@ function TenantForm() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
+            <Link to="/profile" className="text-blue-600 font-semibold">
               Mon profil
             </Link>
             <button
-              onClick={async () => {
-                await supabase.auth.signOut()
-                navigate('/login')
-              }}
+              onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             >
               Déconnexion
@@ -152,18 +135,16 @@ function TenantForm() {
         </div>
       </nav>
 
-      {/* Formulaire */}
+      {/* Contenu */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">
-              {isEditMode ? 'Modifier le locataire' : 'Ajouter un locataire'}
-            </h2>
+            <h2 className="text-2xl font-bold">Mon profil</h2>
             <Link
-              to="/tenants"
+              to="/dashboard"
               className="text-gray-600 hover:text-gray-900"
             >
-              ← Retour
+              ← Retour au dashboard
             </Link>
           </div>
 
@@ -173,7 +154,29 @@ function TenantForm() {
             </div>
           )}
 
+          {success && (
+            <div className="bg-green-100 text-green-700 p-4 rounded mb-6">
+              Profil mis à jour avec succès !
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
+            {/* Email (non modifiable) */}
+            <div className="mb-6">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                value={formData.email}
+                disabled
+                className="w-full p-3 border rounded bg-gray-100 cursor-not-allowed"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                L'email ne peut pas être modifié
+              </p>
+            </div>
+
             {/* Prénom et Nom */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div>
@@ -186,7 +189,7 @@ function TenantForm() {
                   value={formData.first_name}
                   onChange={handleChange}
                   className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Marie"
+                  placeholder="Jean"
                   required
                 />
               </div>
@@ -200,26 +203,10 @@ function TenantForm() {
                   value={formData.last_name}
                   onChange={handleChange}
                   className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Martin"
+                  placeholder="Dupont"
                   required
                 />
               </div>
-            </div>
-
-            {/* Email */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Email *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="marie.martin@email.com"
-                required
-              />
             </div>
 
             {/* Téléphone */}
@@ -237,35 +224,6 @@ function TenantForm() {
               />
             </div>
 
-            {/* Date et lieu de naissance */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Date de naissance
-                </label>
-                <input
-                  type="date"
-                  name="date_of_birth"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Lieu de naissance
-                </label>
-                <input
-                  type="text"
-                  name="place_of_birth"
-                  value={formData.place_of_birth}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Paris"
-                />
-              </div>
-            </div>
-
             {/* Boutons */}
             <div className="flex gap-4">
               <button
@@ -273,10 +231,10 @@ function TenantForm() {
                 disabled={loading}
                 className="flex-1 bg-blue-500 text-white p-3 rounded font-semibold hover:bg-blue-600 disabled:opacity-50"
               >
-                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Créer le locataire'}
+                {loading ? 'Enregistrement...' : 'Enregistrer les modifications'}
               </button>
               <Link
-                to="/tenants"
+                to="/dashboard"
                 className="flex-1 bg-gray-200 text-gray-700 p-3 rounded font-semibold hover:bg-gray-300 text-center"
               >
                 Annuler
@@ -289,4 +247,4 @@ function TenantForm() {
   )
 }
 
-export default TenantForm
+export default Profile

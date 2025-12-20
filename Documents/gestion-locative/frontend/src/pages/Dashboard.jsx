@@ -13,6 +13,10 @@ function Dashboard() {
     monthlyRent: 0,
     latePayments: 0
   })
+  const [alerts, setAlerts] = useState({
+    expiringLeases: [],
+    latePayments: []
+  })
 
   useEffect(() => {
     if (user) {
@@ -89,12 +93,53 @@ function Dashboard() {
         return total + (parseFloat(payment.amount) || 0)
       }, 0) || 0
 
+      // Récupérer les baux qui arrivent à échéance dans les 30 prochains jours
+      const today = new Date()
+      const in30Days = new Date()
+      in30Days.setDate(today.getDate() + 30)
+
+      const { data: expiringLeasesData, error: expiringLeasesError } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          property:properties!inner(id, name, owner_id),
+          tenant:tenants!inner(id, first_name, last_name)
+        `)
+        .eq('property.owner_id', userData.id)
+        .eq('status', 'active')
+        .not('end_date', 'is', null)
+        .gte('end_date', today.toISOString().split('T')[0])
+        .lte('end_date', in30Days.toISOString().split('T')[0])
+
+      if (expiringLeasesError) console.error('Error fetching expiring leases:', expiringLeasesError)
+
+      // Récupérer les paiements en retard (date échéance dépassée et statut pending)
+      const { data: latePaymentsAlerts, error: latePaymentsAlertsError } = await supabase
+        .from('payments')
+        .select(`
+          *,
+          lease:leases!inner(
+            property:properties!inner(id, name, owner_id),
+            tenant:tenants!inner(id, first_name, last_name)
+          )
+        `)
+        .eq('lease.property.owner_id', userData.id)
+        .eq('status', 'pending')
+        .lt('due_date', today.toISOString().split('T')[0])
+
+      if (latePaymentsAlertsError) console.error('Error fetching late payments alerts:', latePaymentsAlertsError)
+
       setStats({
         properties: propertiesCount || 0,
         tenants: tenantsCount || 0,
         activeLeases: leasesCount || 0,
         monthlyRent: monthlyRent,
         latePayments: latePaymentsTotal
+      })
+
+      setAlerts({
+        expiringLeases: expiringLeasesData || [],
+        latePayments: latePaymentsAlerts || []
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -133,18 +178,77 @@ function Dashboard() {
             </Link>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-gray-600">{user?.email}</span>
+            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
+              Mon profil
+            </Link>
             <button
               onClick={handleLogout}
               className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
             >
-              Deconnexion
+              Déconnexion
             </button>
           </div>
         </div>
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Alertes */}
+        {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0) && (
+          <div className="mb-6 space-y-4">
+            {/* Baux arrivant à échéance */}
+            {alerts.expiringLeases.length > 0 && (
+              <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-orange-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="text-orange-800 font-semibold mb-2">
+                      {alerts.expiringLeases.length} bail{alerts.expiringLeases.length > 1 ? 'x' : ''} arrive{alerts.expiringLeases.length > 1 ? 'nt' : ''} à échéance dans les 30 prochains jours
+                    </h3>
+                    <ul className="space-y-1">
+                      {alerts.expiringLeases.map(lease => (
+                        <li key={lease.id} className="text-sm text-orange-700">
+                          <Link to="/leases" className="hover:underline">
+                            {lease.property.name} - {lease.tenant.first_name} {lease.tenant.last_name}
+                            (échéance : {new Date(lease.end_date).toLocaleDateString('fr-FR')})
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Paiements en retard */}
+            {alerts.latePayments.length > 0 && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-red-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="text-red-800 font-semibold mb-2">
+                      {alerts.latePayments.length} paiement{alerts.latePayments.length > 1 ? 's' : ''} en retard
+                    </h3>
+                    <ul className="space-y-1">
+                      {alerts.latePayments.map(payment => (
+                        <li key={payment.id} className="text-sm text-red-700">
+                          <Link to="/payments" className="hover:underline">
+                            {payment.lease.property.name} - {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
+                            ({payment.amount.toFixed(2)} € - dû le {new Date(payment.due_date).toLocaleDateString('fr-FR')})
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-md p-8">
           <h2 className="text-3xl font-bold mb-4">Tableau de bord</h2>
           <p className="text-gray-600">Bienvenue sur votre espace de gestion locative.</p>
