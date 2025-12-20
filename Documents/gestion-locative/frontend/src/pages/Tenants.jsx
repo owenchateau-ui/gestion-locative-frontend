@@ -100,6 +100,9 @@ function Tenants() {
             <Link to="/leases" className="text-gray-600 hover:text-blue-600">
               Mes baux
             </Link>
+            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
+              Paiements
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-gray-600">{user?.email}</span>

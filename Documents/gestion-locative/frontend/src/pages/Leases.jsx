@@ -128,6 +128,9 @@ function Leases() {
             <Link to="/leases" className="text-blue-600 font-semibold">
               Mes baux
             </Link>
+            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
+              Paiements
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-gray-600">{user?.email}</span>

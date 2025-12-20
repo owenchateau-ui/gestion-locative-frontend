@@ -9,6 +9,8 @@ import Tenants from './pages/Tenants'
 import TenantForm from './pages/TenantForm'
 import Leases from './pages/Leases'
 import LeaseForm from './pages/LeaseForm'
+import Payments from './pages/Payments'
+import PaymentForm from './pages/PaymentForm'
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -108,6 +110,30 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <LeaseForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/payments"
+        element={
+          <PrivateRoute>
+            <Payments />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/payments/new"
+        element={
+          <PrivateRoute>
+            <PaymentForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/payments/:id/edit"
+        element={
+          <PrivateRoute>
+            <PaymentForm />
           </PrivateRoute>
         }
       />

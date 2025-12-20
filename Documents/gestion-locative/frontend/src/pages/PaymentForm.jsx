@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 
-function PropertyForm() {
+function PaymentForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
@@ -11,32 +11,64 @@ function PropertyForm() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [leases, setLeases] = useState([])
   const [formData, setFormData] = useState({
-    name: '',
-    address: '',
-    city: '',
-    postal_code: '',
-    property_type: 'apartment',
-    surface_area: '',
-    nb_rooms: '',
+    lease_id: '',
+    amount: '',
     rent_amount: '',
     charges_amount: '',
-    deposit_amount: '',
-    description: '',
-    status: 'vacant'
+    due_date: '',
+    payment_date: '',
+    payment_method: 'virement',
+    status: 'en_attente',
+    notes: ''
   })
 
   useEffect(() => {
+    fetchLeases()
     if (isEditMode) {
-      fetchProperty()
+      fetchPayment()
     }
-  }, [id])
+  }, [id, user])
 
-  const fetchProperty = async () => {
+  const fetchLeases = async () => {
+    if (!user) return
+
+    try {
+      // Récupérer l'ID de l'utilisateur
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('supabase_uid', user.id)
+        .single()
+
+      if (userError) throw userError
+
+      // Récupérer les baux actifs avec les infos du bien et locataire
+      const { data, error } = await supabase
+        .from('leases')
+        .select(`
+          *,
+          property:properties!inner(id, name, owner_id),
+          tenant:tenants!inner(id, first_name, last_name)
+        `)
+        .eq('property.owner_id', userData.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      setLeases(data || [])
+    } catch (error) {
+      console.error('Error fetching leases:', error)
+    }
+  }
+
+  const fetchPayment = async () => {
     try {
       setLoading(true)
       const { data, error } = await supabase
-        .from('properties')
+        .from('payments')
         .select('*')
         .eq('id', id)
         .single()
@@ -44,18 +76,15 @@ function PropertyForm() {
       if (error) throw error
 
       setFormData({
-        name: data.name || '',
-        address: data.address || '',
-        city: data.city || '',
-        postal_code: data.postal_code || '',
-        property_type: data.property_type || 'apartment',
-        surface_area: data.surface_area || '',
-        nb_rooms: data.nb_rooms || '',
+        lease_id: data.lease_id || '',
+        amount: data.amount || '',
         rent_amount: data.rent_amount || '',
         charges_amount: data.charges_amount || '',
-        deposit_amount: data.deposit_amount || '',
-        description: data.description || '',
-        status: data.status || 'vacant'
+        due_date: data.due_date || '',
+        payment_date: data.payment_date || '',
+        payment_method: data.payment_method || 'virement',
+        status: data.status || 'en_attente',
+        notes: data.notes || ''
       })
     } catch (error) {
       setError(error.message)
@@ -72,58 +101,70 @@ function PropertyForm() {
     }))
   }
 
+  const handleLeaseChange = (e) => {
+    const leaseId = e.target.value
+    setFormData(prev => ({
+      ...prev,
+      lease_id: leaseId
+    }))
+
+    // Pré-remplir les montants avec le bail sélectionné
+    if (leaseId) {
+      const selectedLease = leases.find(l => l.id === leaseId)
+      if (selectedLease) {
+        const rentAmount = parseFloat(selectedLease.rent_amount) || 0
+        const chargesAmount = parseFloat(selectedLease.charges_amount) || 0
+        const totalAmount = rentAmount + chargesAmount
+
+        setFormData(prev => ({
+          ...prev,
+          lease_id: leaseId,
+          rent_amount: rentAmount,
+          charges_amount: chargesAmount,
+          amount: totalAmount
+        }))
+      }
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
     try {
-      // Récupérer l'ID de l'utilisateur depuis la table users
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('supabase_uid', user.id)
-        .single()
-
-      if (userError) throw userError
-
       // Préparer les données pour l'insertion/mise à jour
-      const propertyData = {
-        name: formData.name,
-        address: formData.address,
-        city: formData.city,
-        postal_code: formData.postal_code,
-        property_type: formData.property_type,
-        surface_area: formData.surface_area ? parseFloat(formData.surface_area) : null,
-        nb_rooms: formData.nb_rooms ? parseInt(formData.nb_rooms) : null,
-        rent_amount: parseFloat(formData.rent_amount),
-        charges_amount: formData.charges_amount ? parseFloat(formData.charges_amount) : 0,
-        deposit_amount: formData.deposit_amount ? parseFloat(formData.deposit_amount) : null,
-        description: formData.description || null,
-        status: formData.status
+      const paymentData = {
+        lease_id: formData.lease_id,
+        amount: parseFloat(formData.amount),
+        rent_amount: parseFloat(formData.rent_amount) || 0,
+        charges_amount: parseFloat(formData.charges_amount) || 0,
+        due_date: formData.due_date,
+        payment_date: formData.payment_date || null,
+        payment_method: formData.payment_method || null,
+        status: formData.status,
+        notes: formData.notes || null
       }
 
       if (isEditMode) {
         // Mise à jour
         const { error } = await supabase
-          .from('properties')
-          .update(propertyData)
+          .from('payments')
+          .update(paymentData)
           .eq('id', id)
 
         if (error) throw error
       } else {
         // Création
-        propertyData.owner_id = userData.id
-
         const { error } = await supabase
-          .from('properties')
-          .insert([propertyData])
+          .from('payments')
+          .insert([paymentData])
 
         if (error) throw error
       }
 
-      // Rediriger vers la liste des biens
-      navigate('/properties')
+      // Rediriger vers la liste des paiements
+      navigate('/payments')
     } catch (error) {
       setError(error.message)
       setLoading(false)
@@ -173,10 +214,10 @@ function PropertyForm() {
         <div className="bg-white rounded-lg shadow-md p-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">
-              {isEditMode ? 'Modifier le bien' : 'Ajouter un bien'}
+              {isEditMode ? 'Modifier le paiement' : 'Enregistrer un paiement'}
             </h2>
             <Link
-              to="/properties"
+              to="/payments"
               className="text-gray-600 hover:text-gray-900"
             >
               ← Retour
@@ -190,125 +231,34 @@ function PropertyForm() {
           )}
 
           <form onSubmit={handleSubmit}>
-            {/* Nom du bien */}
+            {/* Sélection du bail */}
             <div className="mb-6">
               <label className="block text-gray-700 font-semibold mb-2">
-                Nom du bien *
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Ex: Appartement Paris 11ème"
-                required
-              />
-            </div>
-
-            {/* Adresse */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Adresse *
-              </label>
-              <input
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="15 rue de la Roquette"
-                required
-              />
-            </div>
-
-            {/* Ville et Code postal */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Ville *
-                </label>
-                <input
-                  type="text"
-                  name="city"
-                  value={formData.city}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Paris"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Code postal *
-                </label>
-                <input
-                  type="text"
-                  name="postal_code"
-                  value={formData.postal_code}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="75011"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Type de bien */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
-                Type de bien *
+                Bail *
               </label>
               <select
-                name="property_type"
-                value={formData.property_type}
-                onChange={handleChange}
+                name="lease_id"
+                value={formData.lease_id}
+                onChange={handleLeaseChange}
                 className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={isEditMode}
               >
-                <option value="apartment">Appartement</option>
-                <option value="house">Maison</option>
-                <option value="studio">Studio</option>
-                <option value="commercial">Commercial</option>
-                <option value="parking">Parking</option>
-                <option value="other">Autre</option>
+                <option value="">Sélectionnez un bail actif</option>
+                {leases.map((lease) => (
+                  <option key={lease.id} value={lease.id}>
+                    {lease.property.name} - {lease.tenant.first_name} {lease.tenant.last_name}
+                  </option>
+                ))}
               </select>
+              {isEditMode && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Le bail ne peut pas être modifié après la création du paiement
+                </p>
+              )}
             </div>
 
-            {/* Surface et nombre de pièces */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Surface (m²)
-                </label>
-                <input
-                  type="number"
-                  name="surface_area"
-                  value={formData.surface_area}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="45.5"
-                  step="0.01"
-                  min="0"
-                />
-              </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">
-                  Nombre de pièces
-                </label>
-                <input
-                  type="number"
-                  name="nb_rooms"
-                  value={formData.nb_rooms}
-                  onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="2"
-                  min="0"
-                />
-              </div>
-            </div>
-
-            {/* Loyer, charges et dépôt */}
+            {/* Montants */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
@@ -328,7 +278,7 @@ function PropertyForm() {
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Charges (€)
+                  Charges (€) *
                 </label>
                 <input
                   type="number"
@@ -339,23 +289,73 @@ function PropertyForm() {
                   placeholder="80.00"
                   step="0.01"
                   min="0"
+                  required
                 />
               </div>
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">
-                  Dépôt de garantie (€)
+                  Montant total (€) *
                 </label>
                 <input
                   type="number"
-                  name="deposit_amount"
-                  value={formData.deposit_amount}
+                  name="amount"
+                  value={formData.amount}
                   onChange={handleChange}
                   className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="950.00"
+                  placeholder="1030.00"
                   step="0.01"
                   min="0"
+                  required
                 />
               </div>
+            </div>
+
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">
+                  Date d'échéance *
+                </label>
+                <input
+                  type="date"
+                  name="due_date"
+                  value={formData.due_date}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-700 font-semibold mb-2">
+                  Date de paiement
+                </label>
+                <input
+                  type="date"
+                  name="payment_date"
+                  value={formData.payment_date}
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {/* Mode de paiement */}
+            <div className="mb-6">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Mode de paiement
+              </label>
+              <select
+                name="payment_method"
+                value={formData.payment_method}
+                onChange={handleChange}
+                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Non spécifié</option>
+                <option value="virement">Virement</option>
+                <option value="cheque">Chèque</option>
+                <option value="especes">Espèces</option>
+                <option value="prelevement">Prélèvement</option>
+              </select>
             </div>
 
             {/* Statut */}
@@ -370,24 +370,25 @@ function PropertyForm() {
                 className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
-                <option value="vacant">Vacant</option>
-                <option value="occupied">Occupé</option>
-                <option value="unavailable">Indisponible</option>
+                <option value="en_attente">En attente</option>
+                <option value="paye">Payé</option>
+                <option value="en_retard">En retard</option>
+                <option value="partiel">Partiel</option>
               </select>
             </div>
 
-            {/* Description */}
+            {/* Notes */}
             <div className="mb-6">
               <label className="block text-gray-700 font-semibold mb-2">
-                Description
+                Notes
               </label>
               <textarea
-                name="description"
-                value={formData.description}
+                name="notes"
+                value={formData.notes}
                 onChange={handleChange}
                 className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows="4"
-                placeholder="Description du bien, équipements, etc."
+                rows="3"
+                placeholder="Notes optionnelles sur ce paiement..."
               />
             </div>
 
@@ -398,10 +399,10 @@ function PropertyForm() {
                 disabled={loading}
                 className="flex-1 bg-blue-500 text-white p-3 rounded font-semibold hover:bg-blue-600 disabled:opacity-50"
               >
-                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Créer le bien'}
+                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Enregistrer le paiement'}
               </button>
               <Link
-                to="/properties"
+                to="/payments"
                 className="flex-1 bg-gray-200 text-gray-700 p-3 rounded font-semibold hover:bg-gray-300 text-center"
               >
                 Annuler
@@ -414,4 +415,4 @@ function PropertyForm() {
   )
 }
 
-export default PropertyForm
+export default PaymentForm

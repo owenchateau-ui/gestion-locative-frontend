@@ -9,7 +9,9 @@ function Dashboard() {
   const [stats, setStats] = useState({
     properties: 0,
     tenants: 0,
-    activeLeases: 0
+    activeLeases: 0,
+    monthlyRent: 0,
+    latePayments: 0
   })
 
   useEffect(() => {
@@ -54,10 +56,45 @@ function Dashboard() {
 
       if (leasesError) throw leasesError
 
+      // Calculer le loyer mensuel total (somme des loyers + charges des baux actifs)
+      const { data: activeLeases, error: activeLeasesError } = await supabase
+        .from('leases')
+        .select('rent_amount, charges_amount, property:properties!inner(owner_id)')
+        .eq('property.owner_id', userData.id)
+        .eq('status', 'active')
+
+      if (activeLeasesError) throw activeLeasesError
+
+      const monthlyRent = activeLeases?.reduce((total, lease) => {
+        const rent = parseFloat(lease.rent_amount) || 0
+        const charges = parseFloat(lease.charges_amount) || 0
+        return total + rent + charges
+      }, 0) || 0
+
+      // Calculer le total des paiements en retard
+      const { data: latePaymentsData, error: latePaymentsError } = await supabase
+        .from('payments')
+        .select(`
+          amount,
+          lease:leases!inner(
+            property:properties!inner(owner_id)
+          )
+        `)
+        .eq('lease.property.owner_id', userData.id)
+        .eq('status', 'en_retard')
+
+      if (latePaymentsError) throw latePaymentsError
+
+      const latePaymentsTotal = latePaymentsData?.reduce((total, payment) => {
+        return total + (parseFloat(payment.amount) || 0)
+      }, 0) || 0
+
       setStats({
         properties: propertiesCount || 0,
         tenants: tenantsCount || 0,
-        activeLeases: leasesCount || 0
+        activeLeases: leasesCount || 0,
+        monthlyRent: monthlyRent,
+        latePayments: latePaymentsTotal
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -91,6 +128,9 @@ function Dashboard() {
             <Link to="/leases" className="text-gray-600 hover:text-blue-600">
               Mes baux
             </Link>
+            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
+              Paiements
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-gray-600">{user?.email}</span>
@@ -109,7 +149,7 @@ function Dashboard() {
           <h2 className="text-3xl font-bold mb-4">Tableau de bord</h2>
           <p className="text-gray-600">Bienvenue sur votre espace de gestion locative.</p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-8">
             <Link
               to="/properties"
               className="bg-blue-50 p-6 rounded-lg hover:bg-blue-100 transition cursor-pointer"
@@ -133,6 +173,22 @@ function Dashboard() {
               <h3 className="text-xl font-semibold text-purple-800 mb-2">Baux actifs</h3>
               <p className="text-3xl font-bold text-purple-600">{stats.activeLeases}</p>
               <p className="text-sm text-purple-600 mt-2">Gérer mes baux →</p>
+            </Link>
+            <Link
+              to="/payments"
+              className="bg-indigo-50 p-6 rounded-lg hover:bg-indigo-100 transition cursor-pointer"
+            >
+              <h3 className="text-xl font-semibold text-indigo-800 mb-2">Loyers ce mois</h3>
+              <p className="text-3xl font-bold text-indigo-600">{stats.monthlyRent.toFixed(2)} €</p>
+              <p className="text-sm text-indigo-600 mt-2">Voir les paiements →</p>
+            </Link>
+            <Link
+              to="/payments"
+              className="bg-red-50 p-6 rounded-lg hover:bg-red-100 transition cursor-pointer"
+            >
+              <h3 className="text-xl font-semibold text-red-800 mb-2">Impayés</h3>
+              <p className="text-3xl font-bold text-red-600">{stats.latePayments.toFixed(2)} €</p>
+              <p className="text-sm text-red-600 mt-2">Gérer les impayés →</p>
             </Link>
           </div>
         </div>
