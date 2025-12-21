@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../lib/supabase'
+import DashboardLayout from '../components/layout/DashboardLayout'
+import StatCard from '../components/ui/StatCard'
+import Alert from '../components/ui/Alert'
+import Card from '../components/ui/Card'
 
 function Dashboard() {
-  const navigate = useNavigate()
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const [stats, setStats] = useState({
     properties: 0,
     tenants: 0,
@@ -17,6 +20,7 @@ function Dashboard() {
     expiringLeases: [],
     latePayments: []
   })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (user) {
@@ -26,6 +30,8 @@ function Dashboard() {
 
   const fetchStats = async () => {
     try {
+      setLoading(true)
+
       // Récupérer l'ID de l'utilisateur
       const { data: userData, error: userError } = await supabase
         .from('users')
@@ -143,161 +149,185 @@ function Dashboard() {
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
-  const handleLogout = async () => {
-    try {
-      await signOut()
-      navigate('/login')
-    } catch (error) {
-      console.error('Error logging out:', error)
-    }
+  if (loading) {
+    return (
+      <DashboardLayout title="Tableau de bord">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-gray-500">Chargement...</div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
-            <Link to="/dashboard" className="text-blue-600 font-semibold">
-              Tableau de bord
-            </Link>
-            <Link to="/properties" className="text-gray-600 hover:text-blue-600">
-              Mes biens
-            </Link>
-            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
-              Mes locataires
-            </Link>
-            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
-              Mes baux
-            </Link>
-            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
-              Paiements
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
-              Mon profil
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <DashboardLayout title="Tableau de bord">
+      <div className="space-y-6">
         {/* Alertes */}
         {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0) && (
-          <div className="mb-6 space-y-4">
+          <div className="space-y-4">
             {/* Baux arrivant à échéance */}
             {alerts.expiringLeases.length > 0 && (
-              <div className="bg-orange-50 border-l-4 border-orange-500 p-4 rounded">
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-orange-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                  <div className="flex-1">
-                    <h3 className="text-orange-800 font-semibold mb-2">
-                      {alerts.expiringLeases.length} bail{alerts.expiringLeases.length > 1 ? 'x' : ''} arrive{alerts.expiringLeases.length > 1 ? 'nt' : ''} à échéance dans les 30 prochains jours
-                    </h3>
-                    <ul className="space-y-1">
-                      {alerts.expiringLeases.map(lease => (
-                        <li key={lease.id} className="text-sm text-orange-700">
-                          <Link to="/leases" className="hover:underline">
-                            {lease.property.name} - {lease.tenant.first_name} {lease.tenant.last_name}
-                            (échéance : {new Date(lease.end_date).toLocaleDateString('fr-FR')})
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <Alert variant="warning" title={`${alerts.expiringLeases.length} bail${alerts.expiringLeases.length > 1 ? 'x' : ''} arrive${alerts.expiringLeases.length > 1 ? 'nt' : ''} à échéance dans les 30 prochains jours`}>
+                <ul className="mt-2 space-y-1">
+                  {alerts.expiringLeases.map(lease => (
+                    <li key={lease.id}>
+                      <Link to="/leases" className="hover:underline font-medium">
+                        {lease.property.name} - {lease.tenant.first_name} {lease.tenant.last_name}
+                        {' '}(échéance : {new Date(lease.end_date).toLocaleDateString('fr-FR')})
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Alert>
             )}
 
             {/* Paiements en retard */}
             {alerts.latePayments.length > 0 && (
-              <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-red-500 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div className="flex-1">
-                    <h3 className="text-red-800 font-semibold mb-2">
-                      {alerts.latePayments.length} paiement{alerts.latePayments.length > 1 ? 's' : ''} en retard
-                    </h3>
-                    <ul className="space-y-1">
-                      {alerts.latePayments.map(payment => (
-                        <li key={payment.id} className="text-sm text-red-700">
-                          <Link to="/payments" className="hover:underline">
-                            {payment.lease.property.name} - {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
-                            ({payment.amount.toFixed(2)} € - dû le {new Date(payment.due_date).toLocaleDateString('fr-FR')})
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <Alert variant="error" title={`${alerts.latePayments.length} paiement${alerts.latePayments.length > 1 ? 's' : ''} en retard`}>
+                <ul className="mt-2 space-y-1">
+                  {alerts.latePayments.map(payment => (
+                    <li key={payment.id}>
+                      <Link to="/payments" className="hover:underline font-medium">
+                        {payment.lease.property.name} - {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
+                        {' '}({payment.amount.toFixed(2)} € - dû le {new Date(payment.due_date).toLocaleDateString('fr-FR')})
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </Alert>
             )}
           </div>
         )}
 
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-3xl font-bold mb-4">Tableau de bord</h2>
-          <p className="text-gray-600">Bienvenue sur votre espace de gestion locative.</p>
+        {/* Statistiques principales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StatCard
+            title="Biens"
+            value={stats.properties}
+            subtitle="Voir tous les biens →"
+            variant="blue"
+            href="/properties"
+            icon={
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            }
+          />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-8">
-            <Link
-              to="/properties"
-              className="bg-blue-50 p-6 rounded-lg hover:bg-blue-100 transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold text-blue-800 mb-2">Proprietes</h3>
-              <p className="text-3xl font-bold text-blue-600">{stats.properties}</p>
-              <p className="text-sm text-blue-600 mt-2">Gérer mes biens →</p>
-            </Link>
-            <Link
-              to="/tenants"
-              className="bg-green-50 p-6 rounded-lg hover:bg-green-100 transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold text-green-800 mb-2">Locataires</h3>
-              <p className="text-3xl font-bold text-green-600">{stats.tenants}</p>
-              <p className="text-sm text-green-600 mt-2">Gérer mes locataires →</p>
-            </Link>
-            <Link
-              to="/leases"
-              className="bg-purple-50 p-6 rounded-lg hover:bg-purple-100 transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold text-purple-800 mb-2">Baux actifs</h3>
-              <p className="text-3xl font-bold text-purple-600">{stats.activeLeases}</p>
-              <p className="text-sm text-purple-600 mt-2">Gérer mes baux →</p>
-            </Link>
-            <Link
-              to="/payments"
-              className="bg-indigo-50 p-6 rounded-lg hover:bg-indigo-100 transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold text-indigo-800 mb-2">Loyers ce mois</h3>
-              <p className="text-3xl font-bold text-indigo-600">{stats.monthlyRent.toFixed(2)} €</p>
-              <p className="text-sm text-indigo-600 mt-2">Voir les paiements →</p>
-            </Link>
-            <Link
-              to="/payments"
-              className="bg-red-50 p-6 rounded-lg hover:bg-red-100 transition cursor-pointer"
-            >
-              <h3 className="text-xl font-semibold text-red-800 mb-2">Impayés</h3>
-              <p className="text-3xl font-bold text-red-600">{stats.latePayments.toFixed(2)} €</p>
-              <p className="text-sm text-red-600 mt-2">Gérer les impayés →</p>
-            </Link>
-          </div>
+          <StatCard
+            title="Locataires"
+            value={stats.tenants}
+            subtitle="Gérer les locataires →"
+            variant="emerald"
+            href="/tenants"
+            icon={
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            }
+          />
+
+          <StatCard
+            title="Loyers ce mois"
+            value={`${stats.monthlyRent.toFixed(2)} €`}
+            subtitle="Voir les paiements →"
+            variant="indigo"
+            href="/payments"
+            icon={
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            }
+          />
+
+          <StatCard
+            title="Impayés"
+            value={`${stats.latePayments.toFixed(2)} €`}
+            subtitle="Gérer les impayés →"
+            variant="red"
+            href="/payments"
+            icon={
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            }
+          />
+        </div>
+
+        {/* Sections supplémentaires */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Vue d'ensemble */}
+          <Card title="Vue d'ensemble" subtitle="Résumé de votre activité">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-sm text-gray-600">Baux actifs</span>
+                <span className="text-lg font-semibold text-gray-900">{stats.activeLeases}</span>
+              </div>
+              <div className="flex justify-between items-center py-3 border-b border-gray-100">
+                <span className="text-sm text-gray-600">Taux d'occupation</span>
+                <span className="text-lg font-semibold text-emerald-600">
+                  {stats.properties > 0 ? Math.round((stats.activeLeases / stats.properties) * 100) : 0}%
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-3">
+                <span className="text-sm text-gray-600">Revenus mensuels</span>
+                <span className="text-lg font-semibold text-blue-600">{stats.monthlyRent.toFixed(2)} €</span>
+              </div>
+            </div>
+          </Card>
+
+          {/* Actions rapides */}
+          <Card title="Actions rapides" subtitle="Raccourcis vers les fonctionnalités principales">
+            <div className="grid grid-cols-2 gap-3">
+              <Link
+                to="/properties/new"
+                className="flex flex-col items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+              >
+                <svg className="w-8 h-8 text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="text-sm font-medium text-blue-900">Ajouter un bien</span>
+              </Link>
+
+              <Link
+                to="/tenants/new"
+                className="flex flex-col items-center justify-center p-4 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+              >
+                <svg className="w-8 h-8 text-emerald-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                <span className="text-sm font-medium text-emerald-900">Ajouter un locataire</span>
+              </Link>
+
+              <Link
+                to="/leases/new"
+                className="flex flex-col items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+              >
+                <svg className="w-8 h-8 text-purple-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="text-sm font-medium text-purple-900">Créer un bail</span>
+              </Link>
+
+              <Link
+                to="/payments/new"
+                className="flex flex-col items-center justify-center p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+              >
+                <svg className="w-8 h-8 text-indigo-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-sm font-medium text-indigo-900">Enregistrer un paiement</span>
+              </Link>
+            </div>
+          </Card>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
 
