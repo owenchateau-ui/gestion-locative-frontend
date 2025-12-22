@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import DashboardLayout from '../components/layout/DashboardLayout'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
+import Card from '../components/ui/Card'
 
 function Properties() {
   const [properties, setProperties] = useState([])
+  const [entities, setEntities] = useState([])
+  const [selectedEntity, setSelectedEntity] = useState('all')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [userPlan, setUserPlan] = useState('free')
@@ -12,9 +18,15 @@ function Properties() {
   const { user } = useAuth()
 
   useEffect(() => {
-    fetchProperties()
+    fetchEntities()
     fetchUserPlan()
   }, [user])
+
+  useEffect(() => {
+    if (entities.length > 0 || selectedEntity === 'all') {
+      fetchProperties()
+    }
+  }, [selectedEntity, entities])
 
   const fetchUserPlan = async () => {
     if (!user) return
@@ -33,14 +45,10 @@ function Properties() {
     }
   }
 
-  const fetchProperties = async () => {
+  const fetchEntities = async () => {
     if (!user) return
 
     try {
-      setLoading(true)
-      setError(null)
-
-      // Récupérer l'ID de l'utilisateur depuis la table users
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id')
@@ -49,16 +57,79 @@ function Properties() {
 
       if (userError) throw userError
 
-      // Récupérer les biens de l'utilisateur
-      const { data, error: propertiesError } = await supabase
-        .from('properties')
+      const { data, error } = await supabase
+        .from('entities')
         .select('*')
-        .eq('owner_id', userData.id)
-        .order('created_at', { ascending: false })
+        .eq('user_id', userData.id)
+        .order('default_entity', { ascending: false })
+        .order('name', { ascending: true })
+
+      if (error) throw error
+
+      setEntities(data || [])
+    } catch (error) {
+      console.error('Error fetching entities:', error)
+    }
+  }
+
+  const fetchProperties = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      setError(null)
+
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('supabase_uid', user.id)
+        .single()
+
+      if (userError) throw userError
+
+      // Requête pour récupérer les propriétés avec leurs entités
+      let query = supabase
+        .from('properties_new')
+        .select('*, entities!inner(id, name, color, entity_type)')
+        .eq('entities.user_id', userData.id)
+
+      // Filtrer par entité si sélectionné
+      if (selectedEntity !== 'all') {
+        query = query.eq('entity_id', selectedEntity)
+      }
+
+      const { data: propertiesData, error: propertiesError } = await query.order('created_at', { ascending: false })
 
       if (propertiesError) throw propertiesError
 
-      setProperties(data || [])
+      // Pour chaque propriété, récupérer le nombre de lots et les lots occupés
+      const propertiesWithLots = await Promise.all(
+        (propertiesData || []).map(async (property) => {
+          const { data: lotsData } = await supabase
+            .from('lots')
+            .select('id, status, rent_amount, charges_amount')
+            .eq('property_id', property.id)
+
+          const totalLots = lotsData?.length || 0
+          const occupiedLots = lotsData?.filter(lot => lot.status === 'occupied').length || 0
+
+          // Calculer les revenus mensuels (somme de tous les lots occupés)
+          const monthlyRevenue = lotsData
+            ?.filter(lot => lot.status === 'occupied')
+            .reduce((total, lot) => {
+              return total + (parseFloat(lot.rent_amount) || 0) + (parseFloat(lot.charges_amount) || 0)
+            }, 0) || 0
+
+          return {
+            ...property,
+            lotsCount: totalLots,
+            occupiedLots,
+            monthlyRevenue
+          }
+        })
+      )
+
+      setProperties(propertiesWithLots)
     } catch (error) {
       setError(error.message)
     } finally {
@@ -67,19 +138,18 @@ function Properties() {
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce bien ?')) {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cette propriété ? Tous les lots associés seront également supprimés.')) {
       return
     }
 
     try {
       const { error } = await supabase
-        .from('properties')
+        .from('properties_new')
         .delete()
         .eq('id', id)
 
       if (error) throw error
 
-      // Rafraîchir la liste
       fetchProperties()
     } catch (error) {
       alert('Erreur lors de la suppression : ' + error.message)
@@ -87,208 +157,229 @@ function Properties() {
   }
 
   const handleAddProperty = () => {
-    // Vérifier la limite pour les comptes gratuits
-    if (userPlan === 'free' && properties.length >= 2) {
-      alert('Limite atteinte : les comptes gratuits sont limités à 2 biens. Passez au plan Premium pour ajouter plus de biens.')
+    if (entities.length === 0) {
+      alert('Vous devez d\'abord créer une entité juridique avant d\'ajouter une propriété.')
+      navigate('/entities/new')
       return
     }
     navigate('/properties/new')
   }
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      vacant: 'bg-green-100 text-green-800',
-      occupied: 'bg-blue-100 text-blue-800',
-      unavailable: 'bg-gray-100 text-gray-800'
-    }
+  const getCategoryLabel = (category) => {
     const labels = {
-      vacant: 'Vacant',
-      occupied: 'Occupé',
-      unavailable: 'Indisponible'
-    }
-    return (
-      <span className={`px-2 py-1 rounded text-sm ${badges[status]}`}>
-        {labels[status]}
-      </span>
-    )
-  }
-
-  const getPropertyTypeLabel = (type) => {
-    const labels = {
-      apartment: 'Appartement',
+      building: 'Immeuble',
       house: 'Maison',
-      studio: 'Studio',
-      commercial: 'Commercial',
+      apartment: 'Appartement',
+      commercial: 'Local commercial',
+      office: 'Bureau',
+      land: 'Terrain',
       parking: 'Parking',
       other: 'Autre'
     }
-    return labels[type] || type
+    return labels[category] || category
+  }
+
+  const getCategoryBadge = (category) => {
+    const variants = {
+      building: 'info',
+      house: 'success',
+      apartment: 'default',
+      commercial: 'warning',
+      office: 'default',
+      land: 'default',
+      parking: 'default',
+      other: 'default'
+    }
+    return <Badge variant={variants[category] || 'default'}>{getCategoryLabel(category)}</Badge>
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl">Chargement...</div>
-      </div>
+      <DashboardLayout title="Mes biens">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-gray-500">Chargement...</div>
+        </div>
+      </DashboardLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
-            <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
-              Tableau de bord
-            </Link>
-            <Link to="/properties" className="text-blue-600 font-semibold">
-              Mes biens
-            </Link>
-            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
-              Mes locataires
-            </Link>
-            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
-              Mes baux
-            </Link>
-            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
-              Paiements
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
-              Mon profil
-            </Link>
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut()
-                navigate('/login')
-              }}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Contenu */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+    <DashboardLayout title="Mes biens">
+      <div className="space-y-6">
+        {/* Header avec actions */}
+        <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold">Mes biens immobiliers</h2>
-            {userPlan === 'free' && (
-              <p className="text-sm text-gray-600 mt-2">
-                Compte gratuit : {properties.length}/2 biens utilisés
-              </p>
-            )}
+            <h2 className="text-2xl font-bold text-gray-900">Mes propriétés</h2>
+            <p className="text-sm text-gray-600 mt-1">
+              {properties.length} propriété{properties.length > 1 ? 's' : ''}
+            </p>
           </div>
-          <button
-            onClick={handleAddProperty}
-            className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
-          >
-            + Ajouter un bien
-          </button>
+          <Button onClick={handleAddProperty} size="lg">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Ajouter une propriété
+          </Button>
         </div>
+
+        {/* Filtre par entité */}
+        {entities.length > 0 && (
+          <Card>
+            <div className="flex items-center space-x-4">
+              <label className="text-sm font-medium text-gray-700">
+                Filtrer par entité :
+              </label>
+              <select
+                value={selectedEntity}
+                onChange={(e) => setSelectedEntity(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">Toutes les entités</option>
+                {entities.map((entity) => (
+                  <option key={entity.id} value={entity.id}>
+                    {entity.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </Card>
+        )}
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
+          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
             {error}
           </div>
         )}
 
         {properties.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <p className="text-gray-600 text-lg mb-4">
-              Vous n'avez pas encore de bien immobilier
+          <Card className="text-center py-12">
+            <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucune propriété</h3>
+            <p className="text-gray-600 mb-6">
+              {selectedEntity === 'all'
+                ? 'Commencez par ajouter votre première propriété'
+                : 'Aucune propriété pour cette entité'
+              }
             </p>
-            <button
-              onClick={handleAddProperty}
-              className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
-            >
-              Ajouter votre premier bien
-            </button>
-          </div>
+            <Button onClick={handleAddProperty}>
+              Ajouter votre première propriété
+            </Button>
+          </Card>
         ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Adresse
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Type
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Loyer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {properties.map((property) => (
-                  <tr key={property.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {property.name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{property.address}</div>
-                      <div className="text-sm text-gray-500">
-                        {property.postal_code} {property.city}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {getPropertyTypeLabel(property.property_type)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {property.rent_amount.toFixed(2)} €
-                      </div>
-                      {property.charges_amount > 0 && (
-                        <div className="text-xs text-gray-500">
-                          + {property.charges_amount.toFixed(2)} € charges
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(property.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <Link
-                        to={`/properties/${property.id}/edit`}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        Modifier
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(property.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Supprimer
-                      </button>
-                    </td>
+          <Card padding={false}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nom
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Entité
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Adresse
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Catégorie
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Lots
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Occupation
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Revenus
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {properties.map((property) => (
+                    <tr key={property.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {property.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div
+                            className="w-3 h-3 rounded-full mr-2"
+                            style={{ backgroundColor: property.entities.color }}
+                          />
+                          <span className="text-sm text-gray-900">
+                            {property.entities.name}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{property.address}</div>
+                        <div className="text-sm text-gray-500">
+                          {property.postal_code} {property.city}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getCategoryBadge(property.category)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {property.lotsCount}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          <span className="font-semibold text-emerald-600">{property.occupiedLots}</span>
+                          <span className="text-gray-500">/{property.lotsCount}</span>
+                        </div>
+                        {property.lotsCount > 0 && (
+                          <div className="text-xs text-gray-500">
+                            {((property.occupiedLots / property.lotsCount) * 100).toFixed(0)}% occupé
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-emerald-600">
+                          {property.monthlyRevenue.toFixed(2)} €
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          /mois
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                        <button
+                          onClick={() => navigate(`/properties/${property.id}`)}
+                          className="text-indigo-600 hover:text-indigo-900"
+                        >
+                          Voir
+                        </button>
+                        <button
+                          onClick={() => navigate(`/properties/${property.id}/edit`)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => handleDelete(property.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
 

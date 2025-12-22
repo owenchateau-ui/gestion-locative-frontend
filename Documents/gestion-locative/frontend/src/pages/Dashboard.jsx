@@ -1,21 +1,27 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useEntity } from '../context/EntityContext'
 import { supabase } from '../lib/supabase'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import StatCard from '../components/ui/StatCard'
 import Alert from '../components/ui/Alert'
 import Card from '../components/ui/Card'
+import Badge from '../components/ui/Badge'
 
 function Dashboard() {
   const { user } = useAuth()
+  const { entities, selectedEntity, getSelectedEntityData } = useEntity()
   const [stats, setStats] = useState({
     properties: 0,
+    lots: 0,
+    occupiedLots: 0,
     tenants: 0,
     activeLeases: 0,
     monthlyRent: 0,
     latePayments: 0
   })
+  const [entityBreakdown, setEntityBreakdown] = useState([])
   const [alerts, setAlerts] = useState({
     expiringLeases: [],
     latePayments: []
@@ -26,7 +32,7 @@ function Dashboard() {
     if (user) {
       fetchStats()
     }
-  }, [user])
+  }, [user, selectedEntity])
 
   const fetchStats = async () => {
     try {
@@ -41,37 +47,81 @@ function Dashboard() {
 
       if (userError) throw userError
 
-      // Compter les propriétés
-      const { count: propertiesCount, error: propertiesError } = await supabase
-        .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('owner_id', userData.id)
+      // Query pour les propriétés (avec filtre entité)
+      let propertiesQuery = supabase
+        .from('properties_new')
+        .select('*, entities!inner(id, name, color, user_id)', { count: 'exact' })
+        .eq('entities.user_id', userData.id)
+
+      if (selectedEntity) {
+        propertiesQuery = propertiesQuery.eq('entity_id', selectedEntity)
+      }
+
+      const { data: propertiesData, count: propertiesCount, error: propertiesError } = await propertiesQuery
 
       if (propertiesError) throw propertiesError
 
-      // Compter les locataires
-      const { count: tenantsCount, error: tenantsError } = await supabase
+      // Query pour les lots (avec filtre entité)
+      let lotsQuery = supabase
+        .from('lots')
+        .select('*, properties_new!inner(entity_id, entities!inner(user_id))', { count: 'exact' })
+        .eq('properties_new.entities.user_id', userData.id)
+
+      if (selectedEntity) {
+        lotsQuery = lotsQuery.eq('properties_new.entity_id', selectedEntity)
+      }
+
+      const { data: lotsData, count: lotsCount, error: lotsError } = await lotsQuery
+
+      if (lotsError) throw lotsError
+
+      const occupiedLots = lotsData?.filter(lot => lot.status === 'occupied').length || 0
+
+      // Compter les locataires (avec filtre entité via baux)
+      let tenantsQuery = supabase
         .from('tenants')
-        .select('*', { count: 'exact', head: true })
+        .select('*, leases!inner(lot:lots!inner(properties_new!inner(entity_id, entities!inner(user_id))))')
         .eq('landlord_id', userData.id)
+
+      const { data: tenantsData, error: tenantsError } = await tenantsQuery
 
       if (tenantsError) throw tenantsError
 
-      // Compter les baux actifs
-      const { count: leasesCount, error: leasesError } = await supabase
+      let filteredTenants = tenantsData || []
+      if (selectedEntity && tenantsData) {
+        // Filtrer les locataires qui ont au moins un bail dans l'entité sélectionnée
+        filteredTenants = tenantsData.filter(tenant =>
+          tenant.leases?.some(lease => lease.lot?.properties_new?.entity_id === selectedEntity)
+        )
+      }
+
+      // Compter les baux actifs (avec filtre entité)
+      let leasesQuery = supabase
         .from('leases')
-        .select('*, property:properties!inner(owner_id)', { count: 'exact', head: true })
-        .eq('property.owner_id', userData.id)
+        .select('*, lot:lots!inner(properties_new!inner(entity_id, entities!inner(user_id)))', { count: 'exact' })
+        .eq('lot.properties_new.entities.user_id', userData.id)
         .eq('status', 'active')
+
+      if (selectedEntity) {
+        leasesQuery = leasesQuery.eq('lot.properties_new.entity_id', selectedEntity)
+      }
+
+      const { count: leasesCount, error: leasesError } = await leasesQuery
 
       if (leasesError) throw leasesError
 
-      // Calculer le loyer mensuel total (somme des loyers + charges des baux actifs)
-      const { data: activeLeases, error: activeLeasesError } = await supabase
+      // Calculer le loyer mensuel total (avec filtre entité)
+      let activeLeasesQuery = supabase
         .from('leases')
-        .select('rent_amount, charges_amount, property:properties!inner(owner_id)')
-        .eq('property.owner_id', userData.id)
+        .select('rent_amount, charges_amount, lot:lots!inner(properties_new!inner(entity_id, entities!inner(user_id)))')
+        .eq('lot.properties_new.entities.user_id', userData.id)
         .eq('status', 'active')
+
+      if (selectedEntity) {
+        activeLeasesQuery = activeLeasesQuery.eq('lot.properties_new.entity_id', selectedEntity)
+      }
+
+      const { data: activeLeases, error: activeLeasesError } = await activeLeasesQuery
 
       if (activeLeasesError) throw activeLeasesError
 
@@ -81,17 +131,25 @@ function Dashboard() {
         return total + rent + charges
       }, 0) || 0
 
-      // Calculer le total des paiements en retard
-      const { data: latePaymentsData, error: latePaymentsError } = await supabase
+      // Calculer le total des paiements en retard (avec filtre entité)
+      let latePaymentsQuery = supabase
         .from('payments')
         .select(`
           amount,
           lease:leases!inner(
-            property:properties!inner(owner_id)
+            lot:lots!inner(
+              properties_new!inner(entity_id, entities!inner(user_id))
+            )
           )
         `)
-        .eq('lease.property.owner_id', userData.id)
+        .eq('lease.lot.properties_new.entities.user_id', userData.id)
         .eq('status', 'late')
+
+      if (selectedEntity) {
+        latePaymentsQuery = latePaymentsQuery.eq('lease.lot.properties_new.entity_id', selectedEntity)
+      }
+
+      const { data: latePaymentsData, error: latePaymentsError } = await latePaymentsQuery
 
       if (latePaymentsError) throw latePaymentsError
 
@@ -104,40 +162,102 @@ function Dashboard() {
       const in30Days = new Date()
       in30Days.setDate(today.getDate() + 30)
 
-      const { data: expiringLeasesData, error: expiringLeasesError } = await supabase
+      let expiringLeasesQuery = supabase
         .from('leases')
         .select(`
           *,
-          property:properties!inner(id, name, owner_id),
+          lot:lots!inner(
+            id,
+            name,
+            properties_new!inner(id, name, entity_id, entities!inner(user_id))
+          ),
           tenant:tenants!inner(id, first_name, last_name)
         `)
-        .eq('property.owner_id', userData.id)
+        .eq('lot.properties_new.entities.user_id', userData.id)
         .eq('status', 'active')
         .not('end_date', 'is', null)
         .gte('end_date', today.toISOString().split('T')[0])
         .lte('end_date', in30Days.toISOString().split('T')[0])
 
+      if (selectedEntity) {
+        expiringLeasesQuery = expiringLeasesQuery.eq('lot.properties_new.entity_id', selectedEntity)
+      }
+
+      const { data: expiringLeasesData, error: expiringLeasesError } = await expiringLeasesQuery
+
       if (expiringLeasesError) console.error('Error fetching expiring leases:', expiringLeasesError)
 
-      // Récupérer les paiements en retard (date échéance dépassée et statut pending)
-      const { data: latePaymentsAlerts, error: latePaymentsAlertsError } = await supabase
+      // Récupérer les paiements en retard (avec filtre entité)
+      let latePaymentsAlertsQuery = supabase
         .from('payments')
         .select(`
           *,
           lease:leases!inner(
-            property:properties!inner(id, name, owner_id),
+            lot:lots!inner(
+              id,
+              name,
+              properties_new!inner(id, name, entity_id, entities!inner(user_id))
+            ),
             tenant:tenants!inner(id, first_name, last_name)
           )
         `)
-        .eq('lease.property.owner_id', userData.id)
+        .eq('lease.lot.properties_new.entities.user_id', userData.id)
         .eq('status', 'pending')
         .lt('due_date', today.toISOString().split('T')[0])
 
+      if (selectedEntity) {
+        latePaymentsAlertsQuery = latePaymentsAlertsQuery.eq('lease.lot.properties_new.entity_id', selectedEntity)
+      }
+
+      const { data: latePaymentsAlerts, error: latePaymentsAlertsError } = await latePaymentsAlertsQuery
+
       if (latePaymentsAlertsError) console.error('Error fetching late payments alerts:', latePaymentsAlertsError)
+
+      // Calculer la répartition par entité (uniquement si "Toutes les entités")
+      if (!selectedEntity && entities.length > 0) {
+        const breakdown = await Promise.all(
+          entities.map(async (entity) => {
+            // Compter les biens de l'entité
+            const { count: entityPropertiesCount } = await supabase
+              .from('properties_new')
+              .select('*', { count: 'exact', head: true })
+              .eq('entity_id', entity.id)
+
+            // Compter les lots de l'entité
+            const { count: entityLotsCount } = await supabase
+              .from('lots')
+              .select('*, properties_new!inner(entity_id)', { count: 'exact', head: true })
+              .eq('properties_new.entity_id', entity.id)
+
+            // Calculer les revenus de l'entité
+            const { data: entityActiveLeases } = await supabase
+              .from('leases')
+              .select('rent_amount, charges_amount, lot:lots!inner(properties_new!inner(entity_id))')
+              .eq('lot.properties_new.entity_id', entity.id)
+              .eq('status', 'active')
+
+            const entityRevenue = entityActiveLeases?.reduce((total, lease) => {
+              return total + parseFloat(lease.rent_amount) + parseFloat(lease.charges_amount)
+            }, 0) || 0
+
+            return {
+              entity,
+              propertiesCount: entityPropertiesCount || 0,
+              lotsCount: entityLotsCount || 0,
+              revenue: entityRevenue
+            }
+          })
+        )
+        setEntityBreakdown(breakdown)
+      } else {
+        setEntityBreakdown([])
+      }
 
       setStats({
         properties: propertiesCount || 0,
-        tenants: tenantsCount || 0,
+        lots: lotsCount || 0,
+        occupiedLots: occupiedLots,
+        tenants: filteredTenants.length,
         activeLeases: leasesCount || 0,
         monthlyRent: monthlyRent,
         latePayments: latePaymentsTotal
@@ -164,8 +284,13 @@ function Dashboard() {
     )
   }
 
+  const selectedEntityData = getSelectedEntityData()
+  const dashboardTitle = selectedEntityData
+    ? `Tableau de bord - ${selectedEntityData.name}`
+    : 'Tableau de bord'
+
   return (
-    <DashboardLayout title="Tableau de bord">
+    <DashboardLayout title={dashboardTitle}>
       <div className="space-y-6">
         {/* Alertes */}
         {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0) && (
@@ -177,7 +302,7 @@ function Dashboard() {
                   {alerts.expiringLeases.map(lease => (
                     <li key={lease.id}>
                       <Link to="/leases" className="hover:underline font-medium">
-                        {lease.property.name} - {lease.tenant.first_name} {lease.tenant.last_name}
+                        {lease.lot.properties_new.name} - {lease.lot.name} - {lease.tenant.first_name} {lease.tenant.last_name}
                         {' '}(échéance : {new Date(lease.end_date).toLocaleDateString('fr-FR')})
                       </Link>
                     </li>
@@ -193,7 +318,7 @@ function Dashboard() {
                   {alerts.latePayments.map(payment => (
                     <li key={payment.id}>
                       <Link to="/payments" className="hover:underline font-medium">
-                        {payment.lease.property.name} - {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
+                        {payment.lease.lot.properties_new.name} - {payment.lease.lot.name} - {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
                         {' '}({payment.amount.toFixed(2)} € - dû le {new Date(payment.due_date).toLocaleDateString('fr-FR')})
                       </Link>
                     </li>
@@ -205,7 +330,7 @@ function Dashboard() {
         )}
 
         {/* Statistiques principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <StatCard
             title="Biens"
             value={stats.properties}
@@ -215,6 +340,19 @@ function Dashboard() {
             icon={
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            }
+          />
+
+          <StatCard
+            title="Lots"
+            value={stats.lots}
+            subtitle={`${stats.occupiedLots} occupé${stats.occupiedLots > 1 ? 's' : ''}`}
+            variant="purple"
+            href="/lots"
+            icon={
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
             }
           />
@@ -259,6 +397,37 @@ function Dashboard() {
           />
         </div>
 
+        {/* Répartition par entité (visible uniquement si "Toutes les entités") */}
+        {!selectedEntity && entityBreakdown.length > 0 && (
+          <Card title="Répartition par entité" subtitle="Vue d'ensemble de vos entités">
+            <div className="space-y-3">
+              {entityBreakdown.map((item) => (
+                <div
+                  key={item.entity.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div
+                      className="w-3 h-3 rounded-full"
+                      style={{ backgroundColor: item.entity.color }}
+                    />
+                    <div>
+                      <p className="font-medium text-gray-900">{item.entity.name}</p>
+                      <p className="text-sm text-gray-500">
+                        {item.propertiesCount} bien{item.propertiesCount > 1 ? 's' : ''} · {item.lotsCount} lot{item.lotsCount > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-semibold text-blue-600">{item.revenue.toFixed(2)} €</p>
+                    <p className="text-xs text-gray-500">Revenus mensuels</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* Sections supplémentaires */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Vue d'ensemble */}
@@ -271,7 +440,7 @@ function Dashboard() {
               <div className="flex justify-between items-center py-3 border-b border-gray-100">
                 <span className="text-sm text-gray-600">Taux d'occupation</span>
                 <span className="text-lg font-semibold text-emerald-600">
-                  {stats.properties > 0 ? Math.round((stats.activeLeases / stats.properties) * 100) : 0}%
+                  {stats.lots > 0 ? Math.round((stats.occupiedLots / stats.lots) * 100) : 0}%
                 </span>
               </div>
               <div className="flex justify-between items-center py-3">

@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useEntity } from '../context/EntityContext'
+import DashboardLayout from '../components/layout/DashboardLayout'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
+import Card from '../components/ui/Card'
 import jsPDF from 'jspdf'
 
 function Payments() {
@@ -11,10 +16,11 @@ function Payments() {
   const [statusFilter, setStatusFilter] = useState('tous')
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { selectedEntity } = useEntity()
 
   useEffect(() => {
     fetchPayments()
-  }, [user, statusFilter])
+  }, [user, statusFilter, selectedEntity])
 
   const fetchPayments = async () => {
     if (!user) return
@@ -32,19 +38,28 @@ function Payments() {
 
       if (userError) throw userError
 
-      // Récupérer les paiements avec les informations du bail, bien et locataire
+      // Récupérer les paiements avec les informations du bail, lot, bien et locataire
       let query = supabase
         .from('payments')
         .select(`
           *,
           lease:leases!inner(
             id,
-            property:properties!inner(id, name, owner_id),
+            lot:lots!inner(
+              id,
+              name,
+              properties_new!inner(id, name, entity_id, entities!inner(user_id))
+            ),
             tenant:tenants!inner(id, first_name, last_name)
           )
         `)
-        .eq('lease.property.owner_id', userData.id)
+        .eq('lease.lot.properties_new.entities.user_id', userData.id)
         .order('due_date', { ascending: false })
+
+      // Appliquer le filtre d'entité
+      if (selectedEntity) {
+        query = query.eq('lease.lot.properties_new.entity_id', selectedEntity)
+      }
 
       // Appliquer le filtre de statut
       if (statusFilter !== 'tous') {
@@ -90,7 +105,10 @@ function Payments() {
         .from('leases')
         .select(`
           *,
-          property:properties!inner(*),
+          lot:lots!inner(
+            *,
+            properties_new!inner(*)
+          ),
           tenant:tenants!inner(*)
         `)
         .eq('id', payment.lease_id)
@@ -133,31 +151,32 @@ function Payments() {
         doc.text(`Tel: ${leaseData.tenant.phone}`, 120, 58)
       }
 
-      // Informations du bien
+      // Informations du bien et du lot
       doc.text('Bien loué :', 20, 75)
-      doc.text(leaseData.property.name, 20, 81)
-      doc.text(leaseData.property.address, 20, 87)
-      doc.text(`${leaseData.property.postal_code} ${leaseData.property.city}`, 20, 93)
+      doc.text(leaseData.lot.properties_new.name, 20, 81)
+      doc.text(`Lot : ${leaseData.lot.name}`, 20, 87)
+      doc.text(leaseData.lot.properties_new.address, 20, 93)
+      doc.text(`${leaseData.lot.properties_new.postal_code} ${leaseData.lot.properties_new.city}`, 20, 99)
 
       // Période et montants
       const paymentDate = new Date(payment.payment_date)
       const month = paymentDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
 
-      doc.text(`Période : ${month}`, 20, 110)
+      doc.text(`Période : ${month}`, 20, 115)
 
       // Récupérer les montants du bail
       const rentAmount = parseFloat(leaseData.rent_amount) || 0
       const chargesAmount = parseFloat(leaseData.charges_amount) || 0
 
-      doc.text('Détail des paiements :', 20, 125)
-      doc.text(`Loyer : ${rentAmount.toFixed(2)} €`, 30, 135)
-      doc.text(`Charges : ${chargesAmount.toFixed(2)} €`, 30, 141)
+      doc.text('Détail des paiements :', 20, 130)
+      doc.text(`Loyer : ${rentAmount.toFixed(2)} €`, 30, 140)
+      doc.text(`Charges : ${chargesAmount.toFixed(2)} €`, 30, 146)
       doc.setFontSize(12)
-      doc.text(`Total : ${payment.amount.toFixed(2)} €`, 30, 150)
+      doc.text(`Total : ${payment.amount.toFixed(2)} €`, 30, 155)
 
       // Date de paiement
       doc.setFontSize(10)
-      doc.text(`Payé le : ${paymentDate.toLocaleDateString('fr-FR')}`, 20, 165)
+      doc.text(`Payé le : ${paymentDate.toLocaleDateString('fr-FR')}`, 20, 170)
       if (payment.payment_method) {
         const methods = {
           bank_transfer: 'Virement',
@@ -166,19 +185,19 @@ function Payments() {
           direct_debit: 'Prélèvement',
           other: 'Autre'
         }
-        doc.text(`Mode de paiement : ${methods[payment.payment_method] || payment.payment_method}`, 20, 171)
+        doc.text(`Mode de paiement : ${methods[payment.payment_method] || payment.payment_method}`, 20, 176)
       }
 
       // Mentions légales
       doc.setFontSize(8)
-      doc.text('Le bailleur reconnait avoir reçu du locataire la somme indiquée pour la période mentionnée.', 20, 190)
-      doc.text('Cette quittance annule tous reçus ou quittances qui auraient pu être donnés précédemment.', 20, 195)
+      doc.text('Le bailleur reconnait avoir reçu du locataire la somme indiquée pour la période mentionnée.', 20, 195)
+      doc.text('Cette quittance annule tous reçus ou quittances qui auraient pu être donnés précédemment.', 20, 200)
 
       // Signature
       doc.setFontSize(10)
       const today = new Date().toLocaleDateString('fr-FR')
-      doc.text(`Fait le ${today}`, 120, 220)
-      doc.text('Signature du bailleur', 120, 230)
+      doc.text(`Fait le ${today}`, 120, 225)
+      doc.text('Signature du bailleur', 120, 235)
 
       // Télécharger le PDF
       const filename = `quittance_${leaseData.tenant.last_name}_${paymentDate.getMonth() + 1}_${paymentDate.getFullYear()}.pdf`
@@ -189,23 +208,19 @@ function Payments() {
   }
 
   const getStatusBadge = (status) => {
-    const badges = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'paid': 'bg-green-100 text-green-800',
-      'late': 'bg-red-100 text-red-800',
-      'partial': 'bg-orange-100 text-orange-800'
+    const variants = {
+      pending: 'warning',
+      paid: 'success',
+      late: 'danger',
+      partial: 'info'
     }
     const labels = {
-      'pending': 'En attente',
-      'paid': 'Payé',
-      'late': 'En retard',
-      'partial': 'Partiel'
+      pending: 'En attente',
+      paid: 'Payé',
+      late: 'En retard',
+      partial: 'Partiel'
     }
-    return (
-      <span className={`px-2 py-1 rounded text-sm ${badges[status]}`}>
-        {labels[status]}
-      </span>
-    )
+    return <Badge variant={variants[status]}>{labels[status]}</Badge>
   }
 
   const formatDate = (dateString) => {
@@ -216,77 +231,41 @@ function Payments() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl">Chargement...</div>
-      </div>
+      <DashboardLayout title="Paiements">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-xl text-gray-500">Chargement...</div>
+        </div>
+      </DashboardLayout>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
-            <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
-              Tableau de bord
-            </Link>
-            <Link to="/properties" className="text-gray-600 hover:text-blue-600">
-              Mes biens
-            </Link>
-            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
-              Mes locataires
-            </Link>
-            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
-              Mes baux
-            </Link>
-            <Link to="/payments" className="text-blue-600 font-semibold">
-              Paiements
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
-              Mon profil
-            </Link>
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut()
-                navigate('/login')
-              }}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Déconnexion
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Contenu */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+    <DashboardLayout title="Paiements">
+      <div className="space-y-6">
+        {/* Header avec actions */}
+        <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold">Paiements</h2>
-            <p className="text-sm text-gray-600 mt-2">
+            <h2 className="text-2xl font-bold text-gray-900">Paiements</h2>
+            <p className="text-sm text-gray-600 mt-1">
               {payments.length} paiement{payments.length > 1 ? 's' : ''}
             </p>
           </div>
-          <button
-            onClick={() => navigate('/payments/new')}
-            className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
-          >
-            + Enregistrer un paiement
-          </button>
+          <Button onClick={() => navigate('/payments/new')} size="lg">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Enregistrer un paiement
+          </Button>
         </div>
 
         {/* Filtres */}
-        <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+        <Card>
           <div className="flex items-center gap-4">
             <label className="text-gray-700 font-semibold">Filtrer par statut :</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="tous">Tous</option>
               <option value="pending">En attente</option>
@@ -295,118 +274,128 @@ function Payments() {
               <option value="partial">Partiels</option>
             </select>
           </div>
-        </div>
+        </Card>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded mb-4">
+          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
             {error}
           </div>
         )}
 
         {payments.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <p className="text-gray-600 text-lg mb-4">
+          <Card className="text-center py-12">
+            <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {statusFilter === 'tous' ? 'Aucun paiement' : `Aucun paiement avec le statut "${statusFilter}"`}
+            </h3>
+            <p className="text-gray-600 mb-6">
               {statusFilter === 'tous'
-                ? "Vous n'avez pas encore de paiement enregistré"
-                : `Aucun paiement avec le statut "${statusFilter}"`
+                ? "Commencez par enregistrer votre premier paiement"
+                : "Changez le filtre pour voir d'autres paiements"
               }
             </p>
-            <button
-              onClick={() => navigate('/payments/new')}
-              className="bg-blue-500 text-white px-6 py-3 rounded font-semibold hover:bg-blue-600"
-            >
-              Enregistrer votre premier paiement
-            </button>
-          </div>
+            {statusFilter === 'tous' && (
+              <Button onClick={() => navigate('/payments/new')}>
+                Enregistrer votre premier paiement
+              </Button>
+            )}
+          </Card>
         ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Bien
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Locataire
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Montant
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date échéance
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date paiement
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {payments.map((payment) => (
-                  <tr key={payment.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {payment.lease.property.name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        {payment.amount.toFixed(2)} €
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate(payment.due_date)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {formatDate(payment.payment_date)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStatusBadge(payment.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      {payment.status === 'paid' && (
-                        <button
-                          onClick={() => generateReceipt(payment)}
-                          className="text-green-600 hover:text-green-900 mr-4"
-                        >
-                          Générer quittance
-                        </button>
-                      )}
-                      <Link
-                        to={`/payments/${payment.id}/edit`}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        Modifier
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(payment.id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        Supprimer
-                      </button>
-                    </td>
+          <Card padding={false}>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Bien / Lot
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Locataire
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Montant
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date échéance
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Date paiement
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {payments.map((payment) => (
+                    <tr key={payment.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {payment.lease.lot.properties_new.name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {payment.lease.lot.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {payment.amount.toFixed(2)} €
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {formatDate(payment.due_date)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {formatDate(payment.payment_date)}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(payment.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                        {payment.status === 'paid' && (
+                          <button
+                            onClick={() => generateReceipt(payment)}
+                            className="text-emerald-600 hover:text-emerald-900"
+                          >
+                            Quittance
+                          </button>
+                        )}
+                        <button
+                          onClick={() => navigate(`/payments/${payment.id}/edit`)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          Modifier
+                        </button>
+                        <button
+                          onClick={() => handleDelete(payment.id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         )}
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
 

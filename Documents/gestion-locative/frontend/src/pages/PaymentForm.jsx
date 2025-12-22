@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import DashboardLayout from '../components/layout/DashboardLayout'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 
 function PaymentForm() {
   const { id } = useParams()
@@ -12,6 +15,7 @@ function PaymentForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [leases, setLeases] = useState([])
+  const [selectedLease, setSelectedLease] = useState(null)
   const [formData, setFormData] = useState({
     lease_id: '',
     amount: '',
@@ -42,15 +46,19 @@ function PaymentForm() {
 
       if (userError) throw userError
 
-      // Récupérer les baux actifs avec les infos du bien et locataire
+      // Récupérer les baux actifs avec les infos du lot, bien et locataire
       const { data, error } = await supabase
         .from('leases')
         .select(`
           *,
-          property:properties!inner(id, name, owner_id),
+          lot:lots!inner(
+            id,
+            name,
+            properties_new!inner(id, name, entities!inner(user_id))
+          ),
           tenant:tenants!inner(id, first_name, last_name)
         `)
-        .eq('property.owner_id', userData.id)
+        .eq('lot.properties_new.entities.user_id', userData.id)
         .eq('status', 'active')
         .order('created_at', { ascending: false })
 
@@ -102,19 +110,29 @@ function PaymentForm() {
 
     // Pré-remplir le montant avec le bail sélectionné
     if (leaseId) {
-      const selectedLease = leases.find(l => l.id === leaseId)
-      if (selectedLease) {
-        const rentAmount = parseFloat(selectedLease.rent_amount) || 0
-        const chargesAmount = parseFloat(selectedLease.charges_amount) || 0
-        const totalAmount = rentAmount + chargesAmount
+      const lease = leases.find(l => l.id === leaseId)
+      if (lease) {
+        setSelectedLease(lease)
+
+        const rentAmount = parseFloat(lease.rent_amount) || 0
+        const chargesAmount = parseFloat(lease.charges_amount) || 0
+        const cafAmount = parseFloat(lease.caf_amount) || 0
+        const cafDirectPayment = lease.caf_direct_payment || false
+
+        // Si APL en versement direct, soustraire le montant CAF du total
+        const totalRent = rentAmount + chargesAmount
+        const tenantAmount = cafDirectPayment ? totalRent - cafAmount : totalRent
 
         setFormData(prev => ({
           ...prev,
           lease_id: leaseId,
-          amount: totalAmount
+          amount: tenantAmount,
+          // Si APL en versement direct, suggérer le mode de paiement approprié
+          payment_method: cafDirectPayment ? prev.payment_method : 'bank_transfer'
         }))
       }
     } else {
+      setSelectedLease(null)
       setFormData(prev => ({
         ...prev,
         lease_id: '',
@@ -166,84 +184,43 @@ function PaymentForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
-            <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
-              Tableau de bord
-            </Link>
-            <Link to="/properties" className="text-gray-600 hover:text-blue-600">
-              Mes biens
-            </Link>
-            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
-              Mes locataires
-            </Link>
-            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
-              Mes baux
-            </Link>
-            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
-              Paiements
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
-              Mon profil
-            </Link>
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut()
-                navigate('/login')
-              }}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Déconnexion
-            </button>
-          </div>
+    <DashboardLayout title={isEditMode ? 'Modifier le paiement' : 'Enregistrer un paiement'}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isEditMode ? 'Modifier le paiement' : 'Enregistrer un paiement'}
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Renseignez les informations du paiement
+          </p>
         </div>
-      </nav>
 
-      {/* Formulaire */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">
-              {isEditMode ? 'Modifier le paiement' : 'Enregistrer un paiement'}
-            </h2>
-            <Link
-              to="/payments"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              ← Retour
-            </Link>
-          </div>
-
+        <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded mb-6">
+            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Sélection du bail */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Bail *
               </label>
               <select
                 name="lease_id"
                 value={formData.lease_id}
                 onChange={handleLeaseChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
                 disabled={isEditMode}
               >
                 <option value="">Sélectionnez un bail actif</option>
                 {leases.map((lease) => (
                   <option key={lease.id} value={lease.id}>
-                    {lease.property.name} - {lease.tenant.first_name} {lease.tenant.last_name}
+                    {lease.lot.properties_new.name} - {lease.lot.name} - {lease.tenant.first_name} {lease.tenant.last_name}
                   </option>
                 ))}
               </select>
@@ -255,8 +232,8 @@ function PaymentForm() {
             </div>
 
             {/* Montant */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Montant total (€) *
               </label>
               <input
@@ -264,21 +241,63 @@ function PaymentForm() {
                 name="amount"
                 value={formData.amount}
                 onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="1030.00"
                 step="0.01"
                 min="0"
                 required
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Montant pré-rempli avec loyer + charges du bail sélectionné
-              </p>
+
+              {/* Afficher le détail si CAF */}
+              {selectedLease && selectedLease.caf_direct_payment && (
+                <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-xs font-semibold text-blue-800 mb-2">
+                    Bail avec APL en versement direct
+                  </p>
+                  <div className="text-xs text-gray-700 space-y-1">
+                    <div className="flex justify-between">
+                      <span>Loyer :</span>
+                      <span className="font-medium">{parseFloat(selectedLease.rent_amount || 0).toFixed(2)} €</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Charges :</span>
+                      <span className="font-medium">{parseFloat(selectedLease.charges_amount || 0).toFixed(2)} €</span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-blue-200">
+                      <span>Total loyer :</span>
+                      <span className="font-medium">
+                        {(parseFloat(selectedLease.rent_amount || 0) + parseFloat(selectedLease.charges_amount || 0)).toFixed(2)} €
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-green-700">
+                      <span>APL CAF :</span>
+                      <span className="font-medium">- {parseFloat(selectedLease.caf_amount || 0).toFixed(2)} €</span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-blue-200 font-semibold text-blue-900">
+                      <span>Reste à charge locataire :</span>
+                      <span>
+                        {(
+                          parseFloat(selectedLease.rent_amount || 0) +
+                          parseFloat(selectedLease.charges_amount || 0) -
+                          parseFloat(selectedLease.caf_amount || 0)
+                        ).toFixed(2)} €
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!selectedLease?.caf_direct_payment && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Montant pré-rempli avec loyer + charges du bail sélectionné
+                </p>
+              )}
             </div>
 
             {/* Dates */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date d'échéance *
                 </label>
                 <input
@@ -286,12 +305,12 @@ function PaymentForm() {
                   name="due_date"
                   value={formData.due_date}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date de paiement
                 </label>
                 <input
@@ -299,41 +318,47 @@ function PaymentForm() {
                   name="payment_date"
                   value={formData.payment_date}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
             </div>
 
             {/* Mode de paiement */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Mode de paiement
               </label>
               <select
                 name="payment_method"
                 value={formData.payment_method}
                 onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Non spécifié</option>
                 <option value="bank_transfer">Virement</option>
                 <option value="check">Chèque</option>
                 <option value="cash">Espèces</option>
                 <option value="direct_debit">Prélèvement</option>
+                <option value="caf">CAF (versement direct)</option>
                 <option value="other">Autre</option>
               </select>
+              {formData.payment_method === 'caf' && (
+                <p className="text-xs text-blue-600 mt-1">
+                  Versement des APL directement par la CAF
+                </p>
+              )}
             </div>
 
             {/* Statut */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Statut *
               </label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 required
               >
                 <option value="pending">En attente</option>
@@ -344,40 +369,42 @@ function PaymentForm() {
             </div>
 
             {/* Notes */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Notes
               </label>
               <textarea
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 rows="3"
                 placeholder="Notes optionnelles sur ce paiement..."
               />
             </div>
 
             {/* Boutons */}
-            <div className="flex gap-4">
-              <button
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-500 text-white p-3 rounded font-semibold hover:bg-blue-600 disabled:opacity-50"
+                className="flex-1"
               >
                 {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Enregistrer le paiement'}
-              </button>
-              <Link
-                to="/payments"
-                className="flex-1 bg-gray-200 text-gray-700 p-3 rounded font-semibold hover:bg-gray-300 text-center"
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => navigate('/payments')}
+                className="flex-1"
               >
                 Annuler
-              </Link>
+              </Button>
             </div>
           </form>
-        </div>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
 

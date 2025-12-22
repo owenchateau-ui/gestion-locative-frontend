@@ -1,11 +1,19 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { EntityProvider } from './context/EntityContext'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
+import Entities from './pages/Entities'
+import EntityForm from './pages/EntityForm'
+import EntityDetail from './pages/EntityDetail'
 import Properties from './pages/Properties'
 import PropertyForm from './pages/PropertyForm'
+import PropertyDetail from './pages/PropertyDetail'
+import Lots from './pages/Lots'
+import LotForm from './pages/LotForm'
+import LotDetail from './pages/LotDetail'
 import Tenants from './pages/Tenants'
 import TenantForm from './pages/TenantForm'
 import Leases from './pages/Leases'
@@ -44,6 +52,38 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/entities"
+        element={
+          <PrivateRoute>
+            <Entities />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/entities/new"
+        element={
+          <PrivateRoute>
+            <EntityForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/entities/:id"
+        element={
+          <PrivateRoute>
+            <EntityDetail />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/entities/:id/edit"
+        element={
+          <PrivateRoute>
+            <EntityForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/properties"
         element={
           <PrivateRoute>
@@ -60,10 +100,50 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/properties/:id"
+        element={
+          <PrivateRoute>
+            <PropertyDetail />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/properties/:id/edit"
         element={
           <PrivateRoute>
             <PropertyForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/lots"
+        element={
+          <PrivateRoute>
+            <Lots />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/lots/new"
+        element={
+          <PrivateRoute>
+            <LotForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/lots/:id"
+        element={
+          <PrivateRoute>
+            <LotDetail />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/lots/:id/edit"
+        element={
+          <PrivateRoute>
+            <LotForm />
           </PrivateRoute>
         }
       />
@@ -155,7 +235,9 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <EntityProvider>
+          <AppRoutes />
+        </EntityProvider>
       </AuthProvider>
     </BrowserRouter>
   )

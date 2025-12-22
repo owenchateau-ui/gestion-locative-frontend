@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useParams, Link } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import DashboardLayout from '../components/layout/DashboardLayout'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 
 function TenantForm() {
   const { id } = useParams()
@@ -113,71 +116,30 @@ function TenantForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <h1 className="text-2xl font-bold text-blue-600">Gestion Locative</h1>
-            <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
-              Tableau de bord
-            </Link>
-            <Link to="/properties" className="text-gray-600 hover:text-blue-600">
-              Mes biens
-            </Link>
-            <Link to="/tenants" className="text-gray-600 hover:text-blue-600">
-              Mes locataires
-            </Link>
-            <Link to="/leases" className="text-gray-600 hover:text-blue-600">
-              Mes baux
-            </Link>
-            <Link to="/payments" className="text-gray-600 hover:text-blue-600">
-              Paiements
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to="/profile" className="text-gray-600 hover:text-blue-600">
-              Mon profil
-            </Link>
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut()
-                navigate('/login')
-              }}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-            >
-              Déconnexion
-            </button>
-          </div>
+    <DashboardLayout title={isEditMode ? 'Modifier le locataire' : 'Ajouter un locataire'}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Header */}
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isEditMode ? 'Modifier le locataire' : 'Ajouter un locataire'}
+          </h2>
+          <p className="text-sm text-gray-600 mt-1">
+            Renseignez les informations du locataire
+          </p>
         </div>
-      </nav>
 
-      {/* Formulaire */}
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">
-              {isEditMode ? 'Modifier le locataire' : 'Ajouter un locataire'}
-            </h2>
-            <Link
-              to="/tenants"
-              className="text-gray-600 hover:text-gray-900"
-            >
-              ← Retour
-            </Link>
-          </div>
-
+        <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded mb-6">
+            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Prénom et Nom */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Prénom *
                 </label>
                 <input
@@ -185,13 +147,13 @@ function TenantForm() {
                   name="first_name"
                   value={formData.first_name}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Marie"
                   required
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Nom *
                 </label>
                 <input
@@ -199,7 +161,7 @@ function TenantForm() {
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Martin"
                   required
                 />
@@ -207,8 +169,8 @@ function TenantForm() {
             </div>
 
             {/* Email */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Email *
               </label>
               <input
@@ -216,15 +178,15 @@ function TenantForm() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="marie.martin@email.com"
                 required
               />
             </div>
 
             {/* Téléphone */}
-            <div className="mb-6">
-              <label className="block text-gray-700 font-semibold mb-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Téléphone
               </label>
               <input
@@ -232,15 +194,15 @@ function TenantForm() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="06 12 34 56 78"
               />
             </div>
 
             {/* Date et lieu de naissance */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Date de naissance
                 </label>
                 <input
@@ -248,11 +210,11 @@ function TenantForm() {
                   name="date_of_birth"
                   value={formData.date_of_birth}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-gray-700 font-semibold mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Lieu de naissance
                 </label>
                 <input
@@ -260,32 +222,34 @@ function TenantForm() {
                   name="place_of_birth"
                   value={formData.place_of_birth}
                   onChange={handleChange}
-                  className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Paris"
                 />
               </div>
             </div>
 
             {/* Boutons */}
-            <div className="flex gap-4">
-              <button
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-blue-500 text-white p-3 rounded font-semibold hover:bg-blue-600 disabled:opacity-50"
+                className="flex-1"
               >
                 {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Créer le locataire'}
-              </button>
-              <Link
-                to="/tenants"
-                className="flex-1 bg-gray-200 text-gray-700 p-3 rounded font-semibold hover:bg-gray-300 text-center"
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => navigate('/tenants')}
+                className="flex-1"
               >
                 Annuler
-              </Link>
+              </Button>
             </div>
           </form>
-        </div>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   )
 }
 
