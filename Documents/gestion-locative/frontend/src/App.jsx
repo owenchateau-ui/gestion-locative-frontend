@@ -20,7 +20,9 @@ import Leases from './pages/Leases'
 import LeaseForm from './pages/LeaseForm'
 import Payments from './pages/Payments'
 import PaymentForm from './pages/PaymentForm'
+import Indexation from './pages/Indexation'
 import Profile from './pages/Profile'
+import ComingSoon from './pages/ComingSoon'
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -220,10 +222,164 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/indexation"
+        element={
+          <PrivateRoute>
+            <Indexation />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/profile"
         element={
           <PrivateRoute>
             <Profile />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Routes "Coming Soon" - Fonctionnalités à venir */}
+      <Route
+        path="/diagnostics"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/candidates"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/inspections"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/receipts"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/charges"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/accounting"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/documents"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/templates"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/signatures"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/incidents"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/works"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/maintenance"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/contractors"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/messages"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/mailings"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/tenant-portal"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <PrivateRoute>
+            <ComingSoon />
           </PrivateRoute>
         }
       />

@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
+import { getReferenceQuarterAndYear, formatQuarter } from '../utils/irlUtils'
+import { getIRLIndex } from '../services/irlService'
 
 function LeaseForm() {
   const { id } = useParams()
@@ -30,8 +32,15 @@ function LeaseForm() {
     special_clauses: '',
     caf_direct_payment: false,
     caf_amount: '',
-    caf_payment_day: '5'
+    caf_payment_day: '5',
+    indexation_enabled: true
   })
+
+  // États pour la gestion de l'IRL
+  const [irlReferenceQuarter, setIrlReferenceQuarter] = useState('')
+  const [irlReferenceYear, setIrlReferenceYear] = useState('')
+  const [currentIRL, setCurrentIRL] = useState(null)
+  const [irlLoading, setIrlLoading] = useState(false)
 
   useEffect(() => {
     fetchLotsAndTenants()
@@ -39,6 +48,35 @@ function LeaseForm() {
       fetchLease()
     }
   }, [id, user])
+
+  // Pré-remplir le trimestre et l'année quand la date de début change (en création uniquement)
+  useEffect(() => {
+    if (formData.start_date && !isEditMode) {
+      const { quarter, year } = getReferenceQuarterAndYear(formData.start_date)
+      setIrlReferenceQuarter(quarter.toString())
+      setIrlReferenceYear(year.toString())
+    }
+  }, [formData.start_date, isEditMode])
+
+  // Récupérer l'IRL quand le trimestre ou l'année change
+  useEffect(() => {
+    const fetchIRL = async () => {
+      if (irlReferenceQuarter && irlReferenceYear) {
+        setIrlLoading(true)
+        try {
+          const irl = await getIRLIndex(parseInt(irlReferenceYear), parseInt(irlReferenceQuarter))
+          setCurrentIRL(irl)
+        } catch (error) {
+          console.error('Error fetching IRL:', error)
+          setCurrentIRL(null)
+        } finally {
+          setIrlLoading(false)
+        }
+      }
+    }
+
+    fetchIRL()
+  }, [irlReferenceQuarter, irlReferenceYear])
 
   const fetchLotsAndTenants = async () => {
     if (!user) return
@@ -105,8 +143,17 @@ function LeaseForm() {
         special_clauses: data.special_clauses || '',
         caf_direct_payment: data.caf_direct_payment || false,
         caf_amount: data.caf_amount || '',
-        caf_payment_day: data.caf_payment_day || '5'
+        caf_payment_day: data.caf_payment_day || '5',
+        indexation_enabled: data.indexation_enabled !== false
       })
+
+      // Charger les valeurs IRL existantes
+      if (data.irl_reference_quarter) {
+        setIrlReferenceQuarter(data.irl_reference_quarter.toString())
+      }
+      if (data.irl_reference_year) {
+        setIrlReferenceYear(data.irl_reference_year.toString())
+      }
     } catch (error) {
       setError(error.message)
     } finally {
@@ -128,6 +175,10 @@ function LeaseForm() {
     setError(null)
 
     try {
+      // Utiliser les valeurs IRL sélectionnées par l'utilisateur
+      const quarter = irlReferenceQuarter ? parseInt(irlReferenceQuarter) : null
+      const year = irlReferenceYear ? parseInt(irlReferenceYear) : null
+
       // Préparer les données pour l'insertion/mise à jour
       const leaseData = {
         lot_id: formData.lot_id,
@@ -143,7 +194,11 @@ function LeaseForm() {
         special_clauses: formData.special_clauses || null,
         caf_direct_payment: formData.caf_direct_payment,
         caf_amount: formData.caf_amount ? parseFloat(formData.caf_amount) : 0,
-        caf_payment_day: formData.caf_direct_payment ? parseInt(formData.caf_payment_day) : 5
+        caf_payment_day: formData.caf_direct_payment ? parseInt(formData.caf_payment_day) : 5,
+        indexation_enabled: formData.indexation_enabled,
+        irl_reference_quarter: quarter,
+        irl_reference_year: year,
+        initial_rent: !isEditMode ? parseFloat(formData.rent_amount) : undefined
       }
 
       if (isEditMode) {
@@ -474,6 +529,104 @@ function LeaseForm() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Section Indexation des loyers */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Indexation des loyers (IRL)</h3>
+
+              {/* Activer l'indexation */}
+              <div className="space-y-4">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="indexation_enabled"
+                    checked={formData.indexation_enabled}
+                    onChange={handleChange}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    Activer l'indexation annuelle du loyer
+                  </span>
+                </label>
+
+                {/* Sélection du trimestre et de l'année */}
+                {formData.indexation_enabled && (
+                  <div className="ml-7 space-y-4">
+                    {/* Message d'aide */}
+                    <div className="p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-start gap-2">
+                        <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p className="text-sm text-gray-700">
+                          Le trimestre de référence est généralement celui indiqué dans votre contrat de bail. Par défaut, il correspond à la date de signature.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Selects trimestre et année */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Trimestre de référence IRL *
+                        </label>
+                        <select
+                          value={irlReferenceQuarter}
+                          onChange={(e) => setIrlReferenceQuarter(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required={formData.indexation_enabled}
+                        >
+                          <option value="">Sélectionner un trimestre</option>
+                          <option value="1">T1 (Janvier - Mars)</option>
+                          <option value="2">T2 (Avril - Juin)</option>
+                          <option value="3">T3 (Juillet - Septembre)</option>
+                          <option value="4">T4 (Octobre - Décembre)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Année de référence *
+                        </label>
+                        <select
+                          value={irlReferenceYear}
+                          onChange={(e) => setIrlReferenceYear(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          required={formData.indexation_enabled}
+                        >
+                          <option value="">Sélectionner une année</option>
+                          {[2020, 2021, 2022, 2023, 2024, 2025].map(year => (
+                            <option key={year} value={year}>{year}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Affichage de l'IRL sélectionné */}
+                    {irlReferenceQuarter && irlReferenceYear && (
+                      <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        {irlLoading ? (
+                          <p className="text-sm text-gray-600">
+                            Chargement de l'IRL...
+                          </p>
+                        ) : currentIRL ? (
+                          <p className="text-sm text-gray-900">
+                            <span className="font-medium">IRL T{irlReferenceQuarter} {irlReferenceYear} :</span>{' '}
+                            <span className="font-bold text-emerald-700">{parseFloat(currentIRL.value).toFixed(2)}</span>
+                          </p>
+                        ) : (
+                          <p className="text-sm text-orange-600">
+                            <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            IRL non disponible pour cette période
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Clauses particulières */}

@@ -8,6 +8,8 @@ import StatCard from '../components/ui/StatCard'
 import Alert from '../components/ui/Alert'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
+import { getLeasesPendingIndexation, getIRLIndices } from '../services/irlService'
+import { formatDateFR, getCurrentQuarter } from '../utils/irlUtils'
 
 function Dashboard() {
   const { user } = useAuth()
@@ -24,8 +26,10 @@ function Dashboard() {
   const [entityBreakdown, setEntityBreakdown] = useState([])
   const [alerts, setAlerts] = useState({
     expiringLeases: [],
-    latePayments: []
+    latePayments: [],
+    pendingIndexations: []
   })
+  const [missingCurrentIRL, setMissingCurrentIRL] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -213,6 +217,14 @@ function Dashboard() {
 
       if (latePaymentsAlertsError) console.error('Error fetching late payments alerts:', latePaymentsAlertsError)
 
+      // Récupérer les baux à indexer dans les 30 prochains jours
+      let pendingIndexations = []
+      try {
+        pendingIndexations = await getLeasesPendingIndexation(user.id, 30, selectedEntity)
+      } catch (error) {
+        console.error('Error fetching pending indexations:', error)
+      }
+
       // Calculer la répartition par entité (uniquement si "Toutes les entités")
       if (!selectedEntity && entities.length > 0) {
         const breakdown = await Promise.all(
@@ -253,6 +265,19 @@ function Dashboard() {
         setEntityBreakdown([])
       }
 
+      // Vérifier si l'IRL du trimestre actuel existe
+      try {
+        const irls = await getIRLIndices()
+        const currentQ = getCurrentQuarter()
+        const currentIRLExists = irls.some(
+          irl => irl.quarter === currentQ.quarter && irl.year === currentQ.year
+        )
+        setMissingCurrentIRL(!currentIRLExists)
+      } catch (error) {
+        console.error('Error checking IRL:', error)
+        setMissingCurrentIRL(false)
+      }
+
       setStats({
         properties: propertiesCount || 0,
         lots: lotsCount || 0,
@@ -265,7 +290,8 @@ function Dashboard() {
 
       setAlerts({
         expiringLeases: expiringLeasesData || [],
-        latePayments: latePaymentsAlerts || []
+        latePayments: latePaymentsAlerts || [],
+        pendingIndexations: pendingIndexations || []
       })
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -293,7 +319,7 @@ function Dashboard() {
     <DashboardLayout title={dashboardTitle}>
       <div className="space-y-6">
         {/* Alertes */}
-        {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0) && (
+        {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0 || alerts.pendingIndexations.length > 0) && (
           <div className="space-y-4">
             {/* Baux arrivant à échéance */}
             {alerts.expiringLeases.length > 0 && (
@@ -326,8 +352,62 @@ function Dashboard() {
                 </ul>
               </Alert>
             )}
+
+            {/* Indexations à venir */}
+            {alerts.pendingIndexations.length > 0 && (
+              <Alert variant="info" title={`${alerts.pendingIndexations.length} indexation${alerts.pendingIndexations.length > 1 ? 's' : ''} de loyer à prévoir dans les 30 prochains jours`}>
+                <ul className="mt-2 space-y-2">
+                  {alerts.pendingIndexations.map(lease => (
+                    <li key={lease.id} className="p-3 bg-white rounded-lg border border-blue-100">
+                      <Link to="/indexation" className="block hover:bg-blue-50 transition-colors">
+                        <div className="font-medium text-gray-900">
+                          {lease.lot.properties_new.name} - {lease.lot.name}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                          Locataire : {lease.tenant.first_name} {lease.tenant.last_name}
+                        </div>
+                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                          <span>
+                            📅 Anniversaire : <span className="font-medium text-blue-700">{formatDateFR(lease.anniversaryDate)}</span>
+                          </span>
+                          <span>
+                            💰 Nouveau loyer : <span className="font-semibold text-emerald-600">{lease.indexationCalculation.newRent.toFixed(2)} €</span>
+                            {' '}(+{lease.indexationCalculation.increasePercentage.toFixed(2)}%)
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-3">
+                  <Link to="/indexation" className="text-sm font-medium text-blue-700 hover:text-blue-800">
+                    Gérer les indexations →
+                  </Link>
+                </div>
+              </Alert>
+            )}
           </div>
         )}
+
+        {/* Alerte IRL manquant */}
+        {missingCurrentIRL && (() => {
+          const currentQ = getCurrentQuarter()
+          return (
+            <Alert variant="info" title="📊 Nouvel IRL disponible">
+              <div className="flex items-center justify-between">
+                <p className="text-sm">
+                  L'IRL du <strong>T{currentQ.quarter} {currentQ.year}</strong> n'est pas encore enregistré dans la base.
+                </p>
+                <Link
+                  to="/indexation"
+                  className="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Mettre à jour →
+                </Link>
+              </div>
+            </Alert>
+          )
+        })()}
 
         {/* Statistiques principales */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">

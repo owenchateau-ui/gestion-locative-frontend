@@ -1,7 +1,7 @@
 # CLAUDE.md - SaaS Gestion Locative
 
 > Ce fichier sert de référence pour tout assistant IA travaillant sur ce projet.
-> Dernière mise à jour : Décembre 2024
+> Dernière mise à jour : 23 Décembre 2024
 
 ---
 
@@ -9,14 +9,18 @@
 
 1. [Vision du projet](#-vision-du-projet)
 2. [État actuel du projet](#-état-actuel-du-projet)
-3. [Architecture multi-entités (NOUVELLE)](#-architecture-multi-entités-nouvelle)
-4. [Stack technique](#️-stack-technique)
-5. [Design System](#-design-system)
-6. [Roadmap](#-roadmap)
-7. [Architecture des dossiers](#-architecture-des-dossiers)
-8. [Schéma de base de données](#️-schéma-de-base-de-données)
-9. [Variables d'environnement](#-variables-denvironnement)
-10. [Commandes utiles](#-commandes-utiles)
+3. [Structure de menu](#-structure-de-menu)
+4. [Architecture multi-entités (NOUVELLE)](#-architecture-multi-entités-nouvelle)
+5. [Stack technique](#️-stack-technique)
+6. [Design System](#-design-system)
+7. [Routes à créer](#-routes-à-créer)
+8. [Composants UI à créer](#-composants-ui-à-créer)
+9. [Futures fonctionnalités détaillées](#-futures-fonctionnalités-détaillées)
+10. [Roadmap](#-roadmap)
+11. [Architecture des dossiers](#-architecture-des-dossiers)
+12. [Schéma de base de données](#️-schéma-de-base-de-données)
+13. [Variables d'environnement](#-variables-denvironnement)
+14. [Commandes utiles](#-commandes-utiles)
 
 ---
 
@@ -131,6 +135,63 @@ Grilles     : gap-6 (24px entre colonnes)
 - **Selects** : Mêmes classes que inputs
 - **Boutons** : Variants via composant Button
 - **Cards** : `bg-white rounded-lg shadow-sm`
+
+---
+
+## 🧭 STRUCTURE DE MENU
+
+### Navigation principale (Sidebar)
+
+La sidebar de navigation est organisée par catégories fonctionnelles. Chaque item de menu indique son statut d'implémentation.
+
+#### 📊 Tableau de bord
+- ✅ **Dashboard** (`/dashboard`) - Vue d'ensemble avec statistiques globales
+
+#### 🏛️ Patrimoine
+- ✅ **Entités** (`/entities`) - Gestion des entités juridiques (SCI, SARL, LMNP...)
+- ✅ **Propriétés** (`/properties`) - Gestion des immeubles et bâtiments
+- ✅ **Lots** (`/lots`) - Gestion des unités locatives
+- ✅ **Indexation IRL** (`/indexation`) - Révision automatique des loyers
+
+#### 👥 Locataires
+- ✅ **Liste locataires** (`/tenants`) - Gestion des locataires
+- ✅ **Baux** (`/leases`) - Gestion des contrats de location
+- 🔜 **Candidatures** (`/applications`) - Gestion des dossiers de candidature
+- 🔜 **Portail locataire** (`/tenant-portal`) - Accès locataire (consultation, paiement en ligne)
+
+#### 💰 Finances
+- ✅ **Paiements** (`/payments`) - Suivi des loyers et quittances
+- ✅ **Quittances** (intégré dans Paiements) - Génération PDF
+- 🔜 **Charges** (`/charges`) - Gestion et régularisation des charges
+- 🔜 **Comptabilité** (`/accounting`) - Exports comptables et fiscaux
+- 🔜 **Déclaration fiscale** (`/tax-declaration`) - Aide déclaration 2044
+
+#### 📄 Documents
+- 🔜 **Bibliothèque** (`/documents`) - Tous les documents par catégorie
+- 🔜 **États des lieux** (`/inventories`) - EDL entrée/sortie numériques
+- 🔜 **Modèles** (`/templates`) - Modèles de documents légaux
+- 🔜 **Signatures** (`/signatures`) - Suivi des signatures électroniques
+
+#### 🔧 Interventions
+- 🔜 **Demandes** (`/maintenance-requests`) - Demandes d'intervention locataires
+- 🔜 **Interventions** (`/maintenance`) - Suivi des travaux et réparations
+- 🔜 **Prestataires** (`/service-providers`) - Carnet d'adresses prestataires
+
+#### 📨 Communication
+- 🔜 **Messages** (`/messages`) - Messagerie interne
+- 🔜 **Notifications** (`/notifications`) - Centre de notifications
+- 🔜 **Historique emails** (`/email-history`) - Emails envoyés automatiquement
+- 🔜 **Historique SMS** (`/sms-history`) - SMS envoyés (relances, alertes)
+
+#### ⚙️ Paramètres
+- ✅ **Profil** (`/profile`) - Informations personnelles
+- 🔜 **Abonnement** (`/subscription`) - Plan et facturation
+- 🔜 **Préférences** (`/preferences`) - Notifications, langue, etc.
+- 🔜 **Sécurité** (`/security`) - Mot de passe, 2FA
+
+### Légende
+- ✅ **FAIT** : Fonctionnalité implémentée et opérationnelle
+- 🔜 **À FAIRE** : Fonctionnalité planifiée dans la roadmap
 
 ---
 
@@ -622,6 +683,909 @@ export default MyComponent
 
 ---
 
+## 🛣️ ROUTES À CRÉER
+
+### Routes existantes ✅ FAIT
+
+#### Authentification
+- ✅ `/` - Page d'accueil publique
+- ✅ `/login` - Connexion
+- ✅ `/register` - Inscription
+
+#### Dashboard
+- ✅ `/dashboard` - Tableau de bord principal
+
+#### Patrimoine
+- ✅ `/entities` - Liste des entités
+- ✅ `/entities/new` - Créer une entité
+- ✅ `/entities/:id` - Détail d'une entité
+- ✅ `/entities/:id/edit` - Modifier une entité
+- ✅ `/properties` - Liste des propriétés
+- ✅ `/properties/new` - Créer une propriété
+- ✅ `/properties/:id/edit` - Modifier une propriété
+- ✅ `/lots` - Liste des lots
+- ✅ `/lots/new` - Créer un lot
+- ✅ `/lots/:id/edit` - Modifier un lot
+- ✅ `/indexation` - Indexation IRL
+
+#### Locataires et baux
+- ✅ `/tenants` - Liste des locataires
+- ✅ `/tenants/new` - Créer un locataire
+- ✅ `/tenants/:id/edit` - Modifier un locataire
+- ✅ `/leases` - Liste des baux
+- ✅ `/leases/new` - Créer un bail
+- ✅ `/leases/:id/edit` - Modifier un bail
+
+#### Finances
+- ✅ `/payments` - Liste des paiements
+- ✅ `/payments/new` - Enregistrer un paiement
+- ✅ `/payments/:id/edit` - Modifier un paiement
+
+#### Paramètres
+- ✅ `/profile` - Profil utilisateur
+
+### Routes à créer 🔜 À FAIRE
+
+#### Patrimoine (détails)
+- 🔜 `/properties/:id` - Page détail propriété avec liste des lots
+- 🔜 `/lots/:id` - Page détail lot avec bail actif et historique
+
+#### Candidatures
+- 🔜 `/applications` - Liste des candidatures
+- 🔜 `/applications/new` - Nouvelle candidature
+- 🔜 `/applications/:id` - Détail candidature avec documents
+- 🔜 `/applications/:id/review` - Évaluation candidature
+
+#### Portail locataire
+- 🔜 `/tenant-portal` - Dashboard locataire (consultation uniquement)
+- 🔜 `/tenant-portal/lease` - Mon bail
+- 🔜 `/tenant-portal/payments` - Mes paiements et quittances
+- 🔜 `/tenant-portal/documents` - Mes documents
+- 🔜 `/tenant-portal/maintenance` - Mes demandes d'intervention
+- 🔜 `/tenant-portal/profile` - Mon profil
+
+#### Finances avancées
+- 🔜 `/charges` - Gestion des charges
+- 🔜 `/charges/new` - Enregistrer une charge
+- 🔜 `/charges/:id/edit` - Modifier une charge
+- 🔜 `/charges/reconciliation` - Régularisation annuelle des charges
+- 🔜 `/accounting` - Comptabilité et exports
+- 🔜 `/accounting/export` - Export comptable (CSV, Excel)
+- 🔜 `/tax-declaration` - Aide déclaration fiscale 2044
+- 🔜 `/tax-declaration/preview` - Aperçu déclaration
+
+#### Documents
+- 🔜 `/documents` - Bibliothèque de documents
+- 🔜 `/documents/upload` - Upload multiple de documents
+- 🔜 `/inventories` - États des lieux
+- 🔜 `/inventories/new` - Créer un état des lieux
+- 🔜 `/inventories/:id` - Détail état des lieux avec photos
+- 🔜 `/inventories/:id/edit` - Modifier état des lieux
+- 🔜 `/inventories/:id/compare` - Comparer entrée/sortie
+- 🔜 `/templates` - Modèles de documents
+- 🔜 `/templates/:type/generate` - Générer un document
+- 🔜 `/signatures` - Suivi des signatures électroniques
+- 🔜 `/signatures/:id` - Détail signature
+
+#### Interventions
+- 🔜 `/maintenance-requests` - Demandes d'intervention
+- 🔜 `/maintenance-requests/new` - Nouvelle demande
+- 🔜 `/maintenance-requests/:id` - Détail demande
+- 🔜 `/maintenance` - Suivi des interventions
+- 🔜 `/maintenance/new` - Planifier une intervention
+- 🔜 `/maintenance/:id` - Détail intervention
+- 🔜 `/maintenance/:id/edit` - Modifier intervention
+- 🔜 `/service-providers` - Carnet d'adresses prestataires
+- 🔜 `/service-providers/new` - Ajouter un prestataire
+- 🔜 `/service-providers/:id/edit` - Modifier un prestataire
+
+#### Communication
+- 🔜 `/messages` - Messagerie interne
+- 🔜 `/messages/compose` - Nouveau message
+- 🔜 `/messages/:id` - Conversation
+- 🔜 `/notifications` - Centre de notifications
+- 🔜 `/email-history` - Historique emails envoyés
+- 🔜 `/sms-history` - Historique SMS envoyés
+
+#### Paramètres
+- 🔜 `/subscription` - Plan et facturation
+- 🔜 `/subscription/upgrade` - Passer à Premium
+- 🔜 `/preferences` - Préférences utilisateur
+- 🔜 `/security` - Sécurité et 2FA
+
+#### Diagnostics et conformité
+- 🔜 `/diagnostics` - Gestion des diagnostics immobiliers
+- 🔜 `/diagnostics/new` - Ajouter un diagnostic
+- 🔜 `/diagnostics/:id/edit` - Modifier un diagnostic
+- 🔜 `/diagnostics/alerts` - Alertes diagnostics expirés
+
+---
+
+## 🎨 COMPOSANTS UI À CRÉER
+
+### Composants layout
+
+#### Sidebar.jsx 🔜
+Navigation latérale avec menu hiérarchique et sélecteur d'entité.
+```jsx
+<Sidebar
+  currentEntity={selectedEntity}
+  onEntityChange={handleEntityChange}
+  entities={userEntities}
+/>
+```
+
+**Props** :
+- `currentEntity` : Entité actuellement sélectionnée
+- `onEntityChange` : Callback changement d'entité
+- `entities` : Liste des entités de l'utilisateur
+- `activeRoute` : Route active pour highlighting
+
+**Fonctionnalités** :
+- Menu hiérarchique avec catégories collapsibles
+- Sélecteur d'entité en haut (dropdown)
+- Indicateur visuel route active
+- Responsive (collapse sur mobile)
+
+#### Breadcrumb.jsx 🔜
+Fil d'Ariane pour navigation hiérarchique.
+```jsx
+<Breadcrumb items={[
+  { label: 'Entités', href: '/entities' },
+  { label: 'SCI Famille', href: '/entities/123' },
+  { label: 'Immeuble Paris 15', href: '/properties/456' },
+  { label: 'Appt 3A', href: '/lots/789' }
+]} />
+```
+
+#### EmptyState.jsx 🔜
+État vide avec icône et call-to-action.
+```jsx
+<EmptyState
+  icon={<BuildingIcon />}
+  title="Aucune propriété"
+  description="Commencez par ajouter votre première propriété"
+  action={<Button href="/properties/new">Ajouter une propriété</Button>}
+/>
+```
+
+#### ComingSoon.jsx 🔜
+Page placeholder pour fonctionnalités à venir.
+```jsx
+<ComingSoon
+  feature="Portail locataire"
+  description="Accès consultation pour vos locataires"
+  estimatedDate="Q2 2025"
+/>
+```
+
+### Composants de formulaire
+
+#### FileUpload.jsx 🔜
+Upload de fichiers avec drag & drop et preview.
+```jsx
+<FileUpload
+  multiple={true}
+  accept="image/*,application/pdf"
+  maxSize={10} // Mo
+  onUpload={handleUpload}
+  preview={true}
+/>
+```
+
+**Fonctionnalités** :
+- Drag & drop
+- Preview images et PDF
+- Barre de progression upload
+- Validation taille et type
+- Support multiple fichiers
+
+#### DateRangePicker.jsx 🔜
+Sélecteur de plage de dates.
+```jsx
+<DateRangePicker
+  startDate={startDate}
+  endDate={endDate}
+  onChange={handleDateChange}
+  minDate={new Date()}
+/>
+```
+
+#### AutoComplete.jsx 🔜
+Input avec autocomplétion.
+```jsx
+<AutoComplete
+  placeholder="Rechercher un locataire..."
+  options={tenants}
+  onSelect={handleSelect}
+  displayKey="full_name"
+  searchKeys={['full_name', 'email']}
+/>
+```
+
+#### RichTextEditor.jsx 🔜
+Éditeur de texte enrichi pour notes et descriptions.
+```jsx
+<RichTextEditor
+  value={content}
+  onChange={setContent}
+  placeholder="Ajouter des notes..."
+  toolbar={['bold', 'italic', 'list', 'link']}
+/>
+```
+
+### Composants de données
+
+#### DataTable.jsx 🔜
+Tableau avancé avec tri, filtres, pagination.
+```jsx
+<DataTable
+  columns={columns}
+  data={data}
+  sortable={true}
+  filterable={true}
+  pagination={true}
+  pageSize={20}
+  onRowClick={handleRowClick}
+  actions={rowActions}
+/>
+```
+
+**Fonctionnalités** :
+- Tri multi-colonnes
+- Filtres par colonne
+- Pagination côté client/serveur
+- Sélection lignes (checkbox)
+- Actions par ligne (dropdown)
+- Export CSV/Excel
+- Responsive (scroll horizontal sur mobile)
+
+#### StatChart.jsx 🔜
+Graphiques statistiques (line, bar, pie).
+```jsx
+<StatChart
+  type="line"
+  data={revenueData}
+  xKey="month"
+  yKey="amount"
+  title="Évolution des revenus"
+  color="blue"
+/>
+```
+
+**Types supportés** :
+- `line` : Graphique en ligne
+- `bar` : Graphique en barres
+- `pie` : Camembert
+- `area` : Aire
+
+#### Timeline.jsx 🔜
+Chronologie d'événements.
+```jsx
+<Timeline events={[
+  { date: '2024-01-15', type: 'lease_start', description: 'Début du bail' },
+  { date: '2024-02-01', type: 'payment', description: 'Paiement loyer janvier' },
+  { date: '2024-03-01', type: 'indexation', description: 'Révision loyer IRL' }
+]} />
+```
+
+#### ProgressBar.jsx 🔜
+Barre de progression.
+```jsx
+<ProgressBar
+  value={75}
+  max={100}
+  label="Taux d'occupation"
+  color="emerald"
+  showPercentage={true}
+/>
+```
+
+### Composants métier
+
+#### LeaseCard.jsx 🔜
+Carte récapitulative d'un bail.
+```jsx
+<LeaseCard
+  lease={lease}
+  showTenant={true}
+  showProperty={true}
+  onViewDetails={() => navigate(`/leases/${lease.id}`)}
+/>
+```
+
+**Affiche** :
+- Locataire avec photo
+- Propriété et lot
+- Dates bail (début, fin, durée restante)
+- Montant loyer + charges
+- Statut (actif, terminé, à renouveler)
+- Actions rapides (voir détails, générer quittance)
+
+#### PaymentStatusBadge.jsx 🔜
+Badge statut paiement avec logique métier.
+```jsx
+<PaymentStatusBadge
+  payment={payment}
+  showDaysLate={true}
+/>
+```
+
+**Statuts** :
+- `paid` : Payé (vert)
+- `pending` : En attente (orange)
+- `late` : En retard (rouge)
+- `partial` : Partiel (jaune)
+
+#### TenantAvatar.jsx 🔜
+Avatar locataire avec fallback initiales.
+```jsx
+<TenantAvatar
+  tenant={tenant}
+  size="lg"
+  showName={true}
+/>
+```
+
+#### PropertyTypeIcon.jsx 🔜
+Icône selon type de propriété/lot.
+```jsx
+<PropertyTypeIcon
+  type="apartment"
+  size={24}
+  color="blue"
+/>
+```
+
+**Types** :
+- `apartment` : Appartement
+- `house` : Maison
+- `studio` : Studio
+- `parking` : Parking
+- `commercial` : Local commercial
+- `office` : Bureau
+
+### Composants de feedback
+
+#### Modal.jsx 🔜
+Modal réutilisable.
+```jsx
+<Modal
+  isOpen={isOpen}
+  onClose={handleClose}
+  title="Confirmer la suppression"
+  size="md"
+>
+  <p>Êtes-vous sûr de vouloir supprimer ce bail ?</p>
+  <div className="flex gap-3 mt-4">
+    <Button variant="danger" onClick={handleDelete}>Supprimer</Button>
+    <Button variant="secondary" onClick={handleClose}>Annuler</Button>
+  </div>
+</Modal>
+```
+
+**Sizes** : `sm`, `md`, `lg`, `xl`, `full`
+
+#### Toast.jsx 🔜
+Notifications toast (success, error, warning, info).
+```jsx
+// Usage via hook
+const { showToast } = useToast()
+showToast({
+  type: 'success',
+  message: 'Le bail a été créé avec succès',
+  duration: 3000
+})
+```
+
+#### Spinner.jsx 🔜
+Indicateur de chargement.
+```jsx
+<Spinner size="lg" color="blue" />
+```
+
+#### Skeleton.jsx 🔜
+Placeholder chargement (skeleton screens).
+```jsx
+<Skeleton type="card" count={3} />
+<Skeleton type="text" lines={4} />
+<Skeleton type="avatar" size="lg" />
+```
+
+### Composants utilitaires
+
+#### Tooltip.jsx 🔜
+Info-bulle au survol.
+```jsx
+<Tooltip content="Le loyer révisé selon l'IRL">
+  <InfoIcon />
+</Tooltip>
+```
+
+#### Dropdown.jsx 🔜
+Menu déroulant réutilisable.
+```jsx
+<Dropdown
+  trigger={<Button>Actions</Button>}
+  items={[
+    { label: 'Modifier', onClick: handleEdit, icon: <EditIcon /> },
+    { label: 'Supprimer', onClick: handleDelete, icon: <TrashIcon />, danger: true }
+  ]}
+/>
+```
+
+#### Tabs.jsx 🔜
+Onglets de navigation.
+```jsx
+<Tabs defaultTab="details">
+  <Tab id="details" label="Détails">
+    <LeaseDetails lease={lease} />
+  </Tab>
+  <Tab id="payments" label="Paiements">
+    <PaymentsList leaseId={lease.id} />
+  </Tab>
+  <Tab id="documents" label="Documents">
+    <DocumentsList leaseId={lease.id} />
+  </Tab>
+</Tabs>
+```
+
+#### Pagination.jsx 🔜
+Composant de pagination.
+```jsx
+<Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+  showPageNumbers={5}
+/>
+```
+
+---
+
+## 🚀 FUTURES FONCTIONNALITÉS DÉTAILLÉES
+
+### 1. Candidatures (Espace candidat)
+
+#### Fonctionnalités
+- **Formulaire candidature en ligne** : Lien public partageable par le bailleur
+- **Upload documents** : Pièce d'identité, justificatifs revenus, garants
+- **Calcul automatique taux d'effort** : (Loyer / Revenus nets) × 100
+- **Scoring automatique** : Note sur 100 basée sur critères (revenus, stabilité, garants)
+- **Workflow validation** : Candidature → En cours → Acceptée/Refusée
+- **Historique candidatures** : Archive pour chaque lot
+
+#### Tables SQL à créer
+```sql
+CREATE TYPE application_status AS ENUM (
+  'submitted',      -- Soumise
+  'under_review',   -- En cours d'examen
+  'accepted',       -- Acceptée
+  'rejected',       -- Refusée
+  'withdrawn'       -- Retirée par le candidat
+);
+
+CREATE TABLE applications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lot_id UUID NOT NULL REFERENCES lots(id) ON DELETE CASCADE,
+  entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
+
+  -- Informations candidat
+  first_name VARCHAR(100) NOT NULL,
+  last_name VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(20),
+  birth_date DATE,
+
+  -- Situation professionnelle
+  employment_type VARCHAR(100),
+  employer_name VARCHAR(255),
+  job_title VARCHAR(255),
+  employment_start_date DATE,
+  monthly_income DECIMAL(10,2),
+
+  -- Garants
+  has_guarantor BOOLEAN DEFAULT FALSE,
+  guarantor_first_name VARCHAR(100),
+  guarantor_last_name VARCHAR(100),
+  guarantor_email VARCHAR(255),
+  guarantor_phone VARCHAR(20),
+  guarantor_monthly_income DECIMAL(10,2),
+
+  -- Scoring
+  score INTEGER CHECK (score >= 0 AND score <= 100),
+  income_to_rent_ratio DECIMAL(5,2),
+
+  -- Statut
+  status application_status DEFAULT 'submitted',
+  reviewed_at TIMESTAMP WITH TIME ZONE,
+  reviewed_by UUID REFERENCES users(id),
+  rejection_reason TEXT,
+
+  -- Métadonnées
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE application_documents (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  application_id UUID NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
+  document_type VARCHAR(100) NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  file_size INTEGER,
+  uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_applications_lot ON applications(lot_id);
+CREATE INDEX idx_applications_entity ON applications(entity_id);
+CREATE INDEX idx_applications_status ON applications(status);
+CREATE INDEX idx_application_documents_application ON application_documents(application_id);
+```
+
+---
+
+### 2. Portail Locataire
+
+#### Fonctionnalités
+- **Dashboard locataire** : Vue consultation uniquement
+- **Informations bail** : Dates, loyer, charges, dépôt de garantie
+- **Historique paiements** : Liste des quittances téléchargeables
+- **Espace documents** : Bail, états des lieux, attestations
+- **Demandes d'intervention** : Signaler un problème (formulaire + photos)
+- **Messagerie** : Communication avec le bailleur
+- **Paiement en ligne** (optionnel) : Via Stripe
+
+#### Tables SQL à créer
+```sql
+CREATE TABLE tenant_portal_access (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash VARCHAR(255),
+  is_active BOOLEAN DEFAULT TRUE,
+  last_login_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE tenant_messages (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lease_id UUID NOT NULL REFERENCES leases(id) ON DELETE CASCADE,
+  sender_type VARCHAR(20) NOT NULL CHECK (sender_type IN ('landlord', 'tenant')),
+  sender_id UUID NOT NULL,
+  subject VARCHAR(255),
+  message TEXT NOT NULL,
+  read_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_tenant_portal_access_tenant ON tenant_portal_access(tenant_id);
+CREATE INDEX idx_tenant_portal_access_email ON tenant_portal_access(email);
+CREATE INDEX idx_tenant_messages_lease ON tenant_messages(lease_id);
+```
+
+---
+
+### 3. Interventions et Maintenance
+
+#### Fonctionnalités
+- **Demandes d'intervention** : Formulaire locataire (type, urgence, description, photos)
+- **Suivi interventions** : Planifiée → En cours → Terminée
+- **Carnet d'adresses prestataires** : Plombier, électricien, syndic, etc.
+- **Historique interventions par lot** : Traçabilité complète
+- **Calcul coûts maintenance** : Charges déductibles fiscalement
+- **Photos avant/après** : Documentation visuelle
+- **Notifications automatiques** : Alerte bailleur nouvelle demande
+
+#### Tables SQL à créer
+```sql
+CREATE TYPE maintenance_status AS ENUM (
+  'reported',       -- Signalée
+  'scheduled',      -- Planifiée
+  'in_progress',    -- En cours
+  'completed',      -- Terminée
+  'cancelled'       -- Annulée
+);
+
+CREATE TYPE maintenance_priority AS ENUM (
+  'low',            -- Basse
+  'medium',         -- Moyenne
+  'high',           -- Haute
+  'urgent'          -- Urgente
+);
+
+CREATE TABLE maintenance_requests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lease_id UUID NOT NULL REFERENCES leases(id) ON DELETE CASCADE,
+  lot_id UUID NOT NULL REFERENCES lots(id) ON DELETE CASCADE,
+
+  -- Demande
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  category VARCHAR(100),
+  priority maintenance_priority DEFAULT 'medium',
+
+  -- Intervention
+  status maintenance_status DEFAULT 'reported',
+  scheduled_date TIMESTAMP WITH TIME ZONE,
+  completed_date TIMESTAMP WITH TIME ZONE,
+  service_provider_id UUID REFERENCES service_providers(id),
+  cost DECIMAL(10,2),
+
+  -- Métadonnées
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE maintenance_photos (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  maintenance_request_id UUID NOT NULL REFERENCES maintenance_requests(id) ON DELETE CASCADE,
+  file_name VARCHAR(255) NOT NULL,
+  file_path VARCHAR(500) NOT NULL,
+  photo_type VARCHAR(50) CHECK (photo_type IN ('before', 'after')),
+  uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE service_providers (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
+
+  -- Informations
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(100),
+  email VARCHAR(255),
+  phone VARCHAR(20),
+  address VARCHAR(500),
+
+  -- Notes
+  notes TEXT,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+
+  -- Métadonnées
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_maintenance_requests_lease ON maintenance_requests(lease_id);
+CREATE INDEX idx_maintenance_requests_lot ON maintenance_requests(lot_id);
+CREATE INDEX idx_maintenance_requests_status ON maintenance_requests(status);
+CREATE INDEX idx_maintenance_photos_request ON maintenance_photos(maintenance_request_id);
+CREATE INDEX idx_service_providers_entity ON service_providers(entity_id);
+```
+
+---
+
+### 4. Communication Avancée
+
+#### Fonctionnalités
+- **Templates emails** : Quittance, avis échéance, rappel, relance, indexation
+- **Envoi automatique** : Quittances dès paiement enregistré
+- **Planification emails** : Avis échéance J-5
+- **Relances automatiques** : J+3 (amical), J+7 (formel), J+15 (mise en demeure)
+- **SMS notifications** : Alertes importantes (impayés, interventions urgentes)
+- **Historique** : Tous les emails/SMS envoyés
+- **Personnalisation** : Variables dynamiques (nom, montant, date...)
+
+#### Tables SQL à créer
+```sql
+CREATE TYPE communication_type AS ENUM (
+  'email',
+  'sms',
+  'notification'
+);
+
+CREATE TYPE communication_category AS ENUM (
+  'receipt',           -- Quittance
+  'payment_reminder',  -- Rappel paiement
+  'payment_overdue',   -- Relance impayé
+  'lease_renewal',     -- Renouvellement bail
+  'indexation',        -- Révision loyer
+  'maintenance',       -- Intervention
+  'general'            -- Général
+);
+
+CREATE TABLE communications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
+
+  -- Destinataire
+  recipient_type VARCHAR(20) CHECK (recipient_type IN ('tenant', 'owner', 'other')),
+  recipient_id UUID,
+  recipient_email VARCHAR(255),
+  recipient_phone VARCHAR(20),
+
+  -- Communication
+  type communication_type NOT NULL,
+  category communication_category NOT NULL,
+  subject VARCHAR(255),
+  content TEXT NOT NULL,
+
+  -- Contexte
+  lease_id UUID REFERENCES leases(id),
+  payment_id UUID REFERENCES payments(id),
+  maintenance_request_id UUID REFERENCES maintenance_requests(id),
+
+  -- Statut
+  sent_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  delivered_at TIMESTAMP WITH TIME ZONE,
+  opened_at TIMESTAMP WITH TIME ZONE,
+  clicked_at TIMESTAMP WITH TIME ZONE,
+  failed_at TIMESTAMP WITH TIME ZONE,
+  error_message TEXT,
+
+  -- Métadonnées
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE communication_templates (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+  -- Template
+  name VARCHAR(255) NOT NULL,
+  category communication_category NOT NULL,
+  type communication_type NOT NULL,
+  subject VARCHAR(255),
+  content TEXT NOT NULL,
+
+  -- Variables disponibles
+  available_variables TEXT[],
+
+  -- Métadonnées
+  is_default BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+
+  UNIQUE(user_id, name)
+);
+
+CREATE INDEX idx_communications_entity ON communications(entity_id);
+CREATE INDEX idx_communications_recipient ON communications(recipient_id);
+CREATE INDEX idx_communications_lease ON communications(lease_id);
+CREATE INDEX idx_communications_payment ON communications(payment_id);
+CREATE INDEX idx_communications_category ON communications(category);
+CREATE INDEX idx_communication_templates_user ON communication_templates(user_id);
+```
+
+---
+
+### 5. Diagnostics et Conformité
+
+#### Fonctionnalités
+- **Gestion diagnostics immobiliers** : DPE, amiante, plomb, gaz, électricité, ERP
+- **Dates de validité** : Suivi des expirations
+- **Alertes automatiques** : Email J-60 avant expiration
+- **Stockage documents** : PDFs des diagnostics
+- **Conformité légale** : Checklist obligations bailleur
+- **Historique** : Évolution DPE dans le temps
+
+#### Tables SQL à créer
+```sql
+CREATE TYPE diagnostic_type AS ENUM (
+  'dpe',            -- Diagnostic Performance Énergétique
+  'ges',            -- Gaz à Effet de Serre
+  'amiante',        -- Amiante
+  'lead',           -- Plomb (CREP)
+  'gas',            -- Installation gaz
+  'electricity',    -- Installation électrique
+  'erp',            -- État Risques Pollution
+  'termites',       -- Termites
+  'surface'         -- Mesurage loi Carrez/Boutin
+);
+
+CREATE TABLE diagnostics (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lot_id UUID NOT NULL REFERENCES lots(id) ON DELETE CASCADE,
+
+  -- Diagnostic
+  type diagnostic_type NOT NULL,
+  performed_date DATE NOT NULL,
+  expiration_date DATE,
+  is_valid BOOLEAN GENERATED ALWAYS AS (expiration_date IS NULL OR expiration_date >= CURRENT_DATE) STORED,
+
+  -- Résultats (spécifique DPE/GES)
+  dpe_rating VARCHAR(1) CHECK (dpe_rating IN ('A', 'B', 'C', 'D', 'E', 'F', 'G')),
+  dpe_value INTEGER,
+  ges_rating VARCHAR(1) CHECK (ges_rating IN ('A', 'B', 'C', 'D', 'E', 'F', 'G')),
+  ges_value INTEGER,
+
+  -- Document
+  diagnostician_name VARCHAR(255),
+  diagnostician_company VARCHAR(255),
+  document_path VARCHAR(500),
+
+  -- Notes
+  notes TEXT,
+
+  -- Métadonnées
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX idx_diagnostics_lot ON diagnostics(lot_id);
+CREATE INDEX idx_diagnostics_type ON diagnostics(type);
+CREATE INDEX idx_diagnostics_expiration ON diagnostics(expiration_date) WHERE expiration_date IS NOT NULL;
+```
+
+---
+
+### 6. Comptabilité et Fiscalité
+
+#### Fonctionnalités
+- **Journal des opérations** : Tous les mouvements financiers
+- **Catégorisation charges** : Charges déductibles, non déductibles, amortissables
+- **Export comptable** : CSV/Excel pour expert-comptable
+- **Aide déclaration 2044** : Formulaire pré-rempli revenus fonciers
+- **Calcul amortissements** : LMNP/LMP automatique
+- **Synthèse fiscale annuelle** : Revenus, charges, résultat fiscal
+- **Export par entité** : Comptabilité séparée SCI, LMNP, etc.
+
+---
+
+### 7. Quittances Avancées
+
+#### Fonctionnalités
+- **Génération automatique** : Dès enregistrement paiement
+- **Envoi email automatique** : Option envoi immédiat ou planifié
+- **Personnalisation** : Logo, couleurs par entité
+- **Multi-format** : PDF, email HTML
+- **Quittances groupées** : Plusieurs mois en un PDF
+- **Attestation fiscale annuelle** : Récapitulatif loyers payés
+- **Conformité légale** : Mentions obligatoires loi ALUR
+
+---
+
+### 8. États des Lieux
+
+#### Fonctionnalités
+- **Formulaire structuré** : Pièce par pièce (séjour, chambres, cuisine, SDB, WC)
+- **Items par pièce** : Murs, sol, plafond, fenêtres, portes, équipements
+- **Notation état** : Neuf, Bon, Moyen, Mauvais, Vétuste
+- **Photos multiples** : Upload illimité par item
+- **Signature électronique** : Bailleur + locataire (via Yousign)
+- **Génération PDF** : État des lieux complet avec photos
+- **Comparaison entrée/sortie** : Différences automatiques
+- **Export** : PDF envoyable par email
+
+---
+
+### 9. Documents et Modèles
+
+#### Fonctionnalités
+- **Bibliothèque modèles légaux** :
+  - Bail vide loi ALUR
+  - Bail meublé loi ALUR
+  - Lettre résiliation bailleur
+  - Lettre résiliation locataire
+  - Congé pour vente
+  - Augmentation de loyer
+  - Lettre indexation IRL
+  - Régularisation charges
+  - Mise en demeure
+  - Attestation loyer
+  - Attestation assurance
+- **Générateur dynamique** : Remplissage automatique avec données bail/locataire
+- **Édition avant génération** : Personnalisation du contenu
+- **Stockage organisé** : Par entité > propriété > lot > bail > type
+- **Versioning** : Historique des versions
+- **Tags** : Catégorisation libre
+
+---
+
+### 10. Signatures Électroniques
+
+#### Fonctionnalités
+- **Intégration Yousign** : API signature électronique
+- **Signature baux** : Dématérialisation complète
+- **Signature états des lieux** : Bailleur + locataire
+- **Workflow signature** : Envoi → En attente → Signé → Archivé
+- **Notifications** : Rappels automatiques si non signé J+3
+- **Archivage automatique** : Document signé dans Supabase Storage
+- **Validité juridique** : Conformité eIDAS
+
+---
+
 ## 🗺️ ROADMAP
 
 ### ✅ Phase 0 : MVP Initial (TERMINÉ)
@@ -634,76 +1598,97 @@ export default MyComponent
 - [x] Design system et composants UI
 - [x] DashboardLayout avec navigation
 
-### 🚧 Phase 1 : Architecture Multi-Entités (2-3 semaines)
+### ✅ Phase 1 : Architecture Multi-Entités (TERMINÉ)
 
-#### Semaine 1 : Base de données et migration
-- [ ] **Jour 1-2** : Créer les tables entities, properties, lots dans Supabase
-- [ ] **Jour 3-4** : Script de migration des données existantes
-  - Créer une entité par défaut "Mon patrimoine" pour chaque utilisateur
-  - Migrer properties → properties (avec entity_id)
-  - Créer 1 lot par propriété existante
-  - Mettre à jour les baux (property_id → lot_id)
-- [ ] **Jour 5** : Tests de la migration, rollback si nécessaire
+#### ✅ Base de données et migration
+- [x] Créer les tables entities, properties, lots dans Supabase
+- [x] Script de migration des données existantes
+- [x] Tests de la migration
 
-#### Semaine 2 : Pages Entités et Propriétés
-- [ ] **Jour 1-2** : Pages Entités
-  - Liste des entités avec stats (revenus, nb propriétés, nb lots)
+#### ✅ Pages Entités et Propriétés
+- [x] Pages Entités
+  - Liste des entités avec stats
   - Formulaire création entité (EntityForm.jsx)
   - Page détail entité avec dashboard dédié
-- [ ] **Jour 3-4** : Pages Propriétés (refonte)
+- [x] Pages Propriétés (refonte)
   - Liste propriétés avec filtre par entité
-  - Formulaire création/édition propriété (PropertyForm.jsx refonte)
+  - Formulaire création/édition propriété
   - Page détail propriété avec liste des lots
-- [ ] **Jour 5** : Sélecteur d'entité dans la sidebar
+- [x] Sélecteur d'entité dans la sidebar
 
-#### Semaine 3 : Pages Lots et mise à jour globale
-- [ ] **Jour 1-2** : Pages Lots
-  - Liste lots avec filtres (entité, propriété, statut)
-  - Formulaire création/édition lot (LotForm.jsx)
+#### ✅ Pages Lots et mise à jour globale
+- [x] Pages Lots
+  - Liste lots avec filtres
+  - Formulaire création/édition lot
   - Page détail lot avec bail actif
-- [ ] **Jour 3-4** : Mise à jour pages existantes
-  - Dashboard : stats par entité sélectionnée
-  - Baux : utiliser lot_id au lieu de property_id
-  - Paiements : afficher entité et propriété
-  - Locataires : lier à entity_id
-- [ ] **Jour 5** : Tests, corrections bugs, documentation
+- [x] Mise à jour pages existantes
+  - Dashboard avec stats par entité
+  - Baux utilisant lot_id
+  - Paiements affichant entité et propriété
+  - Locataires liés à entity_id
 
-### 📅 Phase 2 : Fonctionnalités Légales (2-3 semaines)
+### ✅ Phase 2 : Indexation IRL (TERMINÉ)
 
-#### Semaine 1 : Indexation loyers IRL
-- [ ] **IRL automatique** : Récupération API INSEE
-- [ ] **Calcul automatique** : Nouveau loyer révisé
-- [ ] **Générateur PDF** : Lettre d'indexation conforme
-- [ ] **Historique** : Suivi des révisions par bail
+#### ✅ Fonctionnalités IRL
+- [x] **Page Indexation** : Interface complète de gestion IRL
+- [x] **Historique IRL** : Données depuis 2015 avec graphique
+- [x] **Calcul automatique** : Nouveau loyer selon IRL
+- [x] **Simulation** : Prévisualisation avant application
+- [x] **Application groupée** : Indexer plusieurs baux en masse
+- [x] **Historique par bail** : Suivi des révisions
+- [x] **Génération PDF** : Lettre d'indexation conforme
 
-#### Semaine 2 : Bibliothèque de documents
-- [ ] **Modèles PDF** :
+#### ✅ Tables créées
+- [x] `irl_history` : Historique indices IRL
+- [x] `indexation_history` : Historique révisions par bail
+
+### 🚧 Phase 3 : Documents et États des Lieux
+
+#### Semaine 1 : Bibliothèque de documents
+- [ ] **Page Documents** : Bibliothèque centralisée
+- [ ] **Upload multiple** : Drag & drop fichiers
+- [ ] **Organisation** : Par entité > propriété > lot > bail
+- [ ] **Catégorisation** : Baux, EDL, Quittances, Diagnostics, Administratif
+- [ ] **Tags** : Système de tags personnalisés
+- [ ] **Recherche** : Recherche full-text
+- [ ] **Preview** : Aperçu PDF et images
+
+#### Semaine 2 : Modèles de documents
+- [ ] **Modèles PDF légaux** :
   - Bail vide conforme loi ALUR
   - Bail meublé conforme loi ALUR
-  - État des lieux entrée
-  - État des lieux sortie
-  - Quittance de loyer
-  - Attestation de loyer
   - Lettre résiliation bailleur
   - Lettre résiliation locataire
   - Congé pour vente
   - Augmentation de loyer
-  - Lettre indexation IRL
+  - Lettre indexation IRL (améliorer l'existant)
   - Demande régularisation charges
   - Appel de loyer
   - Mise en demeure
+  - Attestation loyer
   - Attestation assurance
 - [ ] **Générateur dynamique** : Remplissage auto avec données
-- [ ] **Stockage** : Supabase Storage par bail/locataire
+- [ ] **Édition pré-génération** : Personnalisation contenu
+- [ ] **Versioning** : Historique versions
 
 #### Semaine 3 : États des lieux numériques
 - [ ] **Formulaire structuré** : Pièce par pièce
-- [ ] **Upload photos** : Multiple par pièce/élément
-- [ ] **Signature électronique** : Bailleur + locataire
+- [ ] **Items par pièce** : Murs, sol, plafond, fenêtres, portes, équipements
+- [ ] **Notation état** : Neuf, Bon, Moyen, Mauvais, Vétuste
+- [ ] **Upload photos** : Multiple par item
 - [ ] **Génération PDF** : État des lieux complet avec photos
-- [ ] **Comparaison** : Entrée vs Sortie
+- [ ] **Comparaison entrée/sortie** : Différences automatiques
+- [ ] **Signature électronique** : Intégration basique
 
-### 📧 Phase 3 : Automatisation (2-3 semaines)
+#### Semaine 4 : Diagnostics immobiliers
+- [ ] **Gestion diagnostics** : DPE, amiante, plomb, gaz, électricité, ERP
+- [ ] **Dates validité** : Suivi expirations
+- [ ] **Alertes automatiques** : Email J-60 avant expiration
+- [ ] **Stockage documents** : PDFs diagnostics
+- [ ] **Conformité légale** : Checklist obligations
+- [ ] **Historique DPE** : Évolution dans le temps
+
+### 📧 Phase 4 : Automatisation Communication
 
 #### Semaine 1 : Envoi emails automatiques
 - [ ] **Intégration Resend/SendGrid**
@@ -712,24 +1697,39 @@ export default MyComponent
   - Avis d'échéance
   - Rappel de paiement
   - Relance impayé
+  - Indexation loyer
+  - Renouvellement bail
 - [ ] **Envoi automatique** : Quittances au paiement
-- [ ] **Planification** : Avis d'échéance 5 jours avant
+- [ ] **Planification** : Avis d'échéance J-5
+- [ ] **Personnalisation** : Variables dynamiques
 
-#### Semaine 2 : Rappels et relances
+#### Semaine 2 : Relances et rappels
 - [ ] **Système de rappels** : Cron job quotidien
 - [ ] **Relances automatiques** :
   - J+3 : Rappel amical
   - J+7 : Premier rappel formel
   - J+15 : Mise en demeure
-- [ ] **Notifications** : Email + in-app
+- [ ] **Notifications in-app** : Centre de notifications
+- [ ] **Historique communications** : Tous les emails envoyés
 
-#### Semaine 3 : Signature électronique
+#### Semaine 3 : SMS et notifications push
+- [ ] **Intégration Twilio** : Envoi SMS
+- [ ] **SMS automatiques** :
+  - Alerte impayé J+7
+  - Intervention urgente
+  - Rappel RDV état des lieux
+- [ ] **Notifications push** : Via Progressive Web App
+- [ ] **Historique SMS** : Tous les SMS envoyés
+
+#### Semaine 4 : Signature électronique avancée
 - [ ] **Intégration Yousign**
-- [ ] **Signature baux** : Dématérialisation complète
-- [ ] **Signature EDL** : États des lieux
-- [ ] **Archivage** : Documents signés dans Supabase
+- [ ] **Signature baux** : Workflow complet
+- [ ] **Signature EDL** : Bailleur + locataire
+- [ ] **Workflow signature** : Envoi → Rappels → Signé → Archivé
+- [ ] **Archivage automatique** : Documents signés dans Supabase
+- [ ] **Validité juridique** : Conformité eIDAS
 
-### 💰 Phase 4 : Monétisation (3-4 semaines)
+### 💰 Phase 5 : Monétisation et Fiscalité
 
 #### Semaine 1 : Paiements Stripe
 - [ ] **Intégration Stripe**
@@ -739,24 +1739,73 @@ export default MyComponent
 - [ ] **Checkout** : Abonnement mensuel
 - [ ] **Webhooks** : Gestion statut abonnement
 - [ ] **Limites** : Blocage si dépassement plan gratuit
+- [ ] **Page abonnement** : Upgrade/Downgrade
+- [ ] **Facturation** : Historique factures
 
-#### Semaine 2 : Aide déclaration fiscale
+#### Semaine 2 : Charges et régularisation
+- [ ] **Gestion charges** : Enregistrement charges propriétaire
+- [ ] **Catégorisation** : Déductibles, non déductibles, amortissables
+- [ ] **Provision charges** : Montant mensuel locataire
+- [ ] **Régularisation annuelle** : Calcul automatique ajustement
+- [ ] **Génération lettre** : Régularisation charges conforme
+- [ ] **Paiement régularisation** : Enregistrement complément/remboursement
+
+#### Semaine 3 : Aide déclaration fiscale
+- [ ] **Journal des opérations** : Tous mouvements financiers
 - [ ] **Export 2044** : Synthèse revenus fonciers
-- [ ] **Calcul charges déductibles**
-- [ ] **Calcul amortissements** (LMNP/LMP)
-- [ ] **Génération PDF** : Récapitulatif fiscal
+- [ ] **Calcul charges déductibles** : Par entité
+- [ ] **Calcul amortissements** : LMNP/LMP automatique
+- [ ] **Synthèse fiscale annuelle** : Revenus, charges, résultat
+- [ ] **Génération PDF** : Récapitulatif pour expert-comptable
 
-#### Semaine 3 : Export comptable
+#### Semaine 4 : Export comptable
 - [ ] **Export CSV** : Revenus, charges, paiements
-- [ ] **Export Excel** : Tableaux formatés
-- [ ] **Exports par entité** : Comptabilité séparée
+- [ ] **Export Excel** : Tableaux formatés avec formules
+- [ ] **Exports par entité** : Comptabilité séparée SCI, LMNP
+- [ ] **Format FEC** : Fichier Écritures Comptables
 - [ ] **Imports** : Import paiements CSV
+- [ ] **Connexion bancaire** (optionnel) : Bridge/Plaid
 
-#### Semaine 4 : Connexion bancaire (optionnel)
-- [ ] **Intégration Bridge/Plaid**
-- [ ] **Réconciliation automatique** : Paiements
-- [ ] **Détection impayés** : Alerte auto
-- [ ] **Synchronisation** : Daily sync
+### 👥 Phase 6 : Candidatures et Portail Locataire
+
+#### Semaine 1 : Système de candidatures
+- [ ] **Formulaire public** : Lien partageable par lot
+- [ ] **Informations candidat** : Identité, situation pro, revenus
+- [ ] **Garants** : Informations garants
+- [ ] **Upload documents** : Pièce d'identité, justificatifs revenus, garants
+- [ ] **Calcul automatique** : Taux d'effort, scoring
+- [ ] **Workflow validation** : Soumise → En cours → Acceptée/Refusée
+- [ ] **Historique candidatures** : Archive par lot
+- [ ] **Comparaison candidats** : Tableau comparatif
+
+#### Semaine 2 : Portail locataire - Base
+- [ ] **Authentification locataire** : Système séparé
+- [ ] **Dashboard locataire** : Vue consultation
+- [ ] **Informations bail** : Dates, montants, documents
+- [ ] **Historique paiements** : Liste quittances téléchargeables
+- [ ] **Documents** : Bail, EDL, attestations
+- [ ] **Messagerie** : Communication avec bailleur
+- [ ] **Profil** : Modifier coordonnées
+
+#### Semaine 3 : Portail locataire - Avancé
+- [ ] **Demandes intervention** : Formulaire + photos
+- [ ] **Suivi interventions** : Statut réparations
+- [ ] **Paiement en ligne** (optionnel) : Via Stripe
+- [ ] **Notifications** : Alertes importantes
+- [ ] **Avis d'échéance** : Rappels automatiques
+- [ ] **App mobile responsive** : PWA
+
+#### Semaine 4 : Interventions et maintenance
+- [ ] **Demandes intervention** : Depuis portail locataire + bailleur
+- [ ] **Catégorisation** : Plomberie, électricité, serrurerie, etc.
+- [ ] **Priorité** : Basse, Moyenne, Haute, Urgente
+- [ ] **Workflow** : Signalée → Planifiée → En cours → Terminée
+- [ ] **Carnet prestataires** : Coordonnées, notes, ratings
+- [ ] **Affectation prestataire** : Assigner intervention
+- [ ] **Photos avant/après** : Documentation
+- [ ] **Coûts maintenance** : Suivi fiscal
+- [ ] **Historique par lot** : Traçabilité complète
+- [ ] **Notifications auto** : Alerte nouvelle demande
 
 ---
 
@@ -1056,4 +2105,12 @@ git branch -d feature/nouvelle-fonctionnalite
 > Référez-vous toujours à ce document avant de faire des modifications importantes.
 > Mettez-le à jour dès qu'une décision architecturale est prise.
 >
-> **Dernière mise à jour** : Décembre 2024 - Phase 1 en préparation
+> **Dernière mise à jour** : 23 Décembre 2024
+> **Statut actuel** :
+> - Phase 0 (MVP Initial) : ✅ TERMINÉ
+> - Phase 1 (Architecture Multi-Entités) : ✅ TERMINÉ
+> - Phase 2 (Indexation IRL) : ✅ TERMINÉ
+> - Phase 3 (Documents et États des Lieux) : 🚧 EN COURS
+> - Phase 4 (Automatisation Communication) : 🔜 À VENIR
+> - Phase 5 (Monétisation et Fiscalité) : 🔜 À VENIR
+> - Phase 6 (Candidatures et Portail Locataire) : 🔜 À VENIR
