@@ -1,30 +1,35 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { EntityProvider } from './context/EntityContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Loading from './components/ui/Loading'
+
+// Pages publiques (chargées immédiatement)
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
-import Dashboard from './pages/Dashboard'
-import Entities from './pages/Entities'
-import EntityForm from './pages/EntityForm'
-import EntityDetail from './pages/EntityDetail'
-import Properties from './pages/Properties'
-import PropertyForm from './pages/PropertyForm'
-import PropertyDetail from './pages/PropertyDetail'
-import Lots from './pages/Lots'
-import LotForm from './pages/LotForm'
-import LotDetail from './pages/LotDetail'
-import Tenants from './pages/Tenants'
-import TenantForm from './pages/TenantForm'
-import Leases from './pages/Leases'
-import LeaseForm from './pages/LeaseForm'
-import Payments from './pages/Payments'
-import PaymentForm from './pages/PaymentForm'
-import Indexation from './pages/Indexation'
-import Profile from './pages/Profile'
-import ComingSoon from './pages/ComingSoon'
+
+// Pages privées (lazy loading)
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Entities = lazy(() => import('./pages/Entities'))
+const EntityForm = lazy(() => import('./pages/EntityForm'))
+const EntityDetail = lazy(() => import('./pages/EntityDetail'))
+const Properties = lazy(() => import('./pages/Properties'))
+const PropertyForm = lazy(() => import('./pages/PropertyForm'))
+const PropertyDetail = lazy(() => import('./pages/PropertyDetail'))
+const Lots = lazy(() => import('./pages/Lots'))
+const LotForm = lazy(() => import('./pages/LotForm'))
+const LotDetail = lazy(() => import('./pages/LotDetail'))
+const Tenants = lazy(() => import('./pages/Tenants'))
+const TenantForm = lazy(() => import('./pages/TenantForm'))
+const Leases = lazy(() => import('./pages/Leases'))
+const LeaseForm = lazy(() => import('./pages/LeaseForm'))
+const Payments = lazy(() => import('./pages/Payments'))
+const PaymentForm = lazy(() => import('./pages/PaymentForm'))
+const Indexation = lazy(() => import('./pages/Indexation'))
+const Profile = lazy(() => import('./pages/Profile'))
+const ComingSoon = lazy(() => import('./pages/ComingSoon'))
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -39,7 +44,8 @@ function PrivateRoute({ children }) {
 
 function AppRoutes() {
   return (
-    <Routes>
+    <Suspense fallback={<Loading fullScreen message="Chargement de la page..." />}>
+      <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
@@ -381,7 +387,8 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
-    </Routes>
+      </Routes>
+    </Suspense>
   )
 }
 
