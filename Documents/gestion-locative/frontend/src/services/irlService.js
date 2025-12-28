@@ -4,6 +4,12 @@ import { supabase } from '../lib/supabase'
  * Service pour la gestion de l'indexation des loyers (IRL)
  */
 
+// Debug mode - only log in development
+const DEBUG = import.meta.env.MODE === 'development'
+const log = (...args) => DEBUG && console.log(...args)
+const warn = (...args) => DEBUG && console.warn(...args)
+const error = (...args) => DEBUG && console.error(...args)
+
 /**
  * Récupère tous les indices IRL
  */
@@ -22,26 +28,26 @@ export const getIRLIndices = async () => {
  * Récupère un indice IRL spécifique
  */
 export const getIRLIndex = async (year, quarter) => {
-  console.log(`[IRL] Recherche IRL pour T${quarter} ${year}`)
+  log(`[IRL] Recherche IRL pour T${quarter} ${year}`)
 
-  const { data, error } = await supabase
+  const { data, error: err } = await supabase
     .from('irl_indices')
     .select('*')
     .eq('year', year)
     .eq('quarter', quarter)
     .limit(1)
 
-  if (error) {
-    console.error(`[IRL] Erreur lors de la récupération de l'IRL T${quarter} ${year}:`, error)
-    throw error
+  if (err) {
+    error(`[IRL] Erreur lors de la récupération de l'IRL T${quarter} ${year}:`, err)
+    throw err
   }
 
   if (!data || data.length === 0) {
-    console.warn(`[IRL] Aucun indice IRL trouvé pour T${quarter} ${year}`)
+    warn(`[IRL] Aucun indice IRL trouvé pour T${quarter} ${year}`)
     return null
   }
 
-  console.log(`[IRL] IRL trouvé pour T${quarter} ${year}:`, data[0].value)
+  log(`[IRL] IRL trouvé pour T${quarter} ${year}:`, data[0].value)
   return data[0]
 }
 
@@ -63,7 +69,7 @@ export const getIRLForDate = async (date) => {
   else if (month <= 9) quarter = 3
   else quarter = 4
 
-  console.log(`[IRL] Recherche IRL pour date ${date} → T${quarter} ${year}`)
+  log(`[IRL] Recherche IRL pour date ${date} → T${quarter} ${year}`)
 
   // Essayer de trouver l'IRL exact
   const exactIRL = await getIRLIndex(year, quarter)
@@ -79,22 +85,22 @@ export const getIRLForDate = async (date) => {
   }
 
   // Si pas trouvé, prendre le dernier IRL disponible
-  console.log(`[IRL] IRL T${quarter} ${year} non trouvé, recherche du dernier IRL disponible...`)
+  log(`[IRL] IRL T${quarter} ${year} non trouvé, recherche du dernier IRL disponible...`)
 
-  const { data: lastIRL, error } = await supabase
+  const { data: lastIRL, error: err } = await supabase
     .from('irl_indices')
     .select('*')
     .order('year', { ascending: false })
     .order('quarter', { ascending: false })
     .limit(1)
 
-  if (error) {
-    console.error('[IRL] Erreur lors de la récupération du dernier IRL:', error)
-    throw error
+  if (err) {
+    error('[IRL] Erreur lors de la récupération du dernier IRL:', err)
+    throw err
   }
 
   if (lastIRL && lastIRL.length > 0) {
-    console.log(`[IRL] Dernier IRL disponible: T${lastIRL[0].quarter} ${lastIRL[0].year}`)
+    log(`[IRL] Dernier IRL disponible: T${lastIRL[0].quarter} ${lastIRL[0].year}`)
     return {
       irl: lastIRL[0],
       estimated: true,
@@ -105,7 +111,7 @@ export const getIRLForDate = async (date) => {
     }
   }
 
-  console.warn('[IRL] Aucun IRL disponible dans la base de données')
+  warn('[IRL] Aucun IRL disponible dans la base de données')
   return null
 }
 
@@ -119,7 +125,7 @@ export const getIRLForDate = async (date) => {
  */
 export const getLeasesPendingIndexation = async (userId, daysAhead = 60, selectedEntity = null) => {
   try {
-    console.log('[IRL] Récupération des baux à indexer...')
+    log('[IRL] Récupération des baux à indexer...')
 
     // Récupérer l'ID utilisateur
     const { data: userData, error: userError } = await supabase
@@ -130,7 +136,7 @@ export const getLeasesPendingIndexation = async (userId, daysAhead = 60, selecte
 
     if (userError) throw userError
     if (!userData || userData.length === 0) {
-      console.error('[IRL] Utilisateur non trouvé')
+      error('[IRL] Utilisateur non trouvé')
       return []
     }
 
@@ -198,9 +204,9 @@ export const getLeasesPendingIndexation = async (userId, daysAhead = 60, selecte
     return eligibleLeases.sort((a, b) =>
       new Date(a.anniversaryDate) - new Date(b.anniversaryDate)
     )
-  } catch (error) {
-    console.error('Error fetching leases pending indexation:', error)
-    throw error
+  } catch (err) {
+    error('Error fetching leases pending indexation:', err)
+    throw err
   }
 }
 
@@ -234,7 +240,7 @@ export const calculateIndexation = async (lease) => {
     const oldIRL = await getIRLIndex(lease.irl_reference_year, lease.irl_reference_quarter)
 
     if (!oldIRL) {
-      console.error('Ancien IRL introuvable:', lease.irl_reference_year, lease.irl_reference_quarter)
+      error('Ancien IRL introuvable:', lease.irl_reference_year, lease.irl_reference_quarter)
       return null
     }
 
@@ -249,7 +255,7 @@ export const calculateIndexation = async (lease) => {
     const newIRL = await getIRLIndex(newYear, newQuarter)
 
     if (!newIRL) {
-      console.error('Nouvel IRL introuvable:', newYear, newQuarter)
+      error('Nouvel IRL introuvable:', newYear, newQuarter)
       return null
     }
 
@@ -267,8 +273,8 @@ export const calculateIndexation = async (lease) => {
       newIRLQuarter: `T${newIRL.quarter} ${newIRL.year}`,
       increasePercentage: Math.round(increasePercentage * 100) / 100
     }
-  } catch (error) {
-    console.error('Error calculating indexation:', error)
+  } catch (err) {
+    error('Error calculating indexation:', err)
     return null
   }
 }
@@ -278,7 +284,7 @@ export const calculateIndexation = async (lease) => {
  */
 export const applyIndexation = async (leaseId, calculation) => {
   try {
-    console.log(`[IRL] Application de l'indexation pour le bail ${leaseId}`)
+    log(`[IRL] Application de l'indexation pour le bail ${leaseId}`)
 
     // Mettre à jour le bail
     const { data: lease, error: updateError } = await supabase
@@ -299,7 +305,7 @@ export const applyIndexation = async (leaseId, calculation) => {
       throw new Error('Bail non trouvé')
     }
 
-    console.log(`[IRL] Indexation appliquée avec succès. Nouveau loyer: ${calculation.newRent} €`)
+    log(`[IRL] Indexation appliquée avec succès. Nouveau loyer: ${calculation.newRent} €`)
 
     // Créer l'entrée dans l'historique
     const { error: historyError } = await supabase
@@ -319,9 +325,9 @@ export const applyIndexation = async (leaseId, calculation) => {
     if (historyError) throw historyError
 
     return lease[0]
-  } catch (error) {
-    console.error('[IRL] Erreur lors de l\'application de l\'indexation:', error)
-    throw error
+  } catch (err) {
+    error('[IRL] Erreur lors de l\'application de l\'indexation:', err)
+    throw err
   }
 }
 
@@ -330,7 +336,7 @@ export const applyIndexation = async (leaseId, calculation) => {
  */
 export const markLetterGenerated = async (leaseId) => {
   try {
-    console.log(`[IRL] Marquage de la lettre comme générée pour le bail ${leaseId}`)
+    log(`[IRL] Marquage de la lettre comme générée pour le bail ${leaseId}`)
 
     // Récupérer la dernière indexation pour ce bail
     const { data: history, error: fetchError } = await supabase
@@ -342,7 +348,7 @@ export const markLetterGenerated = async (leaseId) => {
 
     if (fetchError) throw fetchError
     if (!history || history.length === 0) {
-      console.warn(`[IRL] Aucun historique d'indexation trouvé pour le bail ${leaseId}`)
+      warn(`[IRL] Aucun historique d'indexation trouvé pour le bail ${leaseId}`)
       return false
     }
 
@@ -354,11 +360,11 @@ export const markLetterGenerated = async (leaseId) => {
 
     if (updateError) throw updateError
 
-    console.log('[IRL] Lettre marquée comme générée')
+    log('[IRL] Lettre marquée comme générée')
     return true
-  } catch (error) {
-    console.error('[IRL] Erreur lors du marquage de la lettre:', error)
-    throw error
+  } catch (err) {
+    error('[IRL] Erreur lors du marquage de la lettre:', err)
+    throw err
   }
 }
 
@@ -367,7 +373,7 @@ export const markLetterGenerated = async (leaseId) => {
  */
 export const getIndexationHistory = async (userId, selectedEntity = null) => {
   try {
-    console.log('[IRL] Récupération de l\'historique des indexations...')
+    log('[IRL] Récupération de l\'historique des indexations...')
 
     // Récupérer l'ID utilisateur
     const { data: userData, error: userError } = await supabase
@@ -378,7 +384,7 @@ export const getIndexationHistory = async (userId, selectedEntity = null) => {
 
     if (userError) throw userError
     if (!userData || userData.length === 0) {
-      console.error('[IRL] Utilisateur non trouvé')
+      error('[IRL] Utilisateur non trouvé')
       return []
     }
 
@@ -406,15 +412,15 @@ export const getIndexationHistory = async (userId, selectedEntity = null) => {
       query = query.eq('lease.lot.properties_new.entity_id', selectedEntity)
     }
 
-    const { data, error } = await query
+    const { data, error: err } = await query
 
-    if (error) throw error
+    if (err) throw err
 
-    console.log(`[IRL] ${data?.length || 0} indexations trouvées dans l'historique`)
+    log(`[IRL] ${data?.length || 0} indexations trouvées dans l'historique`)
     return data || []
-  } catch (error) {
-    console.error('Error fetching indexation history:', error)
-    throw error
+  } catch (err) {
+    error('Error fetching indexation history:', err)
+    throw err
   }
 }
 
@@ -451,7 +457,7 @@ export const getAvailableQuarters = () => {
  */
 export const addIRLIndex = async (year, quarter, value) => {
   try {
-    console.log(`[IRL] Ajout d'un nouvel IRL : T${quarter} ${year} = ${value}`)
+    log(`[IRL] Ajout d'un nouvel IRL : T${quarter} ${year} = ${value}`)
 
     // Vérifier si l'IRL existe déjà
     const existing = await getIRLIndex(year, quarter)
@@ -460,7 +466,7 @@ export const addIRLIndex = async (year, quarter, value) => {
     }
 
     // Insérer le nouvel IRL
-    const { data, error } = await supabase
+    const { data, error: err } = await supabase
       .from('irl_indices')
       .insert([{
         year: parseInt(year),
@@ -470,16 +476,16 @@ export const addIRLIndex = async (year, quarter, value) => {
       .select()
       .limit(1)
 
-    if (error) throw error
+    if (err) throw err
     if (!data || data.length === 0) {
       throw new Error('Erreur lors de la création de l\'IRL')
     }
 
-    console.log(`[IRL] IRL T${quarter} ${year} créé avec succès`)
+    log(`[IRL] IRL T${quarter} ${year} créé avec succès`)
     return data[0]
-  } catch (error) {
-    console.error('[IRL] Erreur lors de l\'ajout de l\'IRL:', error)
-    throw error
+  } catch (err) {
+    error('[IRL] Erreur lors de l\'ajout de l\'IRL:', err)
+    throw err
   }
 }
 
@@ -489,19 +495,19 @@ export const addIRLIndex = async (year, quarter, value) => {
  */
 export const deleteIRLIndex = async (id) => {
   try {
-    console.log(`[IRL] Suppression de l'IRL ${id}`)
+    log(`[IRL] Suppression de l'IRL ${id}`)
 
-    const { error } = await supabase
+    const { error: err } = await supabase
       .from('irl_indices')
       .delete()
       .eq('id', id)
 
-    if (error) throw error
+    if (err) throw err
 
-    console.log(`[IRL] IRL ${id} supprimé avec succès`)
-  } catch (error) {
-    console.error('[IRL] Erreur lors de la suppression de l\'IRL:', error)
-    throw error
+    log(`[IRL] IRL ${id} supprimé avec succès`)
+  } catch (err) {
+    error('[IRL] Erreur lors de la suppression de l\'IRL:', err)
+    throw err
   }
 }
 
@@ -510,7 +516,7 @@ export const deleteIRLIndex = async (id) => {
  */
 export const getAllIndexableLeases = async (userId, selectedEntity = null) => {
   try {
-    console.log('[IRL] Récupération de tous les baux indexables...')
+    log('[IRL] Récupération de tous les baux indexables...')
 
     // Récupérer l'ID utilisateur
     const { data: userData, error: userError } = await supabase
@@ -521,7 +527,7 @@ export const getAllIndexableLeases = async (userId, selectedEntity = null) => {
 
     if (userError) throw userError
     if (!userData || userData.length === 0) {
-      console.error('[IRL] Utilisateur non trouvé')
+      error('[IRL] Utilisateur non trouvé')
       return []
     }
 
@@ -606,8 +612,8 @@ export const getAllIndexableLeases = async (userId, selectedEntity = null) => {
     return leasesWithInfo.sort((a, b) =>
       new Date(a.anniversaryDate) - new Date(b.anniversaryDate)
     )
-  } catch (error) {
-    console.error('Error fetching all indexable leases:', error)
-    throw error
+  } catch (err) {
+    error('Error fetching all indexable leases:', err)
+    throw err
   }
 }

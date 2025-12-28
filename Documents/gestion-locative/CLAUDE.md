@@ -518,7 +518,7 @@ CREATE INDEX idx_documents_lot ON documents(lot_id);
 ```
 Framework      : React 18+
 Build tool     : Vite 7.3
-Styling        : TailwindCSS 4
+Styling        : TailwindCSS V3
 Routing        : React Router v6
 State          : Context API + useState
 HTTP Client    : Supabase Client
