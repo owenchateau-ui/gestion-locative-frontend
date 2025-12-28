@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { EntityProvider } from './context/EntityContext'
+import ErrorBoundary from './components/ErrorBoundary'
+import Loading from './components/ui/Loading'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -29,11 +31,7 @@ function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-xl">Chargement...</div>
-      </div>
-    )
+    return <Loading fullScreen message="Vérification de la session..." />
   }
 
   return user ? children : <Navigate to="/login" replace />
@@ -389,13 +387,15 @@ function AppRoutes() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <EntityProvider>
-          <AppRoutes />
-        </EntityProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <EntityProvider>
+            <AppRoutes />
+          </EntityProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   )
 }
 

@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 function Card({ children, title, subtitle, footer, className = '', padding = true }) {
   return (
     <div className={`bg-white rounded-lg shadow ${className}`}>
@@ -19,6 +21,15 @@ function Card({ children, title, subtitle, footer, className = '', padding = tru
       )}
     </div>
   )
+}
+
+Card.propTypes = {
+  children: PropTypes.node.isRequired,
+  title: PropTypes.string,
+  subtitle: PropTypes.string,
+  footer: PropTypes.node,
+  className: PropTypes.string,
+  padding: PropTypes.bool
 }
 
 export default Card

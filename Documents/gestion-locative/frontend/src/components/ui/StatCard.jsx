@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import PropTypes from 'prop-types'
 
 function StatCard({
   title,
@@ -84,6 +85,18 @@ function StatCard({
       {content}
     </div>
   )
+}
+
+StatCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  subtitle: PropTypes.string,
+  icon: PropTypes.node,
+  variant: PropTypes.oneOf(['blue', 'emerald', 'purple', 'amber', 'red', 'indigo']),
+  trend: PropTypes.oneOf(['up', 'down']),
+  trendValue: PropTypes.string,
+  href: PropTypes.string,
+  className: PropTypes.string
 }
 
 export default StatCard

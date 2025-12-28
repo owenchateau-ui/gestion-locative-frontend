@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 function Badge({ children, variant = 'default', className = '' }) {
   const variants = {
     default: 'bg-gray-100 text-gray-800',
@@ -13,6 +15,12 @@ function Badge({ children, variant = 'default', className = '' }) {
       {children}
     </span>
   )
+}
+
+Badge.propTypes = {
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(['default', 'success', 'warning', 'danger', 'info', 'purple']),
+  className: PropTypes.string
 }
 
 export default Badge

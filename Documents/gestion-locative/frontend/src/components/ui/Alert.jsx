@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 function Alert({ children, variant = 'info', title, onClose, className = '' }) {
   const variants = {
     info: {
@@ -78,6 +80,14 @@ function Alert({ children, variant = 'info', title, onClose, className = '' }) {
       </div>
     </div>
   )
+}
+
+Alert.propTypes = {
+  children: PropTypes.node.isRequired,
+  variant: PropTypes.oneOf(['info', 'success', 'warning', 'error']),
+  title: PropTypes.string,
+  onClose: PropTypes.func,
+  className: PropTypes.string
 }
 
 export default Alert
