@@ -52,15 +52,11 @@ export const generateNewLink = async (lotId) => {
 
     if (deactivateError) throw deactivateError
 
-    // Générer un token unique
-    const token = `${lotId}-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
-
-    // Créer le nouveau lien
+    // Créer le nouveau lien (le token UUID sera généré automatiquement par Supabase)
     const { data, error: createError } = await supabase
       .from('candidate_invitation_links')
       .insert({
         lot_id: lotId,
-        token,
         is_active: true
       })
       .select()
