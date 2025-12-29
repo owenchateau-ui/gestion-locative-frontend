@@ -104,12 +104,13 @@ export const getLotByInvitationToken = async (token) => {
       `)
       .eq('token', token)
       .eq('is_active', true)
-      .single()
+      .limit(1)
+      .maybeSingle()
 
     if (linkError) throw linkError
 
     if (!linkData) {
-      return { data: null, error: new Error('Lien invalide ou expiré') }
+      return { data: null, error: new Error('Lien d\'invitation invalide ou expiré') }
     }
 
     log('Lot found:', linkData.lots)
@@ -241,9 +242,13 @@ export const getCandidateById = async (id) => {
         )
       `)
       .eq('id', id)
-      .single()
+      .maybeSingle()
 
     if (fetchError) throw fetchError
+
+    if (!data) {
+      return { data: null, error: new Error('Candidature introuvable') }
+    }
 
     log('Candidate found:', data)
     return { data, error: null }
@@ -277,9 +282,13 @@ export const getCandidateByToken = async (token) => {
         )
       `)
       .eq('access_token', token)
-      .single()
+      .maybeSingle()
 
     if (fetchError) throw fetchError
+
+    if (!data) {
+      return { data: null, error: new Error('Token invalide ou candidature introuvable') }
+    }
 
     log('Candidate found by token')
     return { data, error: null }
@@ -344,9 +353,13 @@ export const createCandidate = async (candidateData) => {
       .from('lots')
       .select('rent_amount')
       .eq('id', candidateData.lot_id)
-      .single()
+      .maybeSingle()
 
     if (lotError) throw lotError
+
+    if (!lotData) {
+      throw new Error('Lot introuvable')
+    }
 
     const rentAmount = lotData.rent_amount
     const incomeRatio = totalIncome / rentAmount
@@ -550,9 +563,13 @@ export const convertToTenant = async (candidateId) => {
         )
       `)
       .eq('id', candidateId)
-      .single()
+      .maybeSingle()
 
     if (candidateError) throw candidateError
+
+    if (!candidate) {
+      throw new Error('Candidature introuvable')
+    }
 
     if (candidate.status !== 'accepted') {
       throw new Error('Seuls les candidats acceptés peuvent être convertis')
