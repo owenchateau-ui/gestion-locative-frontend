@@ -24,11 +24,8 @@ export const candidateSchema = z.object({
 
   phone: z
     .string()
-    .min(1, 'Le téléphone est requis')
-    .regex(
-      /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-      'Format de téléphone invalide (ex: 06 12 34 56 78)'
-    ),
+    .min(10, 'Le téléphone doit contenir au moins 10 caractères')
+    .max(20, 'Le téléphone ne peut pas dépasser 20 caractères'),
 
   birth_date: z
     .string()
@@ -125,10 +122,8 @@ export const candidateSchema = z.object({
 
   guarantor_phone: z
     .string()
-    .regex(
-      /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/,
-      'Format de téléphone invalide (ex: 06 12 34 56 78)'
-    )
+    .min(10, 'Le téléphone du garant doit contenir au moins 10 caractères')
+    .max(20, 'Le téléphone du garant ne peut pas dépasser 20 caractères')
     .optional()
     .or(z.literal('')),
 
