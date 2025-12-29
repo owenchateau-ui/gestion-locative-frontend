@@ -367,7 +367,7 @@ function Candidates() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          {getScoreBadge(candidate.solvency_score)}
+                          {getScoreBadge(candidate.solvability_score)}
                           <TrendingUp className="w-4 h-4 text-gray-400" />
                         </div>
                       </td>

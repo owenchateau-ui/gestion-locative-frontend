@@ -344,46 +344,13 @@ export const createCandidate = async (candidateData) => {
     // Générer un token d'accès unique
     const accessToken = `cand-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
 
-    // Calculer le score de solvabilité
-    const totalIncome = (candidateData.monthly_income || 0) + (candidateData.other_income || 0)
-    const guarantorIncome = candidateData.guarantor_monthly_income || 0
-
-    // Récupérer le loyer du lot
-    const { data: lotData, error: lotError } = await supabase
-      .from('lots')
-      .select('rent_amount')
-      .eq('id', candidateData.lot_id)
-      .maybeSingle()
-
-    if (lotError) throw lotError
-
-    if (!lotData) {
-      throw new Error('Lot introuvable')
-    }
-
-    const rentAmount = lotData.rent_amount
-    const incomeRatio = totalIncome / rentAmount
-
-    // Calcul du score (sur 5)
-    let solvencyScore = 0
-    if (incomeRatio >= 3) solvencyScore = 5
-    else if (incomeRatio >= 2.5) solvencyScore = 4
-    else if (incomeRatio >= 2) solvencyScore = 3
-    else if (incomeRatio >= 1.5) solvencyScore = 2
-    else solvencyScore = 1
-
-    // Bonus si garant avec revenus suffisants
-    if (guarantorIncome >= rentAmount * 3 && solvencyScore < 5) {
-      solvencyScore += 1
-    }
-
+    // Le score de solvabilité est calculé automatiquement par un trigger PostgreSQL
+    // basé sur monthly_income, other_income et le loyer du lot
     const { data, error: createError } = await supabase
       .from('candidates')
       .insert({
         ...candidateData,
         access_token: accessToken,
-        solvency_score: solvencyScore,
-        income_ratio: incomeRatio,
         status: 'pending'
       })
       .select()

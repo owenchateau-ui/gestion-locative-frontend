@@ -551,14 +551,14 @@ function LotDetail() {
                   <div className="flex items-center gap-2">
                     <Badge
                       variant={
-                        candidate.solvency_score >= 3
+                        candidate.solvability_score >= 3
                           ? 'success'
-                          : candidate.solvency_score >= 2
+                          : candidate.solvability_score >= 2
                           ? 'warning'
                           : 'danger'
                       }
                     >
-                      Score: {candidate.solvency_score}/5
+                      Score: {candidate.solvability_score}/5
                     </Badge>
                     <Badge
                       variant={

@@ -344,14 +344,14 @@ function CandidateDetail() {
                 <span className="text-sm text-gray-500">Score</span>
                 <Badge
                   variant={
-                    candidate.solvency_score >= 3
+                    candidate.solvability_score >= 3
                       ? 'success'
-                      : candidate.solvency_score >= 2
+                      : candidate.solvability_score >= 2
                       ? 'warning'
                       : 'danger'
                   }
                 >
-                  {candidate.solvency_score}/5
+                  {candidate.solvability_score}/5
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
