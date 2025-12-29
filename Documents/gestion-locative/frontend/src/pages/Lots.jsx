@@ -6,6 +6,7 @@ import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
+import { countPendingCandidates } from '../services/candidateService'
 
 function Lots() {
   const [lots, setLots] = useState([])
@@ -14,6 +15,7 @@ function Lots() {
   const [filteredProperties, setFilteredProperties] = useState([])
   const [selectedEntity, setSelectedEntity] = useState('all')
   const [selectedProperty, setSelectedProperty] = useState('all')
+  const [candidatesCounts, setCandidatesCounts] = useState({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
@@ -136,6 +138,18 @@ function Lots() {
       if (lotsError) throw lotsError
 
       setLots(lotsData || [])
+
+      // Charger le nombre de candidatures pour les lots vacants
+      const counts = {}
+      await Promise.all(
+        (lotsData || [])
+          .filter(lot => lot.status === 'vacant')
+          .map(async (lot) => {
+            const { count } = await countPendingCandidates(lot.id)
+            counts[lot.id] = count
+          })
+      )
+      setCandidatesCounts(counts)
     } catch (error) {
       setError(error.message)
     } finally {
@@ -349,6 +363,9 @@ function Lots() {
                       Statut
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Candidatures
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -410,6 +427,21 @@ function Lots() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(lot.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {lot.status === 'vacant' && candidatesCounts[lot.id] > 0 ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              navigate(`/candidates?lot=${lot.id}`)
+                            }}
+                            className="inline-flex items-center px-2.5 py-1.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full hover:bg-blue-200 transition"
+                          >
+                            {candidatesCounts[lot.id]} candidature{candidatesCounts[lot.id] > 1 ? 's' : ''}
+                          </button>
+                        ) : (
+                          <span className="text-xs text-gray-400">-</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                         <button

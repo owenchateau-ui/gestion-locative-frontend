@@ -7,6 +7,8 @@ import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import StatCard from '../components/ui/StatCard'
+import InvitationLinkModal from '../components/candidates/InvitationLinkModal'
+import { getCandidatesByLot } from '../services/candidateService'
 
 function LotDetail() {
   const { id } = useParams()
@@ -16,6 +18,8 @@ function LotDetail() {
   const [lot, setLot] = useState(null)
   const [activeLease, setActiveLease] = useState(null)
   const [pastLeases, setPastLeases] = useState([])
+  const [candidates, setCandidates] = useState([])
+  const [showInvitationModal, setShowInvitationModal] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -81,6 +85,12 @@ function LotDetail() {
 
       if (!pastLeasesError) {
         setPastLeases(pastLeasesData || [])
+      }
+
+      // Récupérer les candidatures si le lot est vacant
+      if (lotData.status === 'vacant') {
+        const { data: candidatesData } = await getCandidatesByLot(lotData.id)
+        setCandidates(candidatesData || [])
       }
 
     } catch (error) {
@@ -498,11 +508,98 @@ function LotDetail() {
           <Card>
             <div className="text-center py-6">
               <p className="text-gray-600 mb-4">Ce lot est actuellement vacant</p>
-              <Button onClick={() => navigate(`/leases/new?lot=${id}`)}>
+              <div className="flex gap-3 justify-center">
+                <Button onClick={() => navigate(`/leases/new?lot=${id}`)}>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Créer un bail
+                </Button>
+                <Button variant="secondary" onClick={() => setShowInvitationModal(true)}>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  Générer un lien d'invitation
+                </Button>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {/* Candidatures pour les lots vacants */}
+        {lot.status === 'vacant' && candidates.length > 0 && (
+          <Card
+            title="Candidatures"
+            subtitle={`${candidates.length} candidature${candidates.length > 1 ? 's' : ''} reçue${candidates.length > 1 ? 's' : ''}`}
+          >
+            <div className="space-y-3">
+              {candidates.slice(0, 5).map((candidate) => (
+                <div
+                  key={candidate.id}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                  onClick={() => navigate(`/candidates/${candidate.id}`)}
+                >
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {candidate.first_name} {candidate.last_name}
+                    </p>
+                    <p className="text-sm text-gray-600">{candidate.email}</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Candidature du {new Date(candidate.created_at).toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant={
+                        candidate.solvency_score >= 3
+                          ? 'success'
+                          : candidate.solvency_score >= 2
+                          ? 'warning'
+                          : 'danger'
+                      }
+                    >
+                      Score: {candidate.solvency_score}/5
+                    </Badge>
+                    <Badge
+                      variant={
+                        candidate.status === 'pending'
+                          ? 'default'
+                          : candidate.status === 'accepted'
+                          ? 'success'
+                          : candidate.status === 'rejected'
+                          ? 'danger'
+                          : 'info'
+                      }
+                    >
+                      {candidate.status === 'pending'
+                        ? 'En attente'
+                        : candidate.status === 'accepted'
+                        ? 'Acceptée'
+                        : candidate.status === 'rejected'
+                        ? 'Refusée'
+                        : 'En cours'}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {candidates.length > 5 && (
+              <div className="mt-4 text-center">
+                <Button variant="secondary" onClick={() => navigate(`/candidates?lot=${id}`)}>
+                  Voir toutes les candidatures ({candidates.length})
+                </Button>
+              </div>
+            )}
+            <div className="mt-4 pt-4 border-t">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate(`/candidates?lot=${id}`)}
+              >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                Créer un bail
+                Gérer les candidatures
               </Button>
             </div>
           </Card>
@@ -551,6 +648,18 @@ function LotDetail() {
               </div>
             )}
           </Card>
+        )}
+
+        {/* Modal lien d'invitation */}
+        {showInvitationModal && (
+          <InvitationLinkModal
+            lot={lot}
+            onClose={() => setShowInvitationModal(false)}
+            onSuccess={() => {
+              setShowInvitationModal(false)
+              fetchLotDetails()
+            }}
+          />
         )}
       </div>
     </DashboardLayout>

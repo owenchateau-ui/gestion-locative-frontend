@@ -45,7 +45,7 @@ const menuStructure = [
     isCategory: true,
     children: [
       { label: 'Tous les locataires', path: '/tenants', ready: true },
-      { label: 'Candidatures', path: '/candidates', ready: false },
+      { label: 'Candidatures', path: '/candidates', ready: true },
       { label: 'Baux', path: '/leases', ready: true },
       { label: 'États des lieux', path: '/inspections', ready: false }
     ]

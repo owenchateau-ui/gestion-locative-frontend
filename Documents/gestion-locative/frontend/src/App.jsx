@@ -9,6 +9,8 @@ import Loading from './components/ui/Loading'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import PublicCandidateForm from './pages/PublicCandidateForm'
+import CandidateStatus from './pages/CandidateStatus'
 
 // Pages privées (lazy loading)
 const Dashboard = lazy(() => import('./pages/Dashboard'))
@@ -28,6 +30,8 @@ const LeaseForm = lazy(() => import('./pages/LeaseForm'))
 const Payments = lazy(() => import('./pages/Payments'))
 const PaymentForm = lazy(() => import('./pages/PaymentForm'))
 const Indexation = lazy(() => import('./pages/Indexation'))
+const Candidates = lazy(() => import('./pages/Candidates'))
+const CandidateDetail = lazy(() => import('./pages/CandidateDetail'))
 const Profile = lazy(() => import('./pages/Profile'))
 const ComingSoon = lazy(() => import('./pages/ComingSoon'))
 
@@ -49,6 +53,10 @@ function AppRoutes() {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* Routes publiques pour les candidatures */}
+      <Route path="/apply/:token" element={<PublicCandidateForm />} />
+      <Route path="/application-status" element={<CandidateStatus />} />
       <Route
         path="/dashboard"
         element={
@@ -242,17 +250,27 @@ function AppRoutes() {
         }
       />
 
-      {/* Routes "Coming Soon" - Fonctionnalités à venir */}
+      {/* Routes candidatures */}
       <Route
-        path="/diagnostics"
+        path="/candidates"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <Candidates />
           </PrivateRoute>
         }
       />
       <Route
-        path="/candidates"
+        path="/candidates/:id"
+        element={
+          <PrivateRoute>
+            <CandidateDetail />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Routes "Coming Soon" - Fonctionnalités à venir */}
+      <Route
+        path="/diagnostics"
         element={
           <PrivateRoute>
             <ComingSoon />
