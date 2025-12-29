@@ -93,7 +93,7 @@ export const getLotByInvitationToken = async (token) => {
           deposit_amount,
           surface_area,
           nb_rooms,
-          properties (
+          properties_new (
             id,
             name,
             address,
@@ -136,7 +136,7 @@ export const getCandidatesByLot = async (lotId) => {
           name,
           reference,
           rent_amount,
-          properties (
+          properties_new (
             name,
             address,
             city
@@ -172,7 +172,7 @@ export const getAllCandidates = async (filters = {}) => {
           name,
           reference,
           rent_amount,
-          properties (
+          properties_new (
             name,
             address,
             city,
@@ -194,7 +194,7 @@ export const getAllCandidates = async (filters = {}) => {
 
     // Filtre par entité (via propriété)
     if (filters.entityId) {
-      query = query.eq('lots.properties.entity_id', filters.entityId)
+      query = query.eq('lots.properties_new.entity_id', filters.entityId)
     }
 
     const { data, error: fetchError } = await query
@@ -230,7 +230,7 @@ export const getCandidateById = async (id) => {
           deposit_amount,
           surface_area,
           nb_rooms,
-          properties (
+          properties_new (
             id,
             name,
             address,
@@ -269,7 +269,7 @@ export const getCandidateByToken = async (token) => {
           name,
           reference,
           rent_amount,
-          properties (
+          properties_new (
             name,
             address,
             city
@@ -305,7 +305,7 @@ export const getCandidateByEmail = async (email) => {
           name,
           reference,
           rent_amount,
-          properties (
+          properties_new (
             name,
             address,
             city
@@ -544,7 +544,7 @@ export const convertToTenant = async (candidateId) => {
           rent_amount,
           charges_amount,
           deposit_amount,
-          properties (
+          properties_new (
             entity_id
           )
         )
@@ -562,7 +562,7 @@ export const convertToTenant = async (candidateId) => {
     const { data: tenant, error: tenantError } = await supabase
       .from('tenants')
       .insert({
-        entity_id: candidate.lots.properties.entity_id,
+        entity_id: candidate.lots.properties_new.entity_id,
         first_name: candidate.first_name,
         last_name: candidate.last_name,
         email: candidate.email,
