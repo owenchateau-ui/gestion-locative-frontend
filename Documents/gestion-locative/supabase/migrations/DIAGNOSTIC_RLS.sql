@@ -66,35 +66,25 @@ GROUP BY table_name;
 -- 3. VÉRIFIER LES DONNÉES (Propriétés et Lots)
 -- ============================================================================
 
+DO $$
+BEGIN
+    RAISE NOTICE '';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE '3. VÉRIFICATION PROPRIÉTÉS vs AUTH';
+    RAISE NOTICE '========================================';
+    RAISE NOTICE '';
+END $$;
+
 SELECT
-    '========================================' as "Step",
-    '3. VÉRIFICATION PROPRIÉTÉS vs AUTH' as "lot_id",
-    '' as "lot_name",
-    '' as "property_name",
-    '' as "owner_id",
-    '' as "my_auth_uid",
-    '' as "Match?"
-UNION ALL
-SELECT
-    '========================================',
-    '',
-    '',
-    '',
-    '',
-    '',
-    ''
-UNION ALL
-SELECT
-    'Lot',
-    l.id::TEXT,
-    l.name,
-    p.name,
-    p.owner_id::TEXT,
-    auth.uid()::TEXT,
+    l.id::TEXT as "Lot ID",
+    l.name as "Lot Name",
+    p.name as "Property Name",
+    p.owner_id::TEXT as "Owner ID",
+    auth.uid()::TEXT as "My Auth UID",
     CASE
         WHEN p.owner_id = auth.uid() THEN '✅ OUI'
         ELSE '❌ NON'
-    END
+    END as "Match?"
 FROM lots l
 INNER JOIN properties p ON l.property_id = p.id
 ORDER BY l.created_at DESC
