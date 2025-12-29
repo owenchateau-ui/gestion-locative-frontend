@@ -171,7 +171,7 @@ WITH CHECK (
   EXISTS (
     SELECT 1 FROM lots l
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE l.id = candidate_invitation_links.lot_id
     AND u.supabase_uid = auth.uid()
   )
@@ -185,7 +185,7 @@ USING (
   EXISTS (
     SELECT 1 FROM lots l
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE l.id = candidate_invitation_links.lot_id
     AND u.supabase_uid = auth.uid()
   )
@@ -199,7 +199,7 @@ USING (
   EXISTS (
     SELECT 1 FROM lots l
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE l.id = candidate_invitation_links.lot_id
     AND u.supabase_uid = auth.uid()
   )
@@ -217,7 +217,7 @@ USING (
   EXISTS (
     SELECT 1 FROM lots l
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE l.id = candidates.lot_id
     AND u.supabase_uid = auth.uid()
   )
@@ -243,7 +243,7 @@ USING (
   EXISTS (
     SELECT 1 FROM lots l
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE l.id = candidates.lot_id
     AND u.supabase_uid = auth.uid()
   )
@@ -257,7 +257,7 @@ USING (
   EXISTS (
     SELECT 1 FROM lots l
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE l.id = candidates.lot_id
     AND u.supabase_uid = auth.uid()
   )
@@ -276,7 +276,7 @@ USING (
     SELECT 1 FROM candidates c
     INNER JOIN lots l ON c.lot_id = l.id
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE c.id = candidate_documents.candidate_id
     AND u.supabase_uid = auth.uid()
   )
@@ -303,7 +303,7 @@ USING (
     SELECT 1 FROM candidates c
     INNER JOIN lots l ON c.lot_id = l.id
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE c.id = candidate_documents.candidate_id
     AND u.supabase_uid = auth.uid()
   )
@@ -325,7 +325,7 @@ USING (
     INNER JOIN candidates c ON cd.candidate_id = c.id
     INNER JOIN lots l ON c.lot_id = l.id
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE storage.objects.name = cd.file_path
     AND u.supabase_uid = auth.uid()
   )
@@ -351,7 +351,7 @@ USING (
     INNER JOIN candidates c ON cd.candidate_id = c.id
     INNER JOIN lots l ON c.lot_id = l.id
     INNER JOIN properties p ON l.property_id = p.id
-    INNER JOIN users u ON u.id = p.user_id
+    INNER JOIN users u ON u.id = p.owner_id
     WHERE storage.objects.name = cd.file_path
     AND u.supabase_uid = auth.uid()
   )
