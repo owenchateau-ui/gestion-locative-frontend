@@ -428,7 +428,7 @@ function CandidateDetail() {
               <div>
                 <p className="text-sm text-gray-500">Statut</p>
                 <p className="text-base text-gray-900">
-                  {getEmploymentStatusLabel(candidate.employment_status)}
+                  {getEmploymentStatusLabel(candidate.professional_status)}
                 </p>
               </div>
             </div>

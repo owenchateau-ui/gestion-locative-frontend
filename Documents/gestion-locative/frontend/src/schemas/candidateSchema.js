@@ -43,7 +43,7 @@ export const candidateSchema = z.object({
     .max(500, 'L\'adresse ne peut pas dépasser 500 caractères'),
 
   // Situation professionnelle
-  employment_status: z
+  professional_status: z
     .enum(
       ['cdi', 'cdd', 'interim', 'freelance', 'student', 'retired', 'unemployed', 'other'],
       { errorMap: () => ({ message: 'Le statut professionnel est requis' }) }
@@ -172,7 +172,7 @@ export const candidateStep1Schema = candidateSchema.pick({
  * Schéma pour l'étape 2 : Situation professionnelle
  */
 export const candidateStep2Schema = candidateSchema.pick({
-  employment_status: true,
+  professional_status: true,
   employer_name: true,
   job_title: true,
   contract_type: true,

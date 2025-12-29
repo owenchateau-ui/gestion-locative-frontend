@@ -63,7 +63,7 @@ function PublicCandidateForm() {
     birth_date: '',
     current_address: '',
     // Étape 2
-    employment_status: 'cdi',
+    professional_status: 'cdi',
     employer_name: '',
     job_title: '',
     contract_type: '',
@@ -143,7 +143,7 @@ function PublicCandidateForm() {
         })
       } else if (step === 2) {
         candidateStep2Schema.parse({
-          employment_status: formData.employment_status,
+          professional_status: formData.professional_status,
           employer_name: formData.employer_name,
           job_title: formData.job_title,
           contract_type: formData.contract_type,
@@ -494,8 +494,8 @@ function PublicCandidateForm() {
                   Statut professionnel *
                 </label>
                 <select
-                  name="employment_status"
-                  value={formData.employment_status}
+                  name="professional_status"
+                  value={formData.professional_status}
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
@@ -881,7 +881,7 @@ function PublicCandidateForm() {
 
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h3 className="font-medium text-gray-900 mb-2">Situation professionnelle</h3>
-                  <p className="text-sm text-gray-600">{formData.employment_status}</p>
+                  <p className="text-sm text-gray-600">{formData.professional_status}</p>
                   {formData.employer_name && (
                     <p className="text-sm text-gray-600">{formData.employer_name}</p>
                   )}
