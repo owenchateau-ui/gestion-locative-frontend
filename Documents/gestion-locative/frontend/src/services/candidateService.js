@@ -5,6 +5,44 @@ const log = (...args) => DEBUG && console.log('[CandidateService]', ...args)
 const error = (...args) => DEBUG && console.error('[CandidateService]', ...args)
 
 /**
+ * Fonction utilitaire pour nettoyer les données avant insertion
+ * Convertit les chaînes vides en null pour les champs optionnels
+ */
+const cleanData = (data) => {
+  const cleaned = { ...data }
+
+  // Convertir les chaînes vides en null pour les dates
+  const dateFields = ['birth_date', 'employment_start_date']
+  dateFields.forEach(field => {
+    if (cleaned[field] === '' || cleaned[field] === undefined) {
+      cleaned[field] = null
+    }
+  })
+
+  // Convertir les chaînes vides en null pour les nombres
+  const numberFields = ['monthly_income', 'other_income', 'guarantor_monthly_income']
+  numberFields.forEach(field => {
+    if (cleaned[field] === '' || cleaned[field] === undefined || cleaned[field] === 0) {
+      cleaned[field] = null
+    }
+  })
+
+  // Convertir les chaînes vides en null pour les autres champs optionnels
+  const optionalFields = [
+    'phone', 'current_address', 'employer_name', 'job_title', 'contract_type',
+    'other_income_source', 'guarantor_first_name', 'guarantor_last_name',
+    'guarantor_email', 'guarantor_phone', 'guarantor_relationship'
+  ]
+  optionalFields.forEach(field => {
+    if (cleaned[field] === '') {
+      cleaned[field] = null
+    }
+  })
+
+  return cleaned
+}
+
+/**
  * Récupère ou crée un lien d'invitation pour un lot
  */
 export const getInvitationLink = async (lotId) => {
@@ -341,12 +379,15 @@ export const createCandidate = async (candidateData) => {
   try {
     log('Creating new candidate:', candidateData)
 
+    // Nettoyer les données (convertir chaînes vides en null)
+    const cleanedData = cleanData(candidateData)
+
     // L'UUID et le access_token sont générés automatiquement par PostgreSQL
     // Le score de solvabilité est calculé automatiquement par un trigger PostgreSQL
     const { data, error: createError } = await supabase
       .from('candidates')
       .insert({
-        ...candidateData,
+        ...cleanedData,
         status: 'pending'
       })
       .select()
