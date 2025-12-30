@@ -447,7 +447,7 @@ export const uploadDocument = async (candidateId, file, documentType) => {
     const fileExt = file.name.split('.').pop()
     const fileName = `${candidateId}/${documentType}-${Date.now()}.${fileExt}`
 
-    // Upload vers Supabase Storage
+    // 1. Upload vers Supabase Storage
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('candidate-documents')
       .upload(fileName, file, {
@@ -457,7 +457,12 @@ export const uploadDocument = async (candidateId, file, documentType) => {
 
     if (uploadError) throw uploadError
 
-    // Enregistrer dans la table documents
+    // 2. Récupérer l'URL publique
+    const { data: urlData } = supabase.storage
+      .from('candidate-documents')
+      .getPublicUrl(fileName)
+
+    // 3. Enregistrer dans la table candidate_documents
     const { data: docData, error: docError } = await supabase
       .from('candidate_documents')
       .insert({
@@ -465,7 +470,9 @@ export const uploadDocument = async (candidateId, file, documentType) => {
         document_type: documentType,
         file_name: file.name,
         file_path: uploadData.path,
-        file_size: file.size
+        file_url: urlData.publicUrl,
+        file_size: file.size,
+        mime_type: file.type
       })
       .select()
       .single()
