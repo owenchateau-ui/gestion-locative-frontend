@@ -341,16 +341,12 @@ export const createCandidate = async (candidateData) => {
   try {
     log('Creating new candidate:', candidateData)
 
-    // Générer un token d'accès unique
-    const accessToken = `cand-${Date.now()}-${Math.random().toString(36).substring(2, 15)}`
-
+    // L'UUID et le access_token sont générés automatiquement par PostgreSQL
     // Le score de solvabilité est calculé automatiquement par un trigger PostgreSQL
-    // basé sur monthly_income, other_income et le loyer du lot
     const { data, error: createError } = await supabase
       .from('candidates')
       .insert({
         ...candidateData,
-        access_token: accessToken,
         status: 'pending'
       })
       .select()
