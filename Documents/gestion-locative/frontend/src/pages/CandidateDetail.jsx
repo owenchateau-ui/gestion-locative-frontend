@@ -210,7 +210,7 @@ function CandidateDetail() {
   }
 
   const totalIncome = (candidate.monthly_income || 0) + (candidate.other_income || 0)
-  const rentAmount = candidate.lots_new?.rent_amount || 0
+  const rentAmount = candidate.lots?.rent_amount || 0
   const incomeRatio = rentAmount > 0 ? (totalIncome / rentAmount).toFixed(2) : 0
 
   return (
@@ -290,7 +290,7 @@ function CandidateDetail() {
                 <div>
                   <p className="text-sm text-gray-500">Lot</p>
                   <p className="text-base font-medium text-gray-900">
-                    {candidate.lots_new?.name}
+                    {candidate.lots?.name}
                   </p>
                 </div>
               </div>
@@ -299,11 +299,11 @@ function CandidateDetail() {
                 <div>
                   <p className="text-sm text-gray-500">Adresse</p>
                   <p className="text-base text-gray-900">
-                    {candidate.lots_new?.properties_new?.address}
+                    {candidate.lots?.properties_new?.address}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {candidate.lots_new?.properties_new?.postal_code}{' '}
-                    {candidate.lots_new?.properties_new?.city}
+                    {candidate.lots?.properties_new?.postal_code}{' '}
+                    {candidate.lots?.properties_new?.city}
                   </p>
                 </div>
               </div>
@@ -312,11 +312,11 @@ function CandidateDetail() {
                 <div>
                   <p className="text-sm text-gray-500">Loyer</p>
                   <p className="text-base font-medium text-gray-900">
-                    {formatCurrency(candidate.lots_new?.rent_amount)}
+                    {formatCurrency(candidate.lots?.rent_amount)}
                   </p>
-                  {candidate.lots_new?.charges_amount > 0 && (
+                  {candidate.lots?.charges_amount > 0 && (
                     <p className="text-sm text-gray-500">
-                      + {formatCurrency(candidate.lots_new?.charges_amount)} de charges
+                      + {formatCurrency(candidate.lots?.charges_amount)} de charges
                     </p>
                   )}
                 </div>
