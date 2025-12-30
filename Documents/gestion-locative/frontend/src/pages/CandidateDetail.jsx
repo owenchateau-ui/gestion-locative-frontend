@@ -9,7 +9,6 @@ import Loading from '../components/ui/Loading'
 import {
   getCandidateById,
   updateCandidateStatus,
-  getDocuments,
   getDocumentUrl,
   convertToTenant
 } from '../services/candidateService'
@@ -37,7 +36,6 @@ function CandidateDetail() {
   const navigate = useNavigate()
 
   const [candidate, setCandidate] = useState(null)
-  const [documents, setDocuments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [processing, setProcessing] = useState(false)
@@ -52,7 +50,6 @@ function CandidateDetail() {
 
   useEffect(() => {
     loadCandidate()
-    loadDocuments()
   }, [id])
 
   const loadCandidate = async () => {
@@ -62,22 +59,12 @@ function CandidateDetail() {
     try {
       const { data, error: fetchError } = await getCandidateById(id)
       if (fetchError) throw fetchError
-      setCandidate(data)
+      setCandidate(data)  // data contient maintenant les documents
     } catch (err) {
       console.error('Error loading candidate:', err)
       setError(err.message)
     } finally {
       setLoading(false)
-    }
-  }
-
-  const loadDocuments = async () => {
-    try {
-      const { data, error: fetchError } = await getDocuments(id)
-      if (fetchError) throw fetchError
-      setDocuments(data || [])
-    } catch (err) {
-      console.error('Error loading documents:', err)
     }
   }
 
@@ -563,11 +550,11 @@ function CandidateDetail() {
 
         {/* Documents */}
         <Card title="Documents" padding>
-          {documents.length === 0 ? (
+          {!candidate?.documents || candidate.documents.length === 0 ? (
             <p className="text-gray-500 text-center py-4">Aucun document uploadé</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {documents.map((doc) => (
+              {candidate.documents.map((doc) => (
                 <div
                   key={doc.id}
                   className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition"
