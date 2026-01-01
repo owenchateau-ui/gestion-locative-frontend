@@ -59,6 +59,11 @@ function CandidateDetail() {
     try {
       const { data, error: fetchError } = await getCandidateById(id)
       if (fetchError) throw fetchError
+
+      console.log('🔍 DEBUG CandidateDetail: Candidate data received:', data)
+      console.log('🔍 DEBUG CandidateDetail: Documents in data:', data?.documents)
+      console.log('🔍 DEBUG CandidateDetail: Number of documents:', data?.documents?.length || 0)
+
       setCandidate(data)  // data contient maintenant les documents
     } catch (err) {
       console.error('Error loading candidate:', err)
@@ -550,6 +555,12 @@ function CandidateDetail() {
 
         {/* Documents */}
         <Card title="Documents" padding>
+          {(() => {
+            console.log('🔍 DEBUG Documents render: candidate:', candidate)
+            console.log('🔍 DEBUG Documents render: candidate.documents:', candidate?.documents)
+            console.log('🔍 DEBUG Documents render: length:', candidate?.documents?.length)
+            return null
+          })()}
           {!candidate?.documents || candidate.documents.length === 0 ? (
             <p className="text-gray-500 text-center py-4">Aucun document uploadé</p>
           ) : (

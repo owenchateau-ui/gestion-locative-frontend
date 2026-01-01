@@ -255,7 +255,8 @@ export const getCandidateById = async (id) => {
   try {
     log('Fetching candidate:', id)
 
-    const { data, error: fetchError } = await supabase
+    // Récupérer le candidat avec le lot et la propriété
+    const { data: candidate, error: fetchError } = await supabase
       .from('candidates')
       .select(`
         *,
@@ -284,12 +285,36 @@ export const getCandidateById = async (id) => {
 
     if (fetchError) throw fetchError
 
-    if (!data) {
+    if (!candidate) {
       return { data: null, error: new Error('Candidature introuvable') }
     }
 
-    log('Candidate found:', data)
-    return { data, error: null }
+    // Récupérer les documents séparément
+    console.log('🔍 DEBUG: Fetching documents for candidate_id:', id)
+    const { data: documents, error: docError } = await supabase
+      .from('candidate_documents')
+      .select('*')
+      .eq('candidate_id', id)
+      .order('created_at', { ascending: false })
+
+    console.log('🔍 DEBUG: Documents query result:', { documents, docError })
+
+    if (docError) {
+      log('Error fetching documents:', docError)
+      console.error('❌ DEBUG: Error fetching documents:', docError)
+      // Ne pas bloquer si erreur documents
+    }
+
+    // Fusionner candidat et documents
+    const result = {
+      ...candidate,
+      documents: documents || []
+    }
+
+    console.log('✅ DEBUG: Final result with documents:', result)
+    console.log('✅ DEBUG: Number of documents:', result.documents?.length || 0)
+    log('Candidate found with documents:', result)
+    return { data: result, error: null }
   } catch (err) {
     error('Error fetching candidate:', err)
     return { data: null, error: err }
