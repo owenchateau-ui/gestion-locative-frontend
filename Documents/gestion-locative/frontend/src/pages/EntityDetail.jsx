@@ -3,22 +3,37 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
+import Breadcrumb from '../components/ui/Breadcrumb'
+import Tabs from '../components/ui/Tabs'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import StatCard from '../components/ui/StatCard'
+import { useToast } from '../context/ToastContext'
+import {
+  Building2,
+  Home,
+  Users,
+  Euro,
+  TrendingUp,
+  Edit,
+  Trash2,
+  Plus
+} from 'lucide-react'
 
 function EntityDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { success, error: showError } = useToast()
 
   const [entity, setEntity] = useState(null)
   const [stats, setStats] = useState({
     properties: 0,
     lots: 0,
     occupiedLots: 0,
-    monthlyRevenue: 0
+    monthlyRevenue: 0,
+    tenantsCount: 0
   })
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
@@ -86,11 +101,18 @@ function EntityDetail() {
           return total + (parseFloat(lot.rent_amount) || 0) + (parseFloat(lot.charges_amount) || 0)
         }, 0) || 0
 
+      // Compter les locataires (groupes de locataires)
+      const { count: tenantsCount } = await supabase
+        .from('tenant_groups')
+        .select('id', { count: 'exact', head: true })
+        .eq('entity_id', id)
+
       setStats({
         properties: propertiesData?.length || 0,
         lots: totalLots,
         occupiedLots,
-        monthlyRevenue
+        monthlyRevenue,
+        tenantsCount: tenantsCount || 0
       })
 
     } catch (error) {
@@ -113,9 +135,10 @@ function EntityDetail() {
 
       if (error) throw error
 
+      success('Entité supprimée avec succès')
       navigate('/entities')
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError('Erreur lors de la suppression : ' + err.message)
     }
   }
 
@@ -176,156 +199,319 @@ function EntityDetail() {
 
   const occupancyRate = stats.lots > 0 ? (stats.occupiedLots / stats.lots * 100) : 0
 
-  return (
-    <DashboardLayout title={entity.name}>
-      <div className="space-y-6">
-        {/* Header avec informations principales */}
-        <Card>
-          <div className="flex items-start justify-between">
-            <div className="flex items-start space-x-4">
-              <div
-                className="w-16 h-16 rounded-lg flex items-center justify-center text-white text-2xl font-bold"
-                style={{ backgroundColor: entity.color }}
-              >
-                {entity.name.charAt(0).toUpperCase()}
-              </div>
+  const breadcrumbItems = [
+    { label: 'Entités', href: '/entities' },
+    { label: entity.name }
+  ]
+
+  const tabs = [
+    {
+      id: 'overview',
+      label: 'Vue d\'ensemble',
+      icon: <Building2 className="w-5 h-5" />,
+      content: (
+        <div className="space-y-6">
+          <Card title="Informations de l'entité">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <div className="flex items-center space-x-3">
-                  <h2 className="text-2xl font-bold text-gray-900">{entity.name}</h2>
-                  <Badge variant="info">{getEntityTypeLabel(entity.entity_type)}</Badge>
-                  {entity.default_entity && (
-                    <Badge variant="success">Par défaut</Badge>
-                  )}
-                </div>
-                <div className="mt-2 space-y-1">
-                  {entity.siren && (
-                    <p className="text-sm text-gray-600">
-                      <span className="font-medium">SIREN :</span> {entity.siren}
-                    </p>
-                  )}
-                  {entity.city && (
-                    <p className="text-sm text-gray-600">
-                      <span className="font-medium">Ville :</span> {entity.city}
-                    </p>
-                  )}
-                  {entity.vat_applicable && (
-                    <p className="text-sm text-amber-600 font-medium">
-                      Assujetti à la TVA
-                    </p>
-                  )}
-                </div>
+                <p className="text-sm font-medium text-gray-500">Type d'entité</p>
+                <p className="text-lg font-semibold text-gray-900">{getEntityTypeLabel(entity.entity_type)}</p>
               </div>
+
+              {entity.siren && (
+                <div>
+                  <p className="text-sm font-medium text-gray-500">SIREN</p>
+                  <p className="text-lg font-semibold text-gray-900">{entity.siren}</p>
+                </div>
+              )}
+
+              {entity.siret && (
+                <div>
+                  <p className="text-sm font-medium text-gray-500">SIRET</p>
+                  <p className="text-lg font-semibold text-gray-900">{entity.siret}</p>
+                </div>
+              )}
+
+              {entity.vat_number && (
+                <div>
+                  <p className="text-sm font-medium text-gray-500">N° TVA</p>
+                  <p className="text-lg font-semibold text-gray-900">{entity.vat_number}</p>
+                </div>
+              )}
+
+              {entity.address && (
+                <div className="md:col-span-2">
+                  <p className="text-sm font-medium text-gray-500">Adresse</p>
+                  <p className="text-gray-900">
+                    {entity.address}
+                    {entity.city && entity.postal_code && (
+                      <><br />{entity.postal_code} {entity.city}</>
+                    )}
+                  </p>
+                </div>
+              )}
+
+              {entity.email && (
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Email</p>
+                  <p className="text-gray-900">{entity.email}</p>
+                </div>
+              )}
+
+              {entity.phone && (
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Téléphone</p>
+                  <p className="text-gray-900">{entity.phone}</p>
+                </div>
+              )}
+
+              {entity.vat_applicable && (
+                <div className="md:col-span-2">
+                  <Badge variant="warning">Assujetti à la TVA</Badge>
+                </div>
+              )}
             </div>
-            <div className="flex space-x-3">
-              <Button variant="secondary" onClick={() => navigate(`/entities/${id}/edit`)}>
-                Modifier
+          </Card>
+
+          <Card title="Actions rapides">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button
+                variant="primary"
+                onClick={() => navigate(`/properties/new?entity=${id}`)}
+                className="justify-center"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter une propriété
               </Button>
-              <Button variant="danger" onClick={handleDelete}>
-                Supprimer
+              <Button
+                variant="secondary"
+                onClick={() => navigate(`/tenants/new?entity=${id}`)}
+                className="justify-center"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter un locataire
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => navigate(`/leases/new?entity=${id}`)}
+                className="justify-center"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Créer un bail
               </Button>
             </div>
-          </div>
-        </Card>
-
-        {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        {/* Statistiques */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Propriétés"
-            value={stats.properties}
-            subtitle="Total des biens"
-            variant="blue"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            }
-          />
-
-          <StatCard
-            title="Lots"
-            value={stats.lots}
-            subtitle={`${stats.occupiedLots} occupés`}
-            variant="emerald"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            }
-          />
-
-          <StatCard
-            title="Taux d'occupation"
-            value={`${occupancyRate.toFixed(0)}%`}
-            subtitle={`${stats.occupiedLots}/${stats.lots} lots`}
-            variant="indigo"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-            }
-          />
-
-          <StatCard
-            title="Revenus mensuels"
-            value={`${stats.monthlyRevenue.toFixed(2)} €`}
-            subtitle="Loyers + charges"
-            variant="emerald"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
-          />
+          </Card>
         </div>
-
-        {/* Liste des propriétés */}
-        <Card title="Propriétés de cette entité" subtitle={`${properties.length} propriété${properties.length > 1 ? 's' : ''}`}>
+      )
+    },
+    {
+      id: 'properties',
+      label: 'Propriétés',
+      icon: <Home className="w-5 h-5" />,
+      badge: stats.properties,
+      content: (
+        <div className="space-y-4">
           {properties.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">
-                Aucune propriété dans cette entité
-              </p>
-              <Button onClick={() => navigate('/properties/new')}>
-                Ajouter une propriété
+              <p className="text-gray-600 mb-4">Aucune propriété dans cette entité</p>
+              <Button onClick={() => navigate(`/properties/new?entity=${id}`)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter la première propriété
               </Button>
             </div>
           ) : (
-            <div className="space-y-3">
-              {properties.map(property => (
-                <div
-                  key={property.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
-                  onClick={() => navigate(`/properties/${property.id}`)}
-                >
+            properties.map(property => (
+              <Card
+                key={property.id}
+                className="hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => navigate(`/properties/${property.id}`)}
+              >
+                <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900">{property.name}</h4>
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-lg font-semibold text-gray-900">{property.name}</h3>
+                      <Badge variant="info">{getPropertyCategoryLabel(property.category)}</Badge>
+                    </div>
                     <p className="text-sm text-gray-600">
                       {property.address}, {property.postal_code} {property.city}
                     </p>
-                    <div className="flex items-center space-x-3 mt-1">
-                      <Badge variant="default">
-                        {getPropertyCategoryLabel(property.category)}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {property.lotsCount} lot{property.lotsCount > 1 ? 's' : ''}
-                      </span>
+                    <div className="mt-3 flex gap-4 text-sm text-gray-500">
+                      <span>{property.lotsCount} lot{property.lotsCount > 1 ? 's' : ''}</span>
                     </div>
                   </div>
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      navigate(`/properties/${property.id}/edit`)
+                    }}
+                  >
+                    <Edit className="w-4 h-4" />
+                  </Button>
                 </div>
-              ))}
-            </div>
+              </Card>
+            ))
           )}
-        </Card>
+        </div>
+      )
+    },
+    {
+      id: 'stats',
+      label: 'Statistiques',
+      icon: <TrendingUp className="w-5 h-5" />,
+      content: (
+        <div className="space-y-6">
+          <Card title="Performance financière">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-sm font-medium text-gray-500">Revenus mensuels</p>
+                <p className="text-3xl font-bold text-emerald-600">
+                  {stats.monthlyRevenue.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                </p>
+                <p className="text-sm text-gray-500 mt-1">Loyers + charges des lots occupés</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Revenus annuels estimés</p>
+                <p className="text-3xl font-bold text-blue-600">
+                  {(stats.monthlyRevenue * 12).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
+                </p>
+                <p className="text-sm text-gray-500 mt-1">Projection sur 12 mois</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card title="Taux d'occupation">
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-500">
+                  {stats.occupiedLots} / {stats.lots} lots occupés
+                </span>
+                <span className="text-2xl font-bold text-gray-900">{occupancyRate.toFixed(1)} %</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className="bg-emerald-500 h-4 rounded-full transition-all"
+                  style={{ width: `${occupancyRate}%` }}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-emerald-600">{stats.occupiedLots}</p>
+                <p className="text-sm text-gray-500">Occupés</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-orange-600">{stats.lots - stats.occupiedLots}</p>
+                <p className="text-sm text-gray-500">Vacants</p>
+              </div>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-blue-600">{stats.lots}</p>
+                <p className="text-sm text-gray-500">Total</p>
+              </div>
+            </div>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card title="Patrimoine">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Propriétés</span>
+                  <span className="text-2xl font-bold text-gray-900">{stats.properties}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Lots</span>
+                  <span className="text-2xl font-bold text-gray-900">{stats.lots}</span>
+                </div>
+              </div>
+            </Card>
+            <Card title="Locataires">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Groupes de locataires</span>
+                  <span className="text-2xl font-bold text-gray-900">{stats.tenantsCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Baux actifs</span>
+                  <span className="text-2xl font-bold text-gray-900">{stats.occupiedLots}</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      )
+    }
+  ]
+
+  return (
+    <DashboardLayout title={entity.name}>
+      <Breadcrumb items={breadcrumbItems} />
+
+      {/* En-tête avec actions */}
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-4 h-4 rounded-full"
+            style={{ backgroundColor: entity.color || '#2563EB' }}
+          />
+          <Badge variant="info">{getEntityTypeLabel(entity.entity_type)}</Badge>
+          {entity.default_entity && <Badge variant="success">Par défaut</Badge>}
+        </div>
+
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => navigate(`/entities/${id}/edit`)}>
+            <Edit className="w-4 h-4 mr-2" />
+            Modifier
+          </Button>
+          <Button variant="danger" onClick={handleDelete}>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Supprimer
+          </Button>
+        </div>
       </div>
+
+      {error && (
+        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+          {error}
+        </div>
+      )}
+
+      {/* Statistiques en haut */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+        <StatCard
+          title="Revenus mensuels"
+          value={`${stats.monthlyRevenue.toFixed(2)} €`}
+          subtitle={`${stats.occupiedLots} bail${stats.occupiedLots > 1 ? 'x' : ''} actif${stats.occupiedLots > 1 ? 's' : ''}`}
+          variant="emerald"
+          icon={<Euro className="w-6 h-6" />}
+        />
+        <StatCard
+          title="Taux d'occupation"
+          value={`${occupancyRate.toFixed(1)} %`}
+          subtitle={`${stats.occupiedLots} / ${stats.lots} lots`}
+          variant="blue"
+          icon={<TrendingUp className="w-6 h-6" />}
+        />
+        <StatCard
+          title="Propriétés"
+          value={stats.properties}
+          subtitle={`${stats.lots} lot${stats.lots > 1 ? 's' : ''} au total`}
+          variant="indigo"
+          icon={<Building2 className="w-6 h-6" />}
+          href={`/properties?entity=${id}`}
+        />
+        <StatCard
+          title="Locataires"
+          value={stats.tenantsCount}
+          subtitle="Groupes de locataires"
+          variant="purple"
+          icon={<Users className="w-6 h-6" />}
+          href={`/tenants?entity=${id}`}
+        />
+      </div>
+
+      {/* Onglets */}
+      <Tabs tabs={tabs} defaultTab="overview" />
     </DashboardLayout>
   )
 }

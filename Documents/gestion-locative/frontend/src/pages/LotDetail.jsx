@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
+import Breadcrumb from '../components/ui/Breadcrumb'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
@@ -14,6 +16,7 @@ function LotDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { success, error: showError } = useToast()
 
   const [lot, setLot] = useState(null)
   const [activeLease, setActiveLease] = useState(null)
@@ -61,9 +64,18 @@ function LotDetail() {
           .from('leases')
           .select(`
             *,
-            tenants!inner(id, first_name, last_name, email, phone)
+            tenants!inner(
+              id,
+              first_name,
+              last_name,
+              email,
+              phone,
+              group_id,
+              is_main_tenant,
+              tenant_groups(id, name, group_type)
+            )
           `)
-          .eq('property_id', lotData.property_id)
+          .eq('lot_id', lotData.id)
           .eq('status', 'active')
           .single()
 
@@ -77,9 +89,15 @@ function LotDetail() {
         .from('leases')
         .select(`
           *,
-          tenants!inner(id, first_name, last_name)
+          tenants!inner(
+            id,
+            first_name,
+            last_name,
+            group_id,
+            tenant_groups(id, name, group_type)
+          )
         `)
-        .eq('property_id', lotData.property_id)
+        .eq('lot_id', lotData.id)
         .in('status', ['terminated', 'archived'])
         .order('end_date', { ascending: false })
 
@@ -113,9 +131,10 @@ function LotDetail() {
 
       if (error) throw error
 
+      success('Lot supprimé avec succès')
       navigate('/lots')
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError('Erreur lors de la suppression : ' + err.message)
     }
   }
 
@@ -192,39 +211,18 @@ function LotDetail() {
 
   const totalRent = parseFloat(lot.rent_amount) + parseFloat(lot.charges_amount || 0)
 
+  const breadcrumbItems = [
+    { label: 'Entités', href: '/entities' },
+    { label: lot.properties_new.entities.name, href: `/entities/${lot.properties_new.entity_id}` },
+    { label: lot.properties_new.name, href: `/properties/${lot.properties_new.id}` },
+    { label: lot.name }
+  ]
+
   return (
     <DashboardLayout title={lot.name}>
-      <div className="space-y-6">
-        {/* Fil d'Ariane */}
-        <nav className="flex items-center space-x-2 text-sm text-gray-500">
-          <button
-            onClick={() => navigate('/entities')}
-            className="hover:text-gray-700"
-          >
-            Entités
-          </button>
-          <span>/</span>
-          <button
-            onClick={() => navigate(`/entities/${lot.properties_new.entity_id}`)}
-            className="hover:text-gray-700 flex items-center"
-          >
-            <div
-              className="w-2 h-2 rounded-full mr-1"
-              style={{ backgroundColor: lot.properties_new.entities.color }}
-            />
-            {lot.properties_new.entities.name}
-          </button>
-          <span>/</span>
-          <button
-            onClick={() => navigate(`/properties/${lot.properties_new.id}`)}
-            className="hover:text-gray-700"
-          >
-            {lot.properties_new.name}
-          </button>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">{lot.name}</span>
-        </nav>
+      <Breadcrumb items={breadcrumbItems} />
 
+      <div className="space-y-6">
         {/* Header avec informations principales */}
         <Card>
           <div className="flex items-start justify-between">
@@ -466,14 +464,24 @@ function LotDetail() {
         {activeLease && (
           <Card
             title="Bail actif"
-            subtitle="Locataire actuel"
+            subtitle={activeLease.tenants.tenant_groups ?
+              `${activeLease.tenants.tenant_groups.group_type === 'couple' ? '👫 Couple' :
+                 activeLease.tenants.tenant_groups.group_type === 'colocation' ? '👥 Colocation' :
+                 '👤 Individuel'}` :
+              'Locataire actuel'}
           >
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-gray-900">
-                    {activeLease.tenants.first_name} {activeLease.tenants.last_name}
+                  <p className="font-semibold text-lg text-gray-900">
+                    {activeLease.tenants.tenant_groups?.name ||
+                     `${activeLease.tenants.first_name} ${activeLease.tenants.last_name}`}
                   </p>
+                  {activeLease.tenants.tenant_groups && (
+                    <p className="text-sm text-gray-600 mb-2">
+                      Locataire principal : {activeLease.tenants.first_name} {activeLease.tenants.last_name}
+                    </p>
+                  )}
                   <p className="text-sm text-gray-600">{activeLease.tenants.email}</p>
                   {activeLease.tenants.phone && (
                     <p className="text-sm text-gray-600">{activeLease.tenants.phone}</p>
@@ -493,9 +501,11 @@ function LotDetail() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => navigate(`/tenants/${activeLease.tenants.id}`)}
+                    onClick={() => navigate(activeLease.tenants.tenant_groups ?
+                      `/tenants/${activeLease.tenants.tenant_groups.id}` :
+                      `/tenants/${activeLease.tenants.id}`)}
                   >
-                    Voir le locataire
+                    Voir {activeLease.tenants.tenant_groups ? 'le groupe' : 'le locataire'}
                   </Button>
                 </div>
               </div>
@@ -617,8 +627,16 @@ function LotDetail() {
                 >
                   <div>
                     <p className="font-medium text-gray-900">
-                      {lease.tenants.first_name} {lease.tenants.last_name}
+                      {lease.tenants.tenant_groups?.name ||
+                       `${lease.tenants.first_name} ${lease.tenants.last_name}`}
                     </p>
+                    {lease.tenants.tenant_groups && (
+                      <p className="text-xs text-gray-500">
+                        {lease.tenants.tenant_groups.group_type === 'couple' && '👫 Couple'}
+                        {lease.tenants.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
+                        {lease.tenants.tenant_groups.group_type === 'individual' && '👤 Individuel'}
+                      </p>
+                    )}
                     <p className="text-sm text-gray-600">
                       {new Date(lease.start_date).toLocaleDateString('fr-FR')} - {lease.end_date ? new Date(lease.end_date).toLocaleDateString('fr-FR') : 'En cours'}
                     </p>

@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Backup files
+*.bak
+*.bak*
+*.current
+*.backup
+*.old
+*.tmp

@@ -50,7 +50,14 @@ function Payments() {
               name,
               properties_new!inner(id, name, entity_id, entities!inner(user_id))
             ),
-            tenant:tenants!inner(id, first_name, last_name)
+            tenant:tenants!inner(
+              id,
+              first_name,
+              last_name,
+              group_id,
+              is_main_tenant,
+              tenant_groups(id, name, group_type)
+            )
           )
         `)
         .eq('lease.lot.properties_new.entities.user_id', userData.id)
@@ -344,8 +351,16 @@ function Payments() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
+                          {payment.lease.tenant.tenant_groups?.name ||
+                            `${payment.lease.tenant.first_name} ${payment.lease.tenant.last_name}`}
                         </div>
+                        {payment.lease.tenant.tenant_groups && (
+                          <div className="text-xs text-gray-500">
+                            {payment.lease.tenant.tenant_groups.group_type === 'couple' && '👫 Couple'}
+                            {payment.lease.tenant.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
+                            {payment.lease.tenant.tenant_groups.group_type === 'individual' && '👤 Individuel'}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-semibold text-gray-900">

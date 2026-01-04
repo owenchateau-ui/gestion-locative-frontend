@@ -44,29 +44,24 @@ export const AuthProvider = ({ children }) => {
   }
 
   const signUp = async (email, password, userData) => {
+    // Inscription via Supabase Auth avec metadata
+    // Le trigger handle_new_user() créera automatiquement l'entrée dans users
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          first_name: userData.firstName,
+          last_name: userData.lastName,
+          phone: userData.phone,
+        }
+      }
     })
 
     if (authError) throw authError
 
-    // Créer l'entrée dans la table users
-    const { error: dbError } = await supabase
-      .from('users')
-      .insert([
-        {
-          email,
-          first_name: userData.firstName,
-          last_name: userData.lastName,
-          phone: userData.phone,
-          role: 'landlord',
-          plan: 'free',
-          supabase_uid: authData.user.id,
-        }
-      ])
-
-    if (dbError) throw dbError
+    // Note: L'entrée dans 'users' est créée automatiquement par le trigger
+    // handle_new_user() qui s'exécute AFTER INSERT sur auth.users
 
     return authData
   }

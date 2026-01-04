@@ -1,0 +1,7 @@
+export { default as ApplicationTypeStep } from './ApplicationTypeStep'
+export { default as PersonalInfoStep } from './PersonalInfoStep'
+export { default as ProfessionalStep } from './ProfessionalStep'
+export { default as IncomeStep } from './IncomeStep'
+export { default as GuarantorStep } from './GuarantorStep'
+export { default as DocumentsStep } from './DocumentsStep'
+export { default as SummaryStep } from './SummaryStep'

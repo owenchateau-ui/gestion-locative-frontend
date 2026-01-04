@@ -7,37 +7,84 @@ const error = (...args) => DEBUG && console.error('[CandidateService]', ...args)
 /**
  * Fonction utilitaire pour nettoyer les données avant insertion
  * Convertit les chaînes vides en null pour les champs optionnels
+ * VERSION 2 : Support couples et colocations
  */
 const cleanData = (data) => {
   const cleaned = { ...data }
 
   // Convertir les chaînes vides en null pour les dates
-  const dateFields = ['birth_date', 'employment_start_date']
+  const dateFields = [
+    'birth_date', 'employment_start_date',
+    'applicant2_birth_date', 'applicant2_employment_start_date'
+  ]
   dateFields.forEach(field => {
     if (cleaned[field] === '' || cleaned[field] === undefined) {
       cleaned[field] = null
     }
   })
 
-  // Convertir les chaînes vides en null pour les nombres
-  const numberFields = ['monthly_income', 'other_income', 'guarantor_monthly_income']
-  numberFields.forEach(field => {
-    if (cleaned[field] === '' || cleaned[field] === undefined || cleaned[field] === 0) {
-      cleaned[field] = null
+  // Convertir les revenus en nombres
+  const incomeFields = [
+    'monthly_income', 'other_income',
+    'applicant2_monthly_income', 'applicant2_other_income',
+    'applicant3_monthly_income', 'applicant4_monthly_income',
+    'guarantor_monthly_income', 'guarantor2_monthly_income'
+  ]
+
+  incomeFields.forEach(field => {
+    if (cleaned[field] === '' || cleaned[field] === undefined || cleaned[field] === null) {
+      // other_income et similar → 0, les autres → null
+      if (field.includes('other_income')) {
+        cleaned[field] = 0
+      } else if (field.includes('guarantor')) {
+        cleaned[field] = null
+      } else if (field.includes('applicant')) {
+        cleaned[field] = 0
+      } else if (field === 'monthly_income') {
+        // monthly_income du candidat 1 doit rester défini
+        cleaned[field] = Number(cleaned[field]) || 0
+      }
+    } else {
+      cleaned[field] = Number(cleaned[field])
     }
   })
 
-  // Convertir les chaînes vides en null pour les autres champs optionnels
+  // Convertir les chaînes vides en null pour les champs optionnels
   const optionalFields = [
-    'phone', 'current_address', 'employer_name', 'job_title', 'contract_type',
-    'other_income_source', 'guarantor_first_name', 'guarantor_last_name',
-    'guarantor_email', 'guarantor_phone', 'guarantor_relationship'
+    // Candidat 1
+    'phone', 'birth_place', 'nationality',
+    'employer_name', 'job_title', 'contract_type',
+    'guarantor_first_name', 'guarantor_last_name',
+    'guarantor_email', 'guarantor_phone', 'guarantor_relationship', 'guarantor_professional_status',
+
+    // Candidat 2
+    'applicant2_first_name', 'applicant2_last_name', 'applicant2_email', 'applicant2_phone',
+    'applicant2_birth_place', 'applicant2_nationality',
+    'applicant2_professional_status', 'applicant2_employer_name', 'applicant2_job_title', 'applicant2_contract_type',
+
+    // Candidat 3
+    'applicant3_first_name', 'applicant3_last_name', 'applicant3_email', 'applicant3_phone',
+
+    // Candidat 4
+    'applicant4_first_name', 'applicant4_last_name', 'applicant4_email', 'applicant4_phone',
+
+    // Garant 2
+    'guarantor2_first_name', 'guarantor2_last_name', 'guarantor2_email', 'guarantor2_phone', 'guarantor2_relationship'
   ]
+
   optionalFields.forEach(field => {
     if (cleaned[field] === '') {
       cleaned[field] = null
     }
   })
+
+  // Assurer que application_type et nb_applicants ont des valeurs par défaut
+  if (!cleaned.application_type) {
+    cleaned.application_type = 'individual'
+  }
+  if (!cleaned.nb_applicants) {
+    cleaned.nb_applicants = 1
+  }
 
   return cleaned
 }
@@ -463,16 +510,18 @@ export const updateCandidateStatus = async (id, status, rejectionReason = null) 
 
 /**
  * Upload un document pour une candidature
+ * VERSION 2 : Support applicant_number pour couples/colocations
  */
-export const uploadDocument = async (candidateId, file, documentType) => {
+export const uploadDocument = async (candidateId, file, documentType, applicantNumber = 1) => {
+  console.log('🔍 uploadDocument called with:', { candidateId, fileName: file.name, documentType, applicantNumber })
+
   try {
-    log('Uploading document:', candidateId, documentType)
-
-    // Créer un nom de fichier unique
+    // 1. Upload du fichier dans Storage
     const fileExt = file.name.split('.').pop()
-    const fileName = `${candidateId}/${documentType}-${Date.now()}.${fileExt}`
+    const fileName = `${candidateId}/${documentType}-applicant${applicantNumber}-${Date.now()}.${fileExt}`
 
-    // 1. Upload vers Supabase Storage
+    console.log('🔍 Uploading to storage:', fileName)
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('candidate-documents')
       .upload(fileName, file, {
@@ -480,33 +529,52 @@ export const uploadDocument = async (candidateId, file, documentType) => {
         upsert: false
       })
 
-    if (uploadError) throw uploadError
+    if (uploadError) {
+      console.error('❌ Storage upload error:', uploadError)
+      throw uploadError
+    }
+
+    console.log('✅ Storage upload success:', uploadData)
 
     // 2. Récupérer l'URL publique
     const { data: urlData } = supabase.storage
       .from('candidate-documents')
       .getPublicUrl(fileName)
 
-    // 3. Enregistrer dans la table candidate_documents
-    const { data: docData, error: docError } = await supabase
+    const fileUrl = urlData.publicUrl
+    console.log('🔍 Public URL:', fileUrl)
+
+    // 3. Créer l'entrée dans candidate_documents
+    const insertData = {
+      candidate_id: candidateId,
+      document_type: documentType,
+      applicant_number: applicantNumber,
+      file_name: file.name,
+      file_path: uploadData.path,
+      file_url: fileUrl,
+      file_size: file.size,
+      mime_type: file.type
+    }
+
+    console.log('🔍 Inserting into candidate_documents:', insertData)
+
+    const { data, error } = await supabase
       .from('candidate_documents')
-      .insert({
-        candidate_id: candidateId,
-        document_type: documentType,
-        file_name: file.name,
-        file_path: uploadData.path,
-        file_url: urlData.publicUrl,
-        file_size: file.size,
-        mime_type: file.type
-      })
+      .insert(insertData)
       .select()
       .single()
 
-    if (docError) throw docError
+    if (error) {
+      console.error('❌ Database insert error:', error)
+      throw error
+    }
 
-    log('Document uploaded:', docData)
-    return { data: docData, error: null }
+    console.log('✅ Document saved to database:', data)
+    log('Document uploaded:', data)
+    return { data, error: null }
+
   } catch (err) {
+    console.error('❌ uploadDocument failed:', err)
     error('Error uploading document:', err)
     return { data: null, error: err }
   }

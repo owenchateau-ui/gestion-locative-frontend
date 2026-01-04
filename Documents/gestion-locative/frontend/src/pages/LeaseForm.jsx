@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
+import Alert from '../components/ui/Alert'
 import { getReferenceQuarterAndYear, formatQuarter } from '../utils/irlUtils'
 import { getIRLIndex } from '../services/irlService'
 
@@ -42,6 +43,11 @@ function LeaseForm() {
   const [currentIRL, setCurrentIRL] = useState(null)
   const [irlLoading, setIrlLoading] = useState(false)
 
+  // États pour la validation du taux d'effort
+  const [effortRate, setEffortRate] = useState(null)
+  const [effortWarning, setEffortWarning] = useState(null)
+  const [totalIncome, setTotalIncome] = useState(0)
+
   useEffect(() => {
     fetchLotsAndTenants()
     if (isEditMode) {
@@ -78,6 +84,76 @@ function LeaseForm() {
     fetchIRL()
   }, [irlReferenceQuarter, irlReferenceYear])
 
+  // Pré-remplir les informations CAF quand un locataire est sélectionné
+  useEffect(() => {
+    const fetchTenantGroupAssistance = async () => {
+      if (formData.tenant_id && !isEditMode) {
+        try {
+          const { data, error } = await supabase
+            .from('tenants')
+            .select(`
+              tenant_groups(
+                housing_assistance,
+                tenants(monthly_income, other_income)
+              )
+            `)
+            .eq('id', formData.tenant_id)
+            .single()
+
+          if (error) throw error
+
+          const group = data?.tenant_groups
+          if (group && group.housing_assistance > 0) {
+            setFormData(prev => ({
+              ...prev,
+              caf_direct_payment: true,
+              caf_amount: group.housing_assistance.toString()
+            }))
+          }
+
+          // Calculer le revenu total du groupe
+          const income = group?.tenants?.reduce((sum, t) =>
+            sum + (parseFloat(t.monthly_income) || 0) + (parseFloat(t.other_income) || 0),
+            0
+          ) || 0
+          setTotalIncome(income)
+        } catch (error) {
+          console.error('Error fetching tenant group assistance:', error)
+        }
+      }
+    }
+
+    fetchTenantGroupAssistance()
+  }, [formData.tenant_id, isEditMode])
+
+  // Calculer le taux d'effort en temps réel
+  useEffect(() => {
+    if (formData.tenant_id && (formData.rent_amount || formData.charges_amount) && totalIncome > 0) {
+      const rentAmount = parseFloat(formData.rent_amount) || 0
+      const chargesAmount = parseFloat(formData.charges_amount) || 0
+      const totalRent = rentAmount + chargesAmount
+
+      const cafAmount = formData.caf_direct_payment ? (parseFloat(formData.caf_amount) || 0) : 0
+      const netRent = totalRent - cafAmount
+
+      const rate = totalIncome > 0 ? (netRent / totalIncome) * 100 : 0
+      setEffortRate(rate)
+
+      if (rate > 50) {
+        setEffortWarning('danger')
+      } else if (rate > 40) {
+        setEffortWarning('warning')
+      } else if (rate > 33) {
+        setEffortWarning('info')
+      } else {
+        setEffortWarning(null)
+      }
+    } else {
+      setEffortRate(null)
+      setEffortWarning(null)
+    }
+  }, [formData.tenant_id, formData.rent_amount, formData.charges_amount, formData.caf_direct_payment, formData.caf_amount, totalIncome])
+
   const fetchLotsAndTenants = async () => {
     if (!user) return
 
@@ -104,11 +180,25 @@ function LeaseForm() {
       if (lotsError) throw lotsError
       setLots(lotsData || [])
 
-      // Récupérer les locataires du bailleur
+      // Récupérer les groupes de locataires de l'utilisateur via ses entités
+      const { data: entitiesData, error: entitiesError } = await supabase
+        .from('entities')
+        .select('id')
+        .eq('user_id', userData.id)
+
+      if (entitiesError) throw entitiesError
+
+      const entityIds = entitiesData.map(e => e.id)
+
+      // Récupérer tous les locataires principaux des groupes liés aux entités de l'utilisateur
       const { data: tenantsData, error: tenantsError } = await supabase
         .from('tenants')
-        .select('*')
-        .eq('landlord_id', userData.id)
+        .select(`
+          *,
+          tenant_groups!inner(id, name, entity_id)
+        `)
+        .in('tenant_groups.entity_id', entityIds)
+        .eq('is_main_tenant', true)
         .order('last_name')
 
       if (tenantsError) throw tenantsError
@@ -298,7 +388,7 @@ function LeaseForm() {
                 <option value="">Sélectionnez un locataire</option>
                 {tenants.map((tenant) => (
                   <option key={tenant.id} value={tenant.id}>
-                    {tenant.first_name} {tenant.last_name} - {tenant.email}
+                    {tenant.tenant_groups?.name || `${tenant.first_name} ${tenant.last_name}`} - {tenant.email}
                   </option>
                 ))}
               </select>
@@ -528,6 +618,44 @@ function LeaseForm() {
                     </div>
                   </div>
                 </div>
+              )}
+
+              {/* Alerte taux d'effort */}
+              {effortWarning && effortRate !== null && (
+                <Alert
+                  variant={effortWarning === 'danger' ? 'error' : effortWarning}
+                  title={`Taux d'effort : ${effortRate.toFixed(1)} %`}
+                  className="mt-4"
+                >
+                  {effortWarning === 'danger' && (
+                    <>
+                      <p className="font-semibold mb-1">⚠️ Risque très élevé</p>
+                      <p className="text-sm">Le taux d'effort dépasse 50%. Une garantie solide est fortement recommandée (Visale, organisme de cautionnement, ou garant avec revenus 3× supérieurs au loyer).</p>
+                    </>
+                  )}
+                  {effortWarning === 'warning' && (
+                    <>
+                      <p className="font-semibold mb-1">⚠️ Risque élevé</p>
+                      <p className="text-sm">Le taux d'effort dépasse 40%. Une garantie est recommandée pour sécuriser ce bail.</p>
+                    </>
+                  )}
+                  {effortWarning === 'info' && (
+                    <>
+                      <p className="font-semibold mb-1">ℹ️ Taux légèrement élevé</p>
+                      <p className="text-sm">Le taux d'effort dépasse 33% (maximum recommandé). Vérifiez la solvabilité du locataire.</p>
+                    </>
+                  )}
+                  <div className="mt-2 text-sm">
+                    <p>Revenus mensuels du groupe : <span className="font-medium">{totalIncome.toLocaleString('fr-FR')} €</span></p>
+                    <p>Loyer net après aides : <span className="font-medium">
+                      {(
+                        parseFloat(formData.rent_amount || 0) +
+                        parseFloat(formData.charges_amount || 0) -
+                        (formData.caf_direct_payment ? parseFloat(formData.caf_amount || 0) : 0)
+                      ).toLocaleString('fr-FR')} €
+                    </span></p>
+                  </div>
+                </Alert>
               )}
             </div>
 

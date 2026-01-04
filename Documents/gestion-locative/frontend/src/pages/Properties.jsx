@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
@@ -6,6 +6,29 @@ import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
+
+// Constantes extraites pour éviter recréation à chaque render
+const CATEGORY_LABELS = {
+  building: 'Immeuble',
+  house: 'Maison',
+  apartment: 'Appartement',
+  commercial: 'Local commercial',
+  office: 'Bureau',
+  land: 'Terrain',
+  parking: 'Parking',
+  other: 'Autre'
+}
+
+const CATEGORY_VARIANTS = {
+  building: 'info',
+  house: 'success',
+  apartment: 'default',
+  commercial: 'warning',
+  office: 'default',
+  land: 'default',
+  parking: 'default',
+  other: 'default'
+}
 
 function Properties() {
   const [properties, setProperties] = useState([])
@@ -137,7 +160,8 @@ function Properties() {
     }
   }
 
-  const handleDelete = async (id) => {
+  // Handlers mémoïsés pour éviter recréation à chaque render
+  const handleDelete = useCallback(async (id) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer cette propriété ? Tous les lots associés seront également supprimés.')) {
       return
     }
@@ -154,44 +178,25 @@ function Properties() {
     } catch (error) {
       alert('Erreur lors de la suppression : ' + error.message)
     }
-  }
+  }, [])
 
-  const handleAddProperty = () => {
+  const handleAddProperty = useCallback(() => {
     if (entities.length === 0) {
       alert('Vous devez d\'abord créer une entité juridique avant d\'ajouter une propriété.')
       navigate('/entities/new')
       return
     }
     navigate('/properties/new')
-  }
+  }, [entities.length, navigate])
 
-  const getCategoryLabel = (category) => {
-    const labels = {
-      building: 'Immeuble',
-      house: 'Maison',
-      apartment: 'Appartement',
-      commercial: 'Local commercial',
-      office: 'Bureau',
-      land: 'Terrain',
-      parking: 'Parking',
-      other: 'Autre'
-    }
-    return labels[category] || category
-  }
+  // Fonctions utilitaires mémoïsées
+  const getCategoryLabel = useCallback((category) => {
+    return CATEGORY_LABELS[category] || category
+  }, [])
 
-  const getCategoryBadge = (category) => {
-    const variants = {
-      building: 'info',
-      house: 'success',
-      apartment: 'default',
-      commercial: 'warning',
-      office: 'default',
-      land: 'default',
-      parking: 'default',
-      other: 'default'
-    }
-    return <Badge variant={variants[category] || 'default'}>{getCategoryLabel(category)}</Badge>
-  }
+  const getCategoryBadge = useCallback((category) => {
+    return <Badge variant={CATEGORY_VARIANTS[category] || 'default'}>{CATEGORY_LABELS[category] || category}</Badge>
+  }, [])
 
   if (loading) {
     return (

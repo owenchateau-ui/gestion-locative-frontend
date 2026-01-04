@@ -1,254 +1,614 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
+import { ArrowLeft, Plus, Trash2, Save, User, Users, Heart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useEntity } from '../context/EntityContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
+import Alert from '../components/ui/Alert'
+import Loading from '../components/ui/Loading'
+import EntitySelect from '../components/entities/EntitySelect'
+import { createTenantGroup, getTenantGroupById, updateTenantGroup } from '../services/tenantGroupService'
+import { PROFESSIONAL_STATUS, CONTRACT_TYPES, RELATIONSHIPS } from '../constants/tenantConstants'
 
 function TenantForm() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { selectedEntity } = useEntity()
   const isEditMode = Boolean(id)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    phone: '',
-    date_of_birth: '',
-    place_of_birth: ''
+  const [submitting, setSubmitting] = useState(false)
+  const [entityId, setEntityId] = useState(selectedEntity || '')
+
+  const [groupData, setGroupData] = useState({
+    group_type: 'individual',
+    couple_status: null,
+    name: ''
   })
+
+  const [tenants, setTenants] = useState([
+    {
+      tempId: Date.now(),
+      is_main_tenant: true,
+      first_name: '',
+      last_name: '',
+      email: '',
+      phone: '',
+      birth_date: '',
+      birth_place: '',
+      relationship: null,
+      professional_status: '',
+      employer_name: '',
+      job_title: '',
+      contract_type: '',
+      employment_start_date: '',
+      monthly_income: '',
+      other_income: ''
+    }
+  ])
 
   useEffect(() => {
     if (isEditMode) {
-      fetchTenant()
+      fetchTenantGroup()
     }
   }, [id])
 
-  const fetchTenant = async () => {
+  // Synchroniser l'entité sélectionnée depuis le contexte
+  useEffect(() => {
+    if (selectedEntity && !entityId) {
+      setEntityId(selectedEntity)
+    }
+  }, [selectedEntity])
+
+  useEffect(() => {
+    // Générer automatiquement le nom du groupe
+    if (tenants.length > 0 && !isEditMode) {
+      const names = tenants
+        .filter(t => t.first_name && t.last_name)
+        .map(t => `${t.first_name} ${t.last_name}`)
+        .join(' & ')
+
+      if (names) {
+        setGroupData(prev => ({ ...prev, name: names }))
+      }
+    }
+  }, [tenants, isEditMode])
+
+  const fetchTenantGroup = async () => {
     try {
       setLoading(true)
-      const { data, error } = await supabase
-        .from('tenants')
-        .select('*')
-        .eq('id', id)
-        .single()
+      const data = await getTenantGroupById(id)
 
-      if (error) throw error
-
-      setFormData({
-        first_name: data.first_name || '',
-        last_name: data.last_name || '',
-        email: data.email || '',
-        phone: data.phone || '',
-        date_of_birth: data.date_of_birth || '',
-        place_of_birth: data.place_of_birth || ''
+      setGroupData({
+        group_type: data.group_type || 'individual',
+        couple_status: data.couple_status,
+        name: data.name || ''
       })
-    } catch (error) {
-      setError(error.message)
+
+      // Charger l'entity_id du groupe
+      if (data.entity_id) {
+        setEntityId(data.entity_id)
+      }
+
+      if (data.tenants && data.tenants.length > 0) {
+        setTenants(data.tenants.map(t => ({
+          ...t,
+          tempId: t.id,
+          monthly_income: t.monthly_income || '',
+          other_income: t.other_income || ''
+        })))
+      }
+    } catch (err) {
+      console.error('Erreur lors du chargement:', err)
+      setError(err.message)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
+  const handleGroupChange = (field, value) => {
+    setGroupData(prev => ({ ...prev, [field]: value }))
+
+    // Ajuster le nombre de locataires selon le type de groupe
+    if (field === 'group_type') {
+      if (value === 'individual' && tenants.length > 1) {
+        // Garder seulement le locataire principal
+        setTenants(prev => prev.filter(t => t.is_main_tenant))
+      } else if (value === 'couple' && tenants.length === 1) {
+        // Ajouter un deuxième locataire pour le couple
+        addTenant()
+      }
+    }
+  }
+
+  const handleTenantChange = (tempId, field, value) => {
+    setTenants(prev =>
+      prev.map(t =>
+        t.tempId === tempId ? { ...t, [field]: value } : t
+      )
+    )
+  }
+
+  const addTenant = () => {
+    setTenants(prev => [
       ...prev,
-      [name]: value
-    }))
+      {
+        tempId: Date.now(),
+        is_main_tenant: false,
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        birth_date: '',
+        birth_place: '',
+        relationship: groupData.group_type === 'couple' ? 'conjoint' : 'colocataire',
+        professional_status: '',
+        employer_name: '',
+        job_title: '',
+        contract_type: '',
+        employment_start_date: '',
+        monthly_income: '',
+        other_income: ''
+      }
+    ])
+  }
+
+  const removeTenant = (tempId) => {
+    if (tenants.length <= 1) {
+      alert('Il doit y avoir au moins un locataire')
+      return
+    }
+
+    setTenants(prev => prev.filter(t => t.tempId !== tempId))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
-    setError(null)
+
+    if (!entityId) {
+      setError('Veuillez sélectionner une entité')
+      return
+    }
+
+    // Validation
+    if (!groupData.name.trim()) {
+      setError('Le nom du groupe est obligatoire')
+      return
+    }
+
+    if (tenants.length === 0) {
+      setError('Il doit y avoir au moins un locataire')
+      return
+    }
+
+    const mainTenant = tenants.find(t => t.is_main_tenant)
+    if (!mainTenant) {
+      setError('Il doit y avoir un locataire principal')
+      return
+    }
+
+    for (const tenant of tenants) {
+      if (!tenant.first_name || !tenant.last_name || !tenant.email) {
+        setError('Tous les locataires doivent avoir un prénom, nom et email')
+        return
+      }
+    }
 
     try {
-      // Récupérer l'ID de l'utilisateur depuis la table users
-      const { data: userData, error: userError } = await supabase
-        .from('users')
-        .select('id')
-        .eq('supabase_uid', user.id)
-        .single()
+      setSubmitting(true)
+      setError(null)
 
-      if (userError) throw userError
-
-      // Préparer les données pour l'insertion/mise à jour
-      const tenantData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        email: formData.email,
-        phone: formData.phone || null,
-        date_of_birth: formData.date_of_birth || null,
-        place_of_birth: formData.place_of_birth || null
+      const groupPayload = {
+        ...groupData,
+        entity_id: entityId,
+        tenants: tenants.map(t => ({
+          ...t,
+          monthly_income: parseFloat(t.monthly_income) || 0,
+          other_income: parseFloat(t.other_income) || 0
+        }))
       }
 
       if (isEditMode) {
-        // Mise à jour
-        const { error } = await supabase
-          .from('tenants')
-          .update(tenantData)
-          .eq('id', id)
-
-        if (error) throw error
+        await updateTenantGroup(id, groupPayload)
       } else {
-        // Création
-        tenantData.landlord_id = userData.id
-
-        const { error } = await supabase
-          .from('tenants')
-          .insert([tenantData])
-
-        if (error) throw error
+        await createTenantGroup(groupPayload)
       }
 
-      // Rediriger vers la liste des locataires
       navigate('/tenants')
-    } catch (error) {
-      setError(error.message)
-      setLoading(false)
+    } catch (err) {
+      console.error('Erreur lors de la sauvegarde:', err)
+      setError(err.message)
+    } finally {
+      setSubmitting(false)
     }
   }
 
+  if (loading) {
+    return (
+      <DashboardLayout title={isEditMode ? 'Modifier le locataire' : 'Nouveau locataire'}>
+        <Loading message="Chargement..." />
+      </DashboardLayout>
+    )
+  }
+
   return (
-    <DashboardLayout title={isEditMode ? 'Modifier le locataire' : 'Ajouter un locataire'}>
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            {isEditMode ? 'Modifier le locataire' : 'Ajouter un locataire'}
-          </h2>
-          <p className="text-sm text-gray-600 mt-1">
-            Renseignez les informations du locataire
-          </p>
+    <DashboardLayout title={isEditMode ? 'Modifier le locataire' : 'Nouveau locataire'}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <Alert variant="error" title="Erreur">
+            {error}
+          </Alert>
+        )}
+
+        <div className="flex items-center gap-3">
+          <Button type="button" variant="secondary" onClick={() => navigate('/tenants')}>
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Retour
+          </Button>
         </div>
 
-        <Card>
-          {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
-              {error}
+        {/* Sélecteur d'entité */}
+        <Card title="Entité juridique" padding>
+          <EntitySelect
+            value={entityId}
+            onChange={setEntityId}
+            required
+            label="Entité propriétaire"
+            placeholder="Sélectionner l'entité juridique..."
+          />
+          <p className="text-sm text-gray-500 mt-2">
+            L'entité juridique à laquelle sera rattaché ce locataire (SCI, SARL, nom propre, etc.)
+          </p>
+        </Card>
+
+        {/* Type de groupe */}
+        <Card title="Type de location" padding>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button
+              type="button"
+              onClick={() => handleGroupChange('group_type', 'individual')}
+              className={`p-6 border-2 rounded-lg transition ${
+                groupData.group_type === 'individual'
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <User className="w-8 h-8 mx-auto mb-3 text-blue-500" />
+              <p className="font-medium text-gray-900">Individuel</p>
+              <p className="text-sm text-gray-500 mt-1">Une seule personne</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleGroupChange('group_type', 'couple')}
+              className={`p-6 border-2 rounded-lg transition ${
+                groupData.group_type === 'couple'
+                  ? 'border-pink-500 bg-pink-50'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <Heart className="w-8 h-8 mx-auto mb-3 text-pink-500" />
+              <p className="font-medium text-gray-900">Couple</p>
+              <p className="text-sm text-gray-500 mt-1">Deux conjoints</p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleGroupChange('group_type', 'colocation')}
+              className={`p-6 border-2 rounded-lg transition ${
+                groupData.group_type === 'colocation'
+                  ? 'border-purple-500 bg-purple-50'
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <Users className="w-8 h-8 mx-auto mb-3 text-purple-500" />
+              <p className="font-medium text-gray-900">Colocation</p>
+              <p className="text-sm text-gray-500 mt-1">Plusieurs locataires</p>
+            </button>
+          </div>
+
+          {/* Statut couple */}
+          {groupData.group_type === 'couple' && (
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Statut du couple
+              </label>
+              <select
+                value={groupData.couple_status || ''}
+                onChange={(e) => handleGroupChange('couple_status', e.target.value || null)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Sélectionner...</option>
+                <option value="married">Mariés</option>
+                <option value="pacs">Pacsés</option>
+                <option value="concubinage">Concubinage</option>
+              </select>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Prénom et Nom */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Prénom *
-                </label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Marie"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom *
-                </label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Martin"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="marie.martin@email.com"
-                required
-              />
-            </div>
-
-            {/* Téléphone */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Téléphone
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="06 12 34 56 78"
-              />
-            </div>
-
-            {/* Date et lieu de naissance */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date de naissance
-                </label>
-                <input
-                  type="date"
-                  name="date_of_birth"
-                  value={formData.date_of_birth}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Lieu de naissance
-                </label>
-                <input
-                  type="text"
-                  name="place_of_birth"
-                  value={formData.place_of_birth}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Paris"
-                />
-              </div>
-            </div>
-
-            {/* Boutons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                type="submit"
-                disabled={loading}
-                className="flex-1"
-              >
-                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Créer le locataire'}
-              </Button>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => navigate('/tenants')}
-                className="flex-1"
-              >
-                Annuler
-              </Button>
-            </div>
-          </form>
+          {/* Nom du groupe */}
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Nom du groupe *
+            </label>
+            <input
+              type="text"
+              value={groupData.name}
+              onChange={(e) => handleGroupChange('name', e.target.value)}
+              placeholder="Ex: Jean Dupont & Marie Martin"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Ce nom sera généré automatiquement à partir des noms des locataires
+            </p>
+          </div>
         </Card>
-      </div>
+
+        {/* Locataires */}
+        {tenants.map((tenant, index) => (
+          <Card
+            key={tenant.tempId}
+            title={`Locataire ${index + 1}${tenant.is_main_tenant ? ' (Principal)' : ''}`}
+            padding
+          >
+            <div className="space-y-6">
+              {/* Informations personnelles */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-4">Informations personnelles</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Prénom *
+                    </label>
+                    <input
+                      type="text"
+                      value={tenant.first_name}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'first_name', e.target.value)}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nom *
+                    </label>
+                    <input
+                      type="text"
+                      value={tenant.last_name}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'last_name', e.target.value)}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      value={tenant.email}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'email', e.target.value)}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Téléphone
+                    </label>
+                    <input
+                      type="tel"
+                      value={tenant.phone}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'phone', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date de naissance
+                    </label>
+                    <input
+                      type="date"
+                      value={tenant.birth_date}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'birth_date', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lieu de naissance
+                    </label>
+                    <input
+                      type="text"
+                      value={tenant.birth_place}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'birth_place', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {!tenant.is_main_tenant && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Relation avec le locataire principal
+                      </label>
+                      <select
+                        value={tenant.relationship || ''}
+                        onChange={(e) => handleTenantChange(tenant.tempId, 'relationship', e.target.value || null)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Sélectionner...</option>
+                        {Object.entries(RELATIONSHIPS).map(([key, rel]) => (
+                          <option key={key} value={key}>{rel.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Situation professionnelle */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-4">Situation professionnelle</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Statut professionnel
+                    </label>
+                    <select
+                      value={tenant.professional_status}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'professional_status', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Sélectionner...</option>
+                      {Object.entries(PROFESSIONAL_STATUS).map(([key, status]) => (
+                        <option key={key} value={key}>{status.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Employeur
+                    </label>
+                    <input
+                      type="text"
+                      value={tenant.employer_name}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'employer_name', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Poste
+                    </label>
+                    <input
+                      type="text"
+                      value={tenant.job_title}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'job_title', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Type de contrat
+                    </label>
+                    <select
+                      value={tenant.contract_type}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'contract_type', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Sélectionner...</option>
+                      {Object.entries(CONTRACT_TYPES).map(([key, type]) => (
+                        <option key={key} value={key}>{type.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Date de début
+                    </label>
+                    <input
+                      type="date"
+                      value={tenant.employment_start_date}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'employment_start_date', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Revenus */}
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-4">Revenus mensuels nets</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Salaire net mensuel (€)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={tenant.monthly_income}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'monthly_income', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Autres revenus (€)
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={tenant.other_income}
+                      onChange={(e) => handleTenantChange(tenant.tempId, 'other_income', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Pensions, allocations, revenus locatifs, etc.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              {tenants.length > 1 && (
+                <div className="border-t pt-4">
+                  <Button
+                    type="button"
+                    variant="danger"
+                    size="sm"
+                    onClick={() => removeTenant(tenant.tempId)}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Retirer ce locataire
+                  </Button>
+                </div>
+              )}
+            </div>
+          </Card>
+        ))}
+
+        {/* Ajouter un locataire */}
+        {(groupData.group_type === 'colocation' || (groupData.group_type === 'couple' && tenants.length < 2)) && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={addTenant}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Ajouter un locataire
+          </Button>
+        )}
+
+        {/* Actions finales */}
+        <div className="flex gap-3 justify-end">
+          <Button type="button" variant="secondary" onClick={() => navigate('/tenants')}>
+            Annuler
+          </Button>
+          <Button type="submit" variant="primary" disabled={submitting}>
+            <Save className="w-4 h-4 mr-2" />
+            {submitting ? 'Enregistrement...' : 'Enregistrer'}
+          </Button>
+        </div>
+      </form>
     </DashboardLayout>
   )
 }

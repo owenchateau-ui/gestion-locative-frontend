@@ -272,7 +272,7 @@ function CandidateStatus() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium text-gray-900">
-                        {c.lots_new?.name} - {c.lots_new?.properties_new?.name}
+                        {c.lots?.name} - {c.lots?.properties_new?.name}
                       </p>
                       <p className="text-sm text-gray-500">
                         Candidature du {formatDate(c.created_at)}
@@ -357,11 +357,16 @@ function CandidateStatus() {
                   <div>
                     <p className="text-sm text-gray-500">Lot</p>
                     <p className="text-base font-medium text-gray-900">
-                      {candidate.lots_new?.name}
+                      {candidate.lots?.name || 'Non renseigné'}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {candidate.lots_new?.properties_new?.name}
+                      {candidate.lots?.properties_new?.name || 'Propriété non renseignée'}
                     </p>
+                    {candidate.lots?.properties_new?.address && (
+                      <p className="text-sm text-gray-400 mt-1">
+                        {candidate.lots.properties_new.address}, {candidate.lots.properties_new.city}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -369,7 +374,7 @@ function CandidateStatus() {
                   <div>
                     <p className="text-sm text-gray-500">Loyer</p>
                     <p className="text-base font-medium text-gray-900">
-                      {formatCurrency(candidate.lots_new?.rent_amount)}
+                      {formatCurrency(candidate.lots?.rent_amount)}
                     </p>
                   </div>
                 </div>

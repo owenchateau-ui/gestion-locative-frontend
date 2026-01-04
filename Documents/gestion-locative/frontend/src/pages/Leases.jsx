@@ -44,7 +44,14 @@ function Leases() {
             name,
             properties_new!inner(id, name, entity_id, entities!inner(id, name, color, user_id))
           ),
-          tenant:tenants!inner(id, first_name, last_name, landlord_id)
+          tenant:tenants!inner(
+            id,
+            first_name,
+            last_name,
+            group_id,
+            is_main_tenant,
+            tenant_groups(id, name, group_type)
+          )
         `)
         .eq('lot.properties_new.entities.user_id', userData.id)
         .order('created_at', { ascending: false })
@@ -199,8 +206,15 @@ function Leases() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">
-                          {lease.tenant.first_name} {lease.tenant.last_name}
+                          {lease.tenant.tenant_groups?.name || `${lease.tenant.first_name} ${lease.tenant.last_name}`}
                         </div>
+                        {lease.tenant.tenant_groups && (
+                          <div className="text-xs text-gray-500">
+                            {lease.tenant.tenant_groups.group_type === 'couple' && '👫 Couple'}
+                            {lease.tenant.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
+                            {lease.tenant.tenant_groups.group_type === 'individual' && '👤 Individuel'}
+                          </div>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900">

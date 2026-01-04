@@ -2,8 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Suspense, lazy } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { EntityProvider } from './context/EntityContext'
+import { ToastProvider } from './context/ToastContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Loading from './components/ui/Loading'
+import ToastContainer from './components/ui/ToastContainer'
 
 // Pages publiques (chargées immédiatement)
 import Home from './pages/Home'
@@ -25,8 +27,10 @@ const LotForm = lazy(() => import('./pages/LotForm'))
 const LotDetail = lazy(() => import('./pages/LotDetail'))
 const Tenants = lazy(() => import('./pages/Tenants'))
 const TenantForm = lazy(() => import('./pages/TenantForm'))
+const TenantDetail = lazy(() => import('./pages/TenantDetail'))
 const Leases = lazy(() => import('./pages/Leases'))
 const LeaseForm = lazy(() => import('./pages/LeaseForm'))
+const LeaseDetail = lazy(() => import('./pages/LeaseDetail'))
 const Payments = lazy(() => import('./pages/Payments'))
 const PaymentForm = lazy(() => import('./pages/PaymentForm'))
 const Indexation = lazy(() => import('./pages/Indexation'))
@@ -178,6 +182,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/tenants/:id"
+        element={
+          <PrivateRoute>
+            <TenantDetail />
+          </PrivateRoute>
+        }
+      />
+      <Route
         path="/tenants/:id/edit"
         element={
           <PrivateRoute>
@@ -198,6 +210,14 @@ function AppRoutes() {
         element={
           <PrivateRoute>
             <LeaseForm />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/leases/:id"
+        element={
+          <PrivateRoute>
+            <LeaseDetail />
           </PrivateRoute>
         }
       />
@@ -416,7 +436,10 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <EntityProvider>
-            <AppRoutes />
+            <ToastProvider>
+              <AppRoutes />
+              <ToastContainer />
+            </ToastProvider>
           </EntityProvider>
         </AuthProvider>
       </BrowserRouter>

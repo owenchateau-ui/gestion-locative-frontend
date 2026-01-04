@@ -81,23 +81,21 @@ function Dashboard() {
 
       const occupiedLots = lotsData?.filter(lot => lot.status === 'occupied').length || 0
 
-      // Compter les locataires (avec filtre entité via baux)
-      let tenantsQuery = supabase
-        .from('tenants')
-        .select('*, leases!inner(lot:lots!inner(properties_new!inner(entity_id, entities!inner(user_id))))')
-        .eq('landlord_id', userData.id)
+      // Compter les groupes de locataires (avec filtre entité)
+      let groupsQuery = supabase
+        .from('tenant_groups')
+        .select('*, entities!inner(user_id)', { count: 'exact' })
+        .eq('entities.user_id', userData.id)
 
-      const { data: tenantsData, error: tenantsError } = await tenantsQuery
-
-      if (tenantsError) throw tenantsError
-
-      let filteredTenants = tenantsData || []
-      if (selectedEntity && tenantsData) {
-        // Filtrer les locataires qui ont au moins un bail dans l'entité sélectionnée
-        filteredTenants = tenantsData.filter(tenant =>
-          tenant.leases?.some(lease => lease.lot?.properties_new?.entity_id === selectedEntity)
-        )
+      if (selectedEntity) {
+        groupsQuery = groupsQuery.eq('entity_id', selectedEntity)
       }
+
+      const { data: groupsData, error: groupsError } = await groupsQuery
+
+      if (groupsError) throw groupsError
+
+      const filteredTenants = groupsData || []
 
       // Compter les baux actifs (avec filtre entité)
       let leasesQuery = supabase

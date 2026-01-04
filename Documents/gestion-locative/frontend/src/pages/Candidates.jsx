@@ -333,38 +333,59 @@ function Candidates() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {candidates.map((candidate) => (
-                    <tr key={candidate.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col">
-                          <div className="text-sm font-medium text-gray-900">
-                            {candidate.first_name} {candidate.last_name}
+                  {candidates.map((candidate) => {
+                    // Use total_monthly_income if available (includes all applicants)
+                    const totalIncome = candidate.total_monthly_income ||
+                                       (candidate.monthly_income + (candidate.other_income || 0))
+
+                    return (
+                      <tr key={candidate.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-gray-900">
+                                {candidate.first_name} {candidate.last_name}
+                                {candidate.application_type === 'couple' && (
+                                  <span className="text-gray-500 font-normal"> + 1 autre</span>
+                                )}
+                                {candidate.application_type === 'colocation' && (
+                                  <span className="text-gray-500 font-normal"> + {(candidate.nb_applicants || 2) - 1} autres</span>
+                                )}
+                              </span>
+                              {candidate.application_type === 'couple' && (
+                                <Badge variant="default" className="bg-pink-100 text-pink-700 text-xs px-2 py-0.5">💑</Badge>
+                              )}
+                              {candidate.application_type === 'colocation' && (
+                                <Badge variant="default" className="bg-purple-100 text-purple-700 text-xs px-2 py-0.5">👥 {candidate.nb_applicants}</Badge>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                              <Mail className="w-3 h-3" />
+                              {candidate.email}
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <Phone className="w-3 h-3" />
+                              {candidate.phone}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                            <Mail className="w-3 h-3" />
-                            {candidate.email}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{candidate.lots_new?.name}</div>
+                          <div className="text-xs text-gray-500">
+                            {candidate.lots_new?.properties_new?.name}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-gray-500">
-                            <Phone className="w-3 h-3" />
-                            {candidate.phone}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1 text-sm text-gray-900">
+                            <Euro className="w-4 h-4" />
+                            {formatCurrency(totalIncome)}
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{candidate.lots_new?.name}</div>
-                        <div className="text-xs text-gray-500">
-                          {candidate.lots_new?.properties_new?.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-1 text-sm text-gray-900">
-                          <Euro className="w-4 h-4" />
-                          {formatCurrency(candidate.monthly_income + (candidate.other_income || 0))}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          Loyer: {formatCurrency(candidate.lots_new?.rent_amount)}
-                        </div>
-                      </td>
+                          <div className="text-xs text-gray-500">
+                            {candidate.application_type && candidate.application_type !== 'individual'
+                              ? `Total cumulé • Loyer: ${formatCurrency(candidate.lots_new?.rent_amount)}`
+                              : `Loyer: ${formatCurrency(candidate.lots_new?.rent_amount)}`}
+                          </div>
+                        </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           {getScoreBadge(candidate.solvability_score)}
@@ -377,37 +398,38 @@ function Candidates() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(candidate.created_at)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => navigate(`/candidates/${candidate.id}`)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                          {candidate.status === 'pending' && (
-                            <>
-                              <Button
-                                variant="success"
-                                size="sm"
-                                onClick={() => handleAccept(candidate.id)}
-                              >
-                                <Check className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="danger"
-                                size="sm"
-                                onClick={() => handleReject(candidate.id)}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigate(`/candidates/${candidate.id}`)}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            {candidate.status === 'pending' && (
+                              <>
+                                <Button
+                                  variant="success"
+                                  size="sm"
+                                  onClick={() => handleAccept(candidate.id)}
+                                >
+                                  <Check className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="danger"
+                                  size="sm"
+                                  onClick={() => handleReject(candidate.id)}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>

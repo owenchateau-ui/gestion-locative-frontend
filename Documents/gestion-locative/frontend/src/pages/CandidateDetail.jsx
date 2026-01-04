@@ -214,9 +214,25 @@ function CandidateDetail() {
     )
   }
 
-  const totalIncome = (candidate.monthly_income || 0) + (candidate.other_income || 0)
+  // Use total_monthly_income from database (includes all applicants) if available
+  const totalIncome = candidate.total_monthly_income ||
+                      ((candidate.monthly_income || 0) + (candidate.other_income || 0))
   const rentAmount = candidate.lots?.rent_amount || 0
   const incomeRatio = rentAmount > 0 ? (totalIncome / rentAmount).toFixed(2) : 0
+
+  // Type badges
+  const getApplicationTypeBadge = () => {
+    const type = candidate.application_type || 'individual'
+    if (type === 'individual') return null // Don't show badge for individual
+    if (type === 'couple') {
+      return <Badge variant="default" className="bg-pink-100 text-pink-800">💑 Couple</Badge>
+    }
+    if (type === 'colocation') {
+      const nb = candidate.nb_applicants || 2
+      return <Badge variant="default" className="bg-purple-100 text-purple-800">👥 Colocation ({nb} pers.)</Badge>
+    }
+    return null
+  }
 
   return (
     <DashboardLayout title={`${candidate.first_name} ${candidate.last_name}`}>
@@ -228,8 +244,11 @@ function CandidateDetail() {
               <div className="flex items-center gap-3 mb-2">
                 <h2 className="text-2xl font-bold text-gray-900">
                   {candidate.first_name} {candidate.last_name}
+                  {candidate.application_type === 'couple' && ' + 1 autre'}
+                  {candidate.application_type === 'colocation' && ` + ${(candidate.nb_applicants || 2) - 1} autres`}
                 </h2>
                 {getStatusBadge(candidate.status)}
+                {getApplicationTypeBadge()}
               </div>
               <div className="flex flex-col gap-1 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
@@ -383,8 +402,13 @@ function CandidateDetail() {
           </Card>
         </div>
 
-        {/* Informations personnelles */}
-        <Card title="Informations personnelles" padding>
+        {/* Informations personnelles - Candidat 1 */}
+        <Card
+          title={candidate.application_type && candidate.application_type !== 'individual'
+            ? 'Informations personnelles - Candidat 1'
+            : 'Informations personnelles'}
+          padding
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-start gap-3">
               <User className="w-5 h-5 text-gray-400 mt-0.5" />
@@ -411,6 +435,120 @@ function CandidateDetail() {
             </div>
           </div>
         </Card>
+
+        {/* Candidat 2 */}
+        {(candidate.application_type === 'couple' || candidate.application_type === 'colocation') && (
+          <Card
+            title={`Informations personnelles - ${candidate.application_type === 'couple' ? 'Conjoint(e)' : 'Candidat 2'}`}
+            padding
+            className="bg-pink-50"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {candidate.applicant2_first_name && (
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-pink-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Nom complet</p>
+                    <p className="text-base text-gray-900">
+                      {candidate.applicant2_first_name} {candidate.applicant2_last_name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {candidate.applicant2_email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-pink-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-base text-gray-900">{candidate.applicant2_email}</p>
+                  </div>
+                </div>
+              )}
+              {candidate.applicant2_phone && (
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-pink-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Téléphone</p>
+                    <p className="text-base text-gray-900">{candidate.applicant2_phone}</p>
+                  </div>
+                </div>
+              )}
+              {candidate.applicant2_birth_date && (
+                <div className="flex items-start gap-3">
+                  <Calendar className="w-5 h-5 text-pink-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Date de naissance</p>
+                    <p className="text-base text-gray-900">{formatDate(candidate.applicant2_birth_date)}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Candidat 3 */}
+        {candidate.application_type === 'colocation' && candidate.nb_applicants >= 3 && (
+          <Card
+            title="Informations personnelles - Candidat 3"
+            padding
+            className="bg-purple-50"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {candidate.applicant3_first_name && (
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Nom complet</p>
+                    <p className="text-base text-gray-900">
+                      {candidate.applicant3_first_name} {candidate.applicant3_last_name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {candidate.applicant3_email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-base text-gray-900">{candidate.applicant3_email}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Candidat 4 */}
+        {candidate.application_type === 'colocation' && candidate.nb_applicants >= 4 && (
+          <Card
+            title="Informations personnelles - Candidat 4"
+            padding
+            className="bg-purple-50"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {candidate.applicant4_first_name && (
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Nom complet</p>
+                    <p className="text-base text-gray-900">
+                      {candidate.applicant4_first_name} {candidate.applicant4_last_name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {candidate.applicant4_email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-base text-gray-900">{candidate.applicant4_email}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
 
         {/* Situation professionnelle */}
         <Card title="Situation professionnelle" padding>
@@ -466,12 +604,21 @@ function CandidateDetail() {
         </Card>
 
         {/* Revenus */}
-        <Card title="Revenus" padding>
+        <Card
+          title={candidate.application_type && candidate.application_type !== 'individual'
+            ? 'Revenus cumulés'
+            : 'Revenus'}
+          padding
+        >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-start gap-3">
               <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Salaire mensuel</p>
+                <p className="text-sm text-gray-500">
+                  {candidate.application_type && candidate.application_type !== 'individual'
+                    ? 'Candidat 1 - Salaire mensuel'
+                    : 'Salaire mensuel'}
+                </p>
                 <p className="text-base font-medium text-gray-900">
                   {formatCurrency(candidate.monthly_income)}
                 </p>
@@ -481,26 +628,114 @@ function CandidateDetail() {
               <div className="flex items-start gap-3">
                 <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Autres revenus</p>
+                  <p className="text-sm text-gray-500">Candidat 1 - Autres revenus</p>
                   <p className="text-base font-medium text-gray-900">
                     {formatCurrency(candidate.other_income)}
                   </p>
                 </div>
               </div>
             )}
-            <div className="flex items-start gap-3">
-              <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
+
+            {/* Candidat 2 */}
+            {(candidate.application_type === 'couple' || candidate.application_type === 'colocation') && (
+              <>
+                {candidate.applicant2_monthly_income > 0 && (
+                  <div className="flex items-start gap-3">
+                    <Euro className="w-5 h-5 text-pink-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-500">Candidat 2 - Salaire mensuel</p>
+                      <p className="text-base font-medium text-gray-900">
+                        {formatCurrency(candidate.applicant2_monthly_income)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {candidate.applicant2_other_income > 0 && (
+                  <div className="flex items-start gap-3">
+                    <Euro className="w-5 h-5 text-pink-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-500">Candidat 2 - Autres revenus</p>
+                      <p className="text-base font-medium text-gray-900">
+                        {formatCurrency(candidate.applicant2_other_income)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Candidat 3 */}
+            {candidate.application_type === 'colocation' && candidate.nb_applicants >= 3 && (
+              <>
+                {candidate.applicant3_monthly_income > 0 && (
+                  <div className="flex items-start gap-3">
+                    <Euro className="w-5 h-5 text-purple-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-500">Candidat 3 - Salaire mensuel</p>
+                      <p className="text-base font-medium text-gray-900">
+                        {formatCurrency(candidate.applicant3_monthly_income)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Candidat 4 */}
+            {candidate.application_type === 'colocation' && candidate.nb_applicants >= 4 && (
+              <>
+                {candidate.applicant4_monthly_income > 0 && (
+                  <div className="flex items-start gap-3">
+                    <Euro className="w-5 h-5 text-purple-400 mt-0.5" />
+                    <div>
+                      <p className="text-sm text-gray-500">Candidat 4 - Salaire mensuel</p>
+                      <p className="text-base font-medium text-gray-900">
+                        {formatCurrency(candidate.applicant4_monthly_income)}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Total cumulé */}
+            <div className={`flex items-start gap-3 md:col-span-3 p-4 rounded-lg ${
+              candidate.application_type === 'couple' ? 'bg-pink-50' :
+              candidate.application_type === 'colocation' ? 'bg-purple-50' :
+              'bg-blue-50'
+            }`}>
+              <TrendingUp className={`w-6 h-6 mt-0.5 ${
+                candidate.application_type === 'couple' ? 'text-pink-600' :
+                candidate.application_type === 'colocation' ? 'text-purple-600' :
+                'text-blue-600'
+              }`} />
               <div>
-                <p className="text-sm text-gray-500">Total</p>
-                <p className="text-lg font-bold text-green-600">{formatCurrency(totalIncome)}</p>
+                <p className="text-sm font-medium text-gray-700">
+                  {candidate.application_type && candidate.application_type !== 'individual'
+                    ? 'Total cumulé (tous candidats)'
+                    : 'Total revenus'}
+                </p>
+                <p className={`text-2xl font-bold ${
+                  candidate.application_type === 'couple' ? 'text-pink-600' :
+                  candidate.application_type === 'colocation' ? 'text-purple-600' :
+                  'text-green-600'
+                }`}>
+                  {formatCurrency(totalIncome)}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Ratio avec le loyer: <span className="font-semibold">{incomeRatio}x</span>
+                </p>
               </div>
             </div>
           </div>
         </Card>
 
-        {/* Garant */}
+        {/* Garant 1 */}
         {candidate.has_guarantor && (
-          <Card title="Informations du garant" padding>
+          <Card
+            title={candidate.has_guarantor2 ? "Informations du garant 1" : "Informations du garant"}
+            padding
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
                 <User className="w-5 h-5 text-gray-400 mt-0.5" />
@@ -545,6 +780,63 @@ function CandidateDetail() {
                     <p className="text-sm text-gray-500">Revenus mensuels</p>
                     <p className="text-base font-medium text-gray-900">
                       {formatCurrency(candidate.guarantor_monthly_income)}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Garant 2 */}
+        {candidate.has_guarantor2 && (
+          <Card title="Informations du garant 2" padding className="bg-teal-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {candidate.guarantor2_first_name && (
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-teal-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Nom complet</p>
+                    <p className="text-base text-gray-900">
+                      {candidate.guarantor2_first_name} {candidate.guarantor2_last_name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {candidate.guarantor2_relationship && (
+                <div className="flex items-start gap-3">
+                  <User className="w-5 h-5 text-teal-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Lien avec le candidat</p>
+                    <p className="text-base text-gray-900">{candidate.guarantor2_relationship}</p>
+                  </div>
+                </div>
+              )}
+              {candidate.guarantor2_email && (
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-teal-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-base text-gray-900">{candidate.guarantor2_email}</p>
+                  </div>
+                </div>
+              )}
+              {candidate.guarantor2_phone && (
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-teal-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Téléphone</p>
+                    <p className="text-base text-gray-900">{candidate.guarantor2_phone}</p>
+                  </div>
+                </div>
+              )}
+              {candidate.guarantor2_monthly_income > 0 && (
+                <div className="flex items-start gap-3">
+                  <Euro className="w-5 h-5 text-teal-400 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-gray-500">Revenus mensuels</p>
+                    <p className="text-base font-medium text-gray-900">
+                      {formatCurrency(candidate.guarantor2_monthly_income)}
                     </p>
                   </div>
                 </div>

@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
+import Breadcrumb from '../components/ui/Breadcrumb'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
@@ -12,6 +14,7 @@ function PropertyDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { success, error: showError } = useToast()
 
   const [property, setProperty] = useState(null)
   const [stats, setStats] = useState({
@@ -93,9 +96,10 @@ function PropertyDetail() {
 
       if (error) throw error
 
+      success('Propriété supprimée avec succès')
       navigate('/properties')
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError('Erreur lors de la suppression : ' + err.message)
     }
   }
 
@@ -173,8 +177,16 @@ function PropertyDetail() {
 
   const occupancyRate = stats.totalLots > 0 ? (stats.occupiedLots / stats.totalLots * 100) : 0
 
+  const breadcrumbItems = [
+    { label: 'Entités', href: '/entities' },
+    { label: property.entities.name, href: `/entities/${property.entities.id}` },
+    { label: property.name }
+  ]
+
   return (
     <DashboardLayout title={property.name}>
+      <Breadcrumb items={breadcrumbItems} />
+
       <div className="space-y-6">
         {/* Header avec informations principales */}
         <Card>
