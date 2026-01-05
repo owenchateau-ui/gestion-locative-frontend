@@ -10,6 +10,7 @@ import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
+import ExportButton from '../components/ui/ExportButton'
 
 function Entities() {
   const [entities, setEntities] = useState([])
@@ -166,12 +167,19 @@ function Entities() {
               {entities.length} entité{entities.length > 1 ? 's' : ''}
             </p>
           </div>
-          <Button onClick={() => navigate('/entities/new')} size="lg">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Ajouter une entité
-          </Button>
+          <div className="flex gap-3">
+            <ExportButton
+              data={entities}
+              type="entities"
+              filename="entites"
+            />
+            <Button onClick={() => navigate('/entities/new')} size="lg">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Ajouter une entité
+            </Button>
+          </div>
         </div>
 
         {error && (

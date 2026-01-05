@@ -9,6 +9,7 @@ import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
+import ExportButton from '../components/ui/ExportButton'
 import { Building2 } from 'lucide-react'
 
 // Constantes extraites pour éviter recréation à chaque render
@@ -235,12 +236,19 @@ function Properties() {
               {properties.length} propriété{properties.length > 1 ? 's' : ''}
             </p>
           </div>
-          <Button onClick={handleAddProperty} size="lg">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Ajouter une propriété
-          </Button>
+          <div className="flex gap-3">
+            <ExportButton
+              data={properties}
+              type="properties"
+              filename="proprietes"
+            />
+            <Button onClick={handleAddProperty} size="lg">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Ajouter une propriété
+            </Button>
+          </div>
         </div>
 
         {/* Filtre par entité */}

@@ -10,6 +10,7 @@ import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
+import ExportButton from '../components/ui/ExportButton'
 import { FileText } from 'lucide-react'
 
 function Leases() {
@@ -153,12 +154,22 @@ function Leases() {
               {leases.length} bail{leases.length > 1 ? 'x' : ''}
             </p>
           </div>
-          <Button onClick={() => navigate('/leases/new')} size="lg">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Créer un bail
-          </Button>
+          <div className="flex gap-3">
+            <ExportButton
+              data={leases.map(l => ({
+                ...l,
+                tenant_name: l.tenant.tenant_groups?.name || `${l.tenant.first_name} ${l.tenant.last_name}`
+              }))}
+              type="leases"
+              filename="baux"
+            />
+            <Button onClick={() => navigate('/leases/new')} size="lg">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Créer un bail
+            </Button>
+          </div>
         </div>
 
         {error && (

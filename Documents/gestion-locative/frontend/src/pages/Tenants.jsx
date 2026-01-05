@@ -11,6 +11,7 @@ import Badge from '../components/ui/Badge'
 import Alert from '../components/ui/Alert'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
+import ExportButton from '../components/ui/ExportButton'
 import { useToast } from '../context/ToastContext'
 import { getAllTenantGroups, deleteTenantGroup } from '../services/tenantGroupService'
 
@@ -176,10 +177,26 @@ function Tenants() {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
-          <Button variant="primary" onClick={() => navigate('/tenants/new')}>
-            <Plus className="w-4 h-4 mr-2" />
-            Nouveau groupe
-          </Button>
+          <div className="flex gap-3">
+            <ExportButton
+              data={tenantGroups.map(g => ({
+                ...g,
+                name: g.name,
+                group_type: g.group_type,
+                email: g.tenants?.[0]?.email || '',
+                phone: g.tenants?.[0]?.phone || '',
+                entity_name: g.entity?.name || '',
+                lease_status: g.lease ? true : false,
+                total_income: g.tenants?.reduce((sum, t) => sum + (parseFloat(t.monthly_income) || 0), 0) || 0
+              }))}
+              type="tenants"
+              filename="locataires"
+            />
+            <Button variant="primary" onClick={() => navigate('/tenants/new')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Nouveau groupe
+            </Button>
+          </div>
         </div>
 
         {/* Filtres */}

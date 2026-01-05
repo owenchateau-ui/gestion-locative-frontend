@@ -10,6 +10,7 @@ import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
+import ExportButton from '../components/ui/ExportButton'
 import jsPDF from 'jspdf'
 import { CreditCard } from 'lucide-react'
 
@@ -281,12 +282,22 @@ function Payments() {
               {payments.length} paiement{payments.length > 1 ? 's' : ''}
             </p>
           </div>
-          <Button onClick={() => navigate('/payments/new')} size="lg">
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Enregistrer un paiement
-          </Button>
+          <div className="flex gap-3">
+            <ExportButton
+              data={payments.map(p => ({
+                ...p,
+                tenant_name: p.lease.tenant.tenant_groups?.name || `${p.lease.tenant.first_name} ${p.lease.tenant.last_name}`
+              }))}
+              type="payments"
+              filename="paiements"
+            />
+            <Button onClick={() => navigate('/payments/new')} size="lg">
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Enregistrer un paiement
+            </Button>
+          </div>
         </div>
 
         {/* Filtres */}
