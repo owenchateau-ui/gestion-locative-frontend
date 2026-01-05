@@ -7,7 +7,10 @@ import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
+import Skeleton from '../components/ui/Skeleton'
+import EmptyState from '../components/ui/EmptyState'
 import { countPendingCandidates } from '../services/candidateService'
+import { Home } from 'lucide-react'
 
 function Lots() {
   const [lots, setLots] = useState([])
@@ -238,8 +241,19 @@ function Lots() {
   if (loading) {
     return (
       <DashboardLayout title="Mes lots">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+        <div className="space-y-6">
+          {/* Header skeleton */}
+          <div className="flex justify-between items-center">
+            <div className="space-y-2">
+              <div className="animate-pulse bg-gray-200 rounded h-8 w-56" />
+              <div className="animate-pulse bg-gray-200 rounded h-4 w-20" />
+            </div>
+            <div className="animate-pulse bg-gray-200 rounded h-10 w-36" />
+          </div>
+          {/* Table skeleton */}
+          <Card padding={false}>
+            <Skeleton type="table-row" count={6} />
+          </Card>
         </div>
       </DashboardLayout>
     )
@@ -317,22 +331,19 @@ function Lots() {
         )}
 
         {lots.length === 0 ? (
-          <Card className="text-center py-12">
-            <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucun lot</h3>
-            <p className="text-gray-600 mb-6">
-              {selectedProperty !== 'all'
+          <Card padding>
+            <EmptyState
+              icon={Home}
+              title="Aucun lot"
+              description={selectedProperty !== 'all'
                 ? 'Aucun lot pour cette propriété'
                 : selectedEntity !== 'all'
                 ? 'Aucun lot pour cette entité'
                 : 'Commencez par ajouter votre premier lot (appartement, parking, cave...)'
               }
-            </p>
-            <Button onClick={handleAddLot}>
-              Ajouter votre premier lot
-            </Button>
+              actionLabel="Ajouter votre premier lot"
+              onAction={handleAddLot}
+            />
           </Card>
         ) : (
           <Card padding={false}>
