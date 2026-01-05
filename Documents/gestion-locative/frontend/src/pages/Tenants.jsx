@@ -9,7 +9,8 @@ import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
 import Alert from '../components/ui/Alert'
-import Loading from '../components/ui/Loading'
+import Skeleton from '../components/ui/Skeleton'
+import EmptyState from '../components/ui/EmptyState'
 import { useToast } from '../context/ToastContext'
 import { getAllTenantGroups, deleteTenantGroup } from '../services/tenantGroupService'
 
@@ -146,7 +147,15 @@ function Tenants() {
   if (loading) {
     return (
       <DashboardLayout title="Locataires">
-        <Loading message="Chargement des locataires..." />
+        <div className="space-y-6">
+          {/* Skeleton pour les filtres */}
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="animate-pulse bg-gray-200 rounded-lg h-10 w-64" />
+            <div className="animate-pulse bg-gray-200 rounded-lg h-10 w-32" />
+          </div>
+          {/* Skeleton pour les cartes */}
+          <Skeleton type="list-card" count={6} />
+        </div>
       </DashboardLayout>
     )
   }
@@ -215,27 +224,22 @@ function Tenants() {
       {/* Liste des groupes */}
       {filteredGroups.length === 0 ? (
         <Card padding>
-          <div className="text-center py-12">
-            <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {searchQuery ? 'Aucun résultat' : 'Aucun locataire'}
-            </h3>
-            <p className="text-gray-500 mb-6">
-              {searchQuery
+          <EmptyState
+            icon={Users}
+            title={searchQuery ? 'Aucun résultat' : 'Aucun locataire'}
+            description={
+              searchQuery
                 ? 'Aucun locataire ne correspond à votre recherche'
-                : 'Commencez par ajouter votre premier locataire'}
-            </p>
-            {!searchQuery && (
-              <Button variant="primary" onClick={() => navigate('/tenants/new')}>
-                <Plus className="w-4 h-4 mr-2" />
-                Ajouter un locataire
-              </Button>
-            )}
-          </div>
+                : 'Commencez par ajouter votre premier locataire'
+            }
+            variant={searchQuery ? 'search' : 'default'}
+            actionLabel={!searchQuery ? 'Ajouter un locataire' : undefined}
+            onAction={!searchQuery ? () => navigate('/tenants/new') : undefined}
+          />
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredGroups.map((group) => {
+          {filteredGroups.map((group, index) => {
             const mainTenant = group.tenants?.find(t => t.is_main_tenant) || group.tenants?.[0]
             const totalIncome = group.tenants?.reduce((sum, t) =>
               sum + (parseFloat(t.monthly_income) || 0) + (parseFloat(t.other_income) || 0),
@@ -255,9 +259,16 @@ function Tenants() {
               ? (netRent / totalIncome) * 100
               : 0
 
+            // Animation delay basé sur l'index (max 5 éléments avec animation)
+            const animationDelay = index < 5 ? `animate-delay-${(index + 1) * 100}` : ''
+
             return (
-              <Card key={group.id} padding>
-                <div className="space-y-4">
+              <div
+                key={group.id}
+                className={`hover-lift animate-card-enter ${animationDelay}`}
+              >
+                <Card padding>
+                  <div className="space-y-4">
                   {/* En-tête */}
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
@@ -382,7 +393,8 @@ function Tenants() {
                     </Button>
                   </div>
                 </div>
-              </Card>
+                </Card>
+              </div>
             )
           })}
         </div>
@@ -468,25 +480,26 @@ const renderAllTenantsList = () => {
       {/* Liste des locataires */}
       {filteredTenants.length === 0 ? (
         <Card padding>
-          <div className="text-center py-12">
-            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {searchQuery ? 'Aucun résultat' : 'Aucun locataire'}
-            </h3>
-            <p className="text-gray-500">
-              {searchQuery
+          <EmptyState
+            icon={User}
+            title={searchQuery ? 'Aucun résultat' : 'Aucun locataire'}
+            description={
+              searchQuery
                 ? 'Aucun locataire ne correspond à votre recherche'
-                : 'Aucun locataire trouvé'}
-            </p>
-          </div>
+                : 'Aucun locataire trouvé'
+            }
+            variant={searchQuery ? 'search' : 'default'}
+          />
         </Card>
       ) : (
         <div className="space-y-4">
-          {filteredTenants.map((tenant) => {
+          {filteredTenants.map((tenant, index) => {
             const income = (parseFloat(tenant.monthly_income) || 0) + (parseFloat(tenant.other_income) || 0)
+            const animationDelay = index < 5 ? `animate-delay-${(index + 1) * 100}` : ''
 
             return (
-              <Card key={tenant.id} padding>
+              <div key={tenant.id} className={`hover-lift animate-card-enter ${animationDelay}`}>
+                <Card padding>
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
                     {/* Avatar */}
@@ -560,7 +573,8 @@ const renderAllTenantsList = () => {
                     </Button>
                   </div>
                 </div>
-              </Card>
+                </Card>
+              </div>
             )
           })}
         </div>

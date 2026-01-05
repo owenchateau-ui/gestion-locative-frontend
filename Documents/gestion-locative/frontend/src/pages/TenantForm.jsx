@@ -316,10 +316,11 @@ function TenantForm() {
           {/* Statut couple */}
           {groupData.group_type === 'couple' && (
             <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="tenant-couple-status" className="block text-sm font-medium text-gray-700 mb-2">
                 Statut du couple
               </label>
               <select
+                id="tenant-couple-status"
                 value={groupData.couple_status || ''}
                 onChange={(e) => handleGroupChange('couple_status', e.target.value || null)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -334,10 +335,11 @@ function TenantForm() {
 
           {/* Nom du groupe */}
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="tenant-group-name" className="block text-sm font-medium text-gray-700 mb-2">
               Nom du groupe *
             </label>
             <input
+              id="tenant-group-name"
               type="text"
               value={groupData.name}
               onChange={(e) => handleGroupChange('name', e.target.value)}
@@ -364,10 +366,11 @@ function TenantForm() {
                 <h4 className="text-sm font-medium text-gray-700 mb-4">Informations personnelles</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-first_name`} className="block text-sm font-medium text-gray-700 mb-1">
                       Prénom *
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-first_name`}
                       type="text"
                       value={tenant.first_name}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'first_name', e.target.value)}
@@ -377,10 +380,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-last_name`} className="block text-sm font-medium text-gray-700 mb-1">
                       Nom *
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-last_name`}
                       type="text"
                       value={tenant.last_name}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'last_name', e.target.value)}
@@ -390,10 +394,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-email`} className="block text-sm font-medium text-gray-700 mb-1">
                       Email *
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-email`}
                       type="email"
                       value={tenant.email}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'email', e.target.value)}
@@ -403,10 +408,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-phone`} className="block text-sm font-medium text-gray-700 mb-1">
                       Téléphone
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-phone`}
                       type="tel"
                       value={tenant.phone}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'phone', e.target.value)}
@@ -415,10 +421,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-birth_date`} className="block text-sm font-medium text-gray-700 mb-1">
                       Date de naissance
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-birth_date`}
                       type="date"
                       value={tenant.birth_date}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'birth_date', e.target.value)}
@@ -427,10 +434,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-birth_place`} className="block text-sm font-medium text-gray-700 mb-1">
                       Lieu de naissance
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-birth_place`}
                       type="text"
                       value={tenant.birth_place}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'birth_place', e.target.value)}
@@ -440,10 +448,11 @@ function TenantForm() {
 
                   {!tenant.is_main_tenant && (
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor={`tenant-${tenant.tempId}-relationship`} className="block text-sm font-medium text-gray-700 mb-1">
                         Relation avec le locataire principal
                       </label>
                       <select
+                        id={`tenant-${tenant.tempId}-relationship`}
                         value={tenant.relationship || ''}
                         onChange={(e) => handleTenantChange(tenant.tempId, 'relationship', e.target.value || null)}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -463,10 +472,11 @@ function TenantForm() {
                 <h4 className="text-sm font-medium text-gray-700 mb-4">Situation professionnelle</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-professional_status`} className="block text-sm font-medium text-gray-700 mb-1">
                       Statut professionnel
                     </label>
                     <select
+                      id={`tenant-${tenant.tempId}-professional_status`}
                       value={tenant.professional_status}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'professional_status', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -479,10 +489,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-employer_name`} className="block text-sm font-medium text-gray-700 mb-1">
                       Employeur
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-employer_name`}
                       type="text"
                       value={tenant.employer_name}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'employer_name', e.target.value)}
@@ -491,10 +502,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-job_title`} className="block text-sm font-medium text-gray-700 mb-1">
                       Poste
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-job_title`}
                       type="text"
                       value={tenant.job_title}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'job_title', e.target.value)}
@@ -503,10 +515,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-contract_type`} className="block text-sm font-medium text-gray-700 mb-1">
                       Type de contrat
                     </label>
                     <select
+                      id={`tenant-${tenant.tempId}-contract_type`}
                       value={tenant.contract_type}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'contract_type', e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -519,10 +532,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-employment_start_date`} className="block text-sm font-medium text-gray-700 mb-1">
                       Date de début
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-employment_start_date`}
                       type="date"
                       value={tenant.employment_start_date}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'employment_start_date', e.target.value)}
@@ -537,10 +551,11 @@ function TenantForm() {
                 <h4 className="text-sm font-medium text-gray-700 mb-4">Revenus mensuels nets</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-monthly_income`} className="block text-sm font-medium text-gray-700 mb-1">
                       Salaire net mensuel (€)
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-monthly_income`}
                       type="number"
                       step="0.01"
                       min="0"
@@ -551,10 +566,11 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-other_income`} className="block text-sm font-medium text-gray-700 mb-1">
                       Autres revenus (€)
                     </label>
                     <input
+                      id={`tenant-${tenant.tempId}-other_income`}
                       type="number"
                       step="0.01"
                       min="0"
