@@ -349,10 +349,11 @@ function LeaseForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Sélection du lot */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lease-lot_id" className="block text-sm font-medium text-gray-700 mb-2">
                 Lot à louer *
               </label>
               <select
+                id="lease-lot_id"
                 name="lot_id"
                 value={formData.lot_id}
                 onChange={handleChange}
@@ -375,10 +376,11 @@ function LeaseForm() {
 
             {/* Sélection du locataire */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lease-tenant_id" className="block text-sm font-medium text-gray-700 mb-2">
                 Locataire *
               </label>
               <select
+                id="lease-tenant_id"
                 name="tenant_id"
                 value={formData.tenant_id}
                 onChange={handleChange}
@@ -397,10 +399,11 @@ function LeaseForm() {
             {/* Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-start_date" className="block text-sm font-medium text-gray-700 mb-2">
                   Date de début *
                 </label>
                 <input
+                  id="lease-start_date"
                   type="date"
                   name="start_date"
                   value={formData.start_date}
@@ -410,10 +413,11 @@ function LeaseForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-end_date" className="block text-sm font-medium text-gray-700 mb-2">
                   Date de fin (optionnel)
                 </label>
                 <input
+                  id="lease-end_date"
                   type="date"
                   name="end_date"
                   value={formData.end_date}
@@ -427,10 +431,11 @@ function LeaseForm() {
             {/* Loyer, charges et dépôt */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-rent_amount" className="block text-sm font-medium text-gray-700 mb-2">
                   Loyer (€) *
                 </label>
                 <input
+                  id="lease-rent_amount"
                   type="number"
                   name="rent_amount"
                   value={formData.rent_amount}
@@ -443,10 +448,11 @@ function LeaseForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-charges_amount" className="block text-sm font-medium text-gray-700 mb-2">
                   Charges (€)
                 </label>
                 <input
+                  id="lease-charges_amount"
                   type="number"
                   name="charges_amount"
                   value={formData.charges_amount}
@@ -458,10 +464,11 @@ function LeaseForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-deposit_amount" className="block text-sm font-medium text-gray-700 mb-2">
                   Dépôt de garantie (€)
                 </label>
                 <input
+                  id="lease-deposit_amount"
                   type="number"
                   name="deposit_amount"
                   value={formData.deposit_amount}
@@ -477,10 +484,11 @@ function LeaseForm() {
             {/* Jour de paiement, type et statut */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-payment_day" className="block text-sm font-medium text-gray-700 mb-2">
                   Jour de paiement *
                 </label>
                 <input
+                  id="lease-payment_day"
                   type="number"
                   name="payment_day"
                   value={formData.payment_day}
@@ -493,10 +501,11 @@ function LeaseForm() {
                 <p className="text-xs text-gray-500 mt-1">Entre 1 et 28</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-lease_type" className="block text-sm font-medium text-gray-700 mb-2">
                   Type de bail *
                 </label>
                 <select
+                  id="lease-lease_type"
                   name="lease_type"
                   value={formData.lease_type}
                   onChange={handleChange}
@@ -508,10 +517,11 @@ function LeaseForm() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-status" className="block text-sm font-medium text-gray-700 mb-2">
                   Statut *
                 </label>
                 <select
+                  id="lease-status"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
@@ -532,8 +542,9 @@ function LeaseForm() {
 
               {/* Versement direct CAF */}
               <div className="mb-4">
-                <label className="flex items-center space-x-3 cursor-pointer">
+                <label htmlFor="lease-caf_direct_payment" className="flex items-center space-x-3 cursor-pointer">
                   <input
+                    id="lease-caf_direct_payment"
                     type="checkbox"
                     name="caf_direct_payment"
                     checked={formData.caf_direct_payment}
@@ -553,10 +564,11 @@ function LeaseForm() {
               {formData.caf_direct_payment && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ml-7">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lease-caf_amount" className="block text-sm font-medium text-gray-700 mb-2">
                       Montant mensuel APL (€)
                     </label>
                     <input
+                      id="lease-caf_amount"
                       type="number"
                       name="caf_amount"
                       value={formData.caf_amount}
@@ -571,10 +583,11 @@ function LeaseForm() {
                     </p>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lease-caf_payment_day" className="block text-sm font-medium text-gray-700 mb-2">
                       Jour de versement CAF
                     </label>
                     <input
+                      id="lease-caf_payment_day"
                       type="number"
                       name="caf_payment_day"
                       value={formData.caf_payment_day}
@@ -665,8 +678,9 @@ function LeaseForm() {
 
               {/* Activer l'indexation */}
               <div className="space-y-4">
-                <label className="flex items-center space-x-3 cursor-pointer">
+                <label htmlFor="lease-indexation_enabled" className="flex items-center space-x-3 cursor-pointer">
                   <input
+                    id="lease-indexation_enabled"
                     type="checkbox"
                     name="indexation_enabled"
                     checked={formData.indexation_enabled}
@@ -696,10 +710,11 @@ function LeaseForm() {
                     {/* Selects trimestre et année */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="lease-irl_reference_quarter" className="block text-sm font-medium text-gray-700 mb-2">
                           Trimestre de référence IRL *
                         </label>
                         <select
+                          id="lease-irl_reference_quarter"
                           value={irlReferenceQuarter}
                           onChange={(e) => setIrlReferenceQuarter(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -713,10 +728,11 @@ function LeaseForm() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="lease-irl_reference_year" className="block text-sm font-medium text-gray-700 mb-2">
                           Année de référence *
                         </label>
                         <select
+                          id="lease-irl_reference_year"
                           value={irlReferenceYear}
                           onChange={(e) => setIrlReferenceYear(e.target.value)}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -759,10 +775,11 @@ function LeaseForm() {
 
             {/* Clauses particulières */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lease-special_clauses" className="block text-sm font-medium text-gray-700 mb-2">
                 Clauses particulières
               </label>
               <textarea
+                id="lease-special_clauses"
                 name="special_clauses"
                 value={formData.special_clauses}
                 onChange={handleChange}

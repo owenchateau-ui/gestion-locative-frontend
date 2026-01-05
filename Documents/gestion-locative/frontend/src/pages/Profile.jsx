@@ -121,10 +121,11 @@ function Profile() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email (non modifiable) */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="profile-email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email
               </label>
               <input
+                id="profile-email"
                 type="email"
                 value={formData.email}
                 disabled
@@ -138,10 +139,11 @@ function Profile() {
             {/* Prénom et Nom */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="profile-first_name" className="block text-sm font-medium text-gray-700 mb-2">
                   Prénom *
                 </label>
                 <input
+                  id="profile-first_name"
                   type="text"
                   name="first_name"
                   value={formData.first_name}
@@ -152,10 +154,11 @@ function Profile() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="profile-last_name" className="block text-sm font-medium text-gray-700 mb-2">
                   Nom *
                 </label>
                 <input
+                  id="profile-last_name"
                   type="text"
                   name="last_name"
                   value={formData.last_name}
@@ -169,10 +172,11 @@ function Profile() {
 
             {/* Téléphone */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="profile-phone" className="block text-sm font-medium text-gray-700 mb-2">
                 Téléphone
               </label>
               <input
+                id="profile-phone"
                 type="tel"
                 name="phone"
                 value={formData.phone}

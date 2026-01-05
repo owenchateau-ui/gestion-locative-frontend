@@ -52,25 +52,25 @@ function Register() {
         <form onSubmit={handleRegister}>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-gray-700 mb-2">Prenom</label>
-              <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jean" required />
+              <label htmlFor="register-firstname" className="block text-gray-700 mb-2">Prenom</label>
+              <input id="register-firstname" type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jean" required />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Nom</label>
-              <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Dupont" required />
+              <label htmlFor="register-lastname" className="block text-gray-700 mb-2">Nom</label>
+              <input id="register-lastname" type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Dupont" required />
             </div>
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Telephone</label>
-            <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="06 12 34 56 78" />
+            <label htmlFor="register-phone" className="block text-gray-700 mb-2">Telephone</label>
+            <input id="register-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="06 12 34 56 78" />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">Email</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="votre@email.com" required />
+            <label htmlFor="register-email" className="block text-gray-700 mb-2">Email</label>
+            <input id="register-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="votre@email.com" required />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 mb-2">Mot de passe</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="********" minLength={6} required />
+            <label htmlFor="register-password" className="block text-gray-700 mb-2">Mot de passe</label>
+            <input id="register-password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="********" minLength={6} required />
           </div>
           <button type="submit" disabled={loading} className="w-full bg-blue-500 text-white p-3 rounded font-semibold hover:bg-blue-600 disabled:opacity-50">{loading ? 'Inscription...' : "S'inscrire"}</button>
         </form>

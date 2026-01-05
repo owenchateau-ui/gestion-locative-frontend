@@ -238,10 +238,11 @@ function PropertyForm() {
               <div className="space-y-6">
                 {/* Entité propriétaire */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-entity_id" className="block text-sm font-medium text-gray-700 mb-2">
                     Entité propriétaire *
                   </label>
                   <select
+                    id="property-entity_id"
                     name="entity_id"
                     value={formData.entity_id}
                     onChange={handleChange}
@@ -260,10 +261,11 @@ function PropertyForm() {
 
                 {/* Nom */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-name" className="block text-sm font-medium text-gray-700 mb-2">
                     Nom de la propriété *
                   </label>
                   <input
+                    id="property-name"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -276,10 +278,11 @@ function PropertyForm() {
 
                 {/* Catégorie */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-category" className="block text-sm font-medium text-gray-700 mb-2">
                     Catégorie de propriété *
                   </label>
                   <select
+                    id="property-category"
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
@@ -306,10 +309,11 @@ function PropertyForm() {
               <div className="space-y-6">
                 {/* Adresse */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-address" className="block text-sm font-medium text-gray-700 mb-2">
                     Adresse *
                   </label>
                   <input
+                    id="property-address"
                     type="text"
                     name="address"
                     value={formData.address}
@@ -323,10 +327,11 @@ function PropertyForm() {
                 {/* Ville et Code postal */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-city" className="block text-sm font-medium text-gray-700 mb-2">
                       Ville *
                     </label>
                     <input
+                      id="property-city"
                       type="text"
                       name="city"
                       value={formData.city}
@@ -337,10 +342,11 @@ function PropertyForm() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-postal_code" className="block text-sm font-medium text-gray-700 mb-2">
                       Code postal *
                     </label>
                     <input
+                      id="property-postal_code"
                       type="text"
                       name="postal_code"
                       value={formData.postal_code}
@@ -361,10 +367,11 @@ function PropertyForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-construction_year" className="block text-sm font-medium text-gray-700 mb-2">
                       Année de construction
                     </label>
                     <input
+                      id="property-construction_year"
                       type="number"
                       name="construction_year"
                       value={formData.construction_year}
@@ -376,10 +383,11 @@ function PropertyForm() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-acquisition_date" className="block text-sm font-medium text-gray-700 mb-2">
                       Date d'acquisition
                     </label>
                     <input
+                      id="property-acquisition_date"
                       type="date"
                       name="acquisition_date"
                       value={formData.acquisition_date}
@@ -391,10 +399,11 @@ function PropertyForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-acquisition_price" className="block text-sm font-medium text-gray-700 mb-2">
                       Prix d'acquisition (€)
                     </label>
                     <input
+                      id="property-acquisition_price"
                       type="number"
                       name="acquisition_price"
                       value={formData.acquisition_price}
@@ -406,10 +415,11 @@ function PropertyForm() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-current_value" className="block text-sm font-medium text-gray-700 mb-2">
                       Valeur actuelle estimée (€)
                     </label>
                     <input
+                      id="property-current_value"
                       type="number"
                       name="current_value"
                       value={formData.current_value}
@@ -430,8 +440,9 @@ function PropertyForm() {
 
               <div className="space-y-6">
                 {/* Checkbox copropriété */}
-                <label className="flex items-center">
+                <label htmlFor="property-is_coproperty" className="flex items-center">
                   <input
+                    id="property-is_coproperty"
                     type="checkbox"
                     name="is_coproperty"
                     checked={formData.is_coproperty}
@@ -447,10 +458,11 @@ function PropertyForm() {
                 {formData.is_coproperty && (
                   <div className="space-y-6 pl-6 border-l-2 border-blue-200">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="property-coproperty_lots" className="block text-sm font-medium text-gray-700 mb-2">
                         Nombre de lots dans la copropriété
                       </label>
                       <input
+                        id="property-coproperty_lots"
                         type="number"
                         name="coproperty_lots"
                         value={formData.coproperty_lots}
@@ -462,10 +474,11 @@ function PropertyForm() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="property-syndic_name" className="block text-sm font-medium text-gray-700 mb-2">
                         Nom du syndic
                       </label>
                       <input
+                        id="property-syndic_name"
                         type="text"
                         name="syndic_name"
                         value={formData.syndic_name}
@@ -477,10 +490,11 @@ function PropertyForm() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="property-syndic_email" className="block text-sm font-medium text-gray-700 mb-2">
                           Email du syndic
                         </label>
                         <input
+                          id="property-syndic_email"
                           type="email"
                           name="syndic_email"
                           value={formData.syndic_email}
@@ -490,10 +504,11 @@ function PropertyForm() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="property-syndic_phone" className="block text-sm font-medium text-gray-700 mb-2">
                           Téléphone du syndic
                         </label>
                         <input
+                          id="property-syndic_phone"
                           type="tel"
                           name="syndic_phone"
                           value={formData.syndic_phone}
@@ -505,10 +520,11 @@ function PropertyForm() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="property-syndic_fees" className="block text-sm font-medium text-gray-700 mb-2">
                         Charges de syndic mensuelles (€)
                       </label>
                       <input
+                        id="property-syndic_fees"
                         type="number"
                         name="syndic_fees"
                         value={formData.syndic_fees}
@@ -531,10 +547,11 @@ function PropertyForm() {
               <div className="space-y-6">
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-description" className="block text-sm font-medium text-gray-700 mb-2">
                     Description
                   </label>
                   <textarea
+                    id="property-description"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
@@ -546,10 +563,11 @@ function PropertyForm() {
 
                 {/* Notes */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-notes" className="block text-sm font-medium text-gray-700 mb-2">
                     Notes privées
                   </label>
                   <textarea
+                    id="property-notes"
                     name="notes"
                     value={formData.notes}
                     onChange={handleChange}

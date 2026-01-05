@@ -281,10 +281,11 @@ function LotForm() {
               <div className="space-y-6">
                 {/* Propriété */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lot-property_id" className="block text-sm font-medium text-gray-700 mb-2">
                     Propriété *
                   </label>
                   <select
+                    id="lot-property_id"
                     name="property_id"
                     value={formData.property_id}
                     onChange={handleChange}
@@ -303,10 +304,11 @@ function LotForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Nom */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-name" className="block text-sm font-medium text-gray-700 mb-2">
                       Nom du lot *
                     </label>
                     <input
+                      id="lot-name"
                       type="text"
                       name="name"
                       value={formData.name}
@@ -319,10 +321,11 @@ function LotForm() {
 
                   {/* Référence */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-reference" className="block text-sm font-medium text-gray-700 mb-2">
                       Référence interne
                     </label>
                     <input
+                      id="lot-reference"
                       type="text"
                       name="reference"
                       value={formData.reference}
@@ -336,10 +339,11 @@ function LotForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Type */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-lot_type" className="block text-sm font-medium text-gray-700 mb-2">
                       Type de lot *
                     </label>
                     <select
+                      id="lot-lot_type"
                       name="lot_type"
                       value={formData.lot_type}
                       onChange={handleChange}
@@ -356,10 +360,11 @@ function LotForm() {
 
                   {/* Statut */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-status" className="block text-sm font-medium text-gray-700 mb-2">
                       Statut *
                     </label>
                     <select
+                      id="lot-status"
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
@@ -384,10 +389,11 @@ function LotForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-floor" className="block text-sm font-medium text-gray-700 mb-2">
                       Étage
                     </label>
                     <input
+                      id="lot-floor"
                       type="number"
                       name="floor"
                       value={formData.floor}
@@ -398,10 +404,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-door_number" className="block text-sm font-medium text-gray-700 mb-2">
                       Numéro de porte
                     </label>
                     <input
+                      id="lot-door_number"
                       type="text"
                       name="door_number"
                       value={formData.door_number}
@@ -421,10 +428,11 @@ function LotForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-surface_area" className="block text-sm font-medium text-gray-700 mb-2">
                       Surface (m²)
                     </label>
                     <input
+                      id="lot-surface_area"
                       type="number"
                       name="surface_area"
                       value={formData.surface_area}
@@ -437,10 +445,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-nb_rooms" className="block text-sm font-medium text-gray-700 mb-2">
                       Nombre de pièces
                     </label>
                     <input
+                      id="lot-nb_rooms"
                       type="number"
                       name="nb_rooms"
                       value={formData.nb_rooms}
@@ -452,10 +461,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-nb_bedrooms" className="block text-sm font-medium text-gray-700 mb-2">
                       Nombre de chambres
                     </label>
                     <input
+                      id="lot-nb_bedrooms"
                       type="number"
                       name="nb_bedrooms"
                       value={formData.nb_bedrooms}
@@ -469,10 +479,11 @@ function LotForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-nb_bathrooms" className="block text-sm font-medium text-gray-700 mb-2">
                       Nombre de salles de bain
                     </label>
                     <input
+                      id="lot-nb_bathrooms"
                       type="number"
                       name="nb_bathrooms"
                       value={formData.nb_bathrooms}
@@ -484,10 +495,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-heating_type" className="block text-sm font-medium text-gray-700 mb-2">
                       Type de chauffage
                     </label>
                     <input
+                      id="lot-heating_type"
                       type="text"
                       name="heating_type"
                       value={formData.heating_type}
@@ -507,10 +519,11 @@ function LotForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-rent_amount" className="block text-sm font-medium text-gray-700 mb-2">
                       Loyer hors charges (€) *
                     </label>
                     <input
+                      id="lot-rent_amount"
                       type="number"
                       name="rent_amount"
                       value={formData.rent_amount}
@@ -524,10 +537,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-charges_amount" className="block text-sm font-medium text-gray-700 mb-2">
                       Charges mensuelles (€)
                     </label>
                     <input
+                      id="lot-charges_amount"
                       type="number"
                       name="charges_amount"
                       value={formData.charges_amount}
@@ -540,10 +554,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-deposit_amount" className="block text-sm font-medium text-gray-700 mb-2">
                       Dépôt de garantie (€)
                     </label>
                     <input
+                      id="lot-deposit_amount"
                       type="number"
                       name="deposit_amount"
                       value={formData.deposit_amount}
@@ -563,8 +578,9 @@ function LotForm() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Équipements</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label className="flex items-center">
+                <label htmlFor="lot-furnished" className="flex items-center">
                   <input
+                    id="lot-furnished"
                     type="checkbox"
                     name="furnished"
                     checked={formData.furnished}
@@ -574,8 +590,9 @@ function LotForm() {
                   <span className="ml-2 text-sm text-gray-700">Meublé</span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="lot-has_parking" className="flex items-center">
                   <input
+                    id="lot-has_parking"
                     type="checkbox"
                     name="has_parking"
                     checked={formData.has_parking}
@@ -585,8 +602,9 @@ function LotForm() {
                   <span className="ml-2 text-sm text-gray-700">Parking inclus</span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="lot-has_cellar" className="flex items-center">
                   <input
+                    id="lot-has_cellar"
                     type="checkbox"
                     name="has_cellar"
                     checked={formData.has_cellar}
@@ -596,8 +614,9 @@ function LotForm() {
                   <span className="ml-2 text-sm text-gray-700">Cave incluse</span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="lot-has_balcony" className="flex items-center">
                   <input
+                    id="lot-has_balcony"
                     type="checkbox"
                     name="has_balcony"
                     checked={formData.has_balcony}
@@ -607,8 +626,9 @@ function LotForm() {
                   <span className="ml-2 text-sm text-gray-700">Balcon</span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="lot-has_terrace" className="flex items-center">
                   <input
+                    id="lot-has_terrace"
                     type="checkbox"
                     name="has_terrace"
                     checked={formData.has_terrace}
@@ -618,8 +638,9 @@ function LotForm() {
                   <span className="ml-2 text-sm text-gray-700">Terrasse</span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="lot-has_garden" className="flex items-center">
                   <input
+                    id="lot-has_garden"
                     type="checkbox"
                     name="has_garden"
                     checked={formData.has_garden}
@@ -629,8 +650,9 @@ function LotForm() {
                   <span className="ml-2 text-sm text-gray-700">Jardin</span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="lot-has_elevator" className="flex items-center">
                   <input
+                    id="lot-has_elevator"
                     type="checkbox"
                     name="has_elevator"
                     checked={formData.has_elevator}
@@ -649,10 +671,11 @@ function LotForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-dpe_rating" className="block text-sm font-medium text-gray-700 mb-2">
                       Classe DPE
                     </label>
                     <select
+                      id="lot-dpe_rating"
                       name="dpe_rating"
                       value={formData.dpe_rating}
                       onChange={handleChange}
@@ -666,10 +689,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-dpe_value" className="block text-sm font-medium text-gray-700 mb-2">
                       Valeur DPE (kWh/m²/an)
                     </label>
                     <input
+                      id="lot-dpe_value"
                       type="number"
                       name="dpe_value"
                       value={formData.dpe_value}
@@ -681,10 +705,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-dpe_date" className="block text-sm font-medium text-gray-700 mb-2">
                       Date DPE
                     </label>
                     <input
+                      id="lot-dpe_date"
                       type="date"
                       name="dpe_date"
                       value={formData.dpe_date}
@@ -696,10 +721,11 @@ function LotForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-ges_rating" className="block text-sm font-medium text-gray-700 mb-2">
                       Classe GES (Gaz à Effet de Serre)
                     </label>
                     <select
+                      id="lot-ges_rating"
                       name="ges_rating"
                       value={formData.ges_rating}
                       onChange={handleChange}
@@ -713,10 +739,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-ges_value" className="block text-sm font-medium text-gray-700 mb-2">
                       Valeur GES (kg CO2/m²/an)
                     </label>
                     <input
+                      id="lot-ges_value"
                       type="number"
                       name="ges_value"
                       value={formData.ges_value}
@@ -737,10 +764,11 @@ function LotForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-coproperty_lot_number" className="block text-sm font-medium text-gray-700 mb-2">
                       Numéro de lot en copropriété
                     </label>
                     <input
+                      id="lot-coproperty_lot_number"
                       type="text"
                       name="coproperty_lot_number"
                       value={formData.coproperty_lot_number}
@@ -751,10 +779,11 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-coproperty_tantieme" className="block text-sm font-medium text-gray-700 mb-2">
                       Tantièmes de copropriété
                     </label>
                     <input
+                      id="lot-coproperty_tantieme"
                       type="number"
                       name="coproperty_tantieme"
                       value={formData.coproperty_tantieme}
@@ -774,10 +803,11 @@ function LotForm() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lot-description" className="block text-sm font-medium text-gray-700 mb-2">
                     Description
                   </label>
                   <textarea
+                    id="lot-description"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
@@ -788,10 +818,11 @@ function LotForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lot-notes" className="block text-sm font-medium text-gray-700 mb-2">
                     Notes privées
                   </label>
                   <textarea
+                    id="lot-notes"
                     name="notes"
                     value={formData.notes}
                     onChange={handleChange}

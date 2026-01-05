@@ -206,10 +206,11 @@ function PaymentForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Sélection du bail */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-lease_id" className="block text-sm font-medium text-gray-700 mb-2">
                 Bail *
               </label>
               <select
+                id="payment-lease_id"
                 name="lease_id"
                 value={formData.lease_id}
                 onChange={handleLeaseChange}
@@ -233,10 +234,11 @@ function PaymentForm() {
 
             {/* Montant */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-amount" className="block text-sm font-medium text-gray-700 mb-2">
                 Montant total (€) *
               </label>
               <input
+                id="payment-amount"
                 type="number"
                 name="amount"
                 value={formData.amount}
@@ -297,10 +299,11 @@ function PaymentForm() {
             {/* Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="payment-due_date" className="block text-sm font-medium text-gray-700 mb-2">
                   Date d'échéance *
                 </label>
                 <input
+                  id="payment-due_date"
                   type="date"
                   name="due_date"
                   value={formData.due_date}
@@ -310,10 +313,11 @@ function PaymentForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="payment-payment_date" className="block text-sm font-medium text-gray-700 mb-2">
                   Date de paiement
                 </label>
                 <input
+                  id="payment-payment_date"
                   type="date"
                   name="payment_date"
                   value={formData.payment_date}
@@ -325,10 +329,11 @@ function PaymentForm() {
 
             {/* Mode de paiement */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-payment_method" className="block text-sm font-medium text-gray-700 mb-2">
                 Mode de paiement
               </label>
               <select
+                id="payment-payment_method"
                 name="payment_method"
                 value={formData.payment_method}
                 onChange={handleChange}
@@ -351,10 +356,11 @@ function PaymentForm() {
 
             {/* Statut */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-status" className="block text-sm font-medium text-gray-700 mb-2">
                 Statut *
               </label>
               <select
+                id="payment-status"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
@@ -370,10 +376,11 @@ function PaymentForm() {
 
             {/* Notes */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-notes" className="block text-sm font-medium text-gray-700 mb-2">
                 Notes
               </label>
               <textarea
+                id="payment-notes"
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}

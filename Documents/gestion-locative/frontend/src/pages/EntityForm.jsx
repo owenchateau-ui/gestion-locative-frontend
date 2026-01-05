@@ -195,10 +195,11 @@ function EntityForm() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-name" className="block text-sm font-medium text-gray-700 mb-2">
                     Nom de l'entité *
                   </label>
                   <input
+                    id="entity-name"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -210,10 +211,11 @@ function EntityForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-entity_type" className="block text-sm font-medium text-gray-700 mb-2">
                     Type d'entité *
                   </label>
                   <select
+                    id="entity-entity_type"
                     name="entity_type"
                     value={formData.entity_type}
                     onChange={handleChange}
@@ -229,11 +231,12 @@ function EntityForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-color" className="block text-sm font-medium text-gray-700 mb-2">
                     Couleur de différenciation
                   </label>
                   <div className="flex items-center space-x-3">
                     <input
+                      id="entity-color"
                       type="color"
                       name="color"
                       value={formData.color}
@@ -256,10 +259,11 @@ function EntityForm() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-siren" className="block text-sm font-medium text-gray-700 mb-2">
                         SIREN
                       </label>
                       <input
+                        id="entity-siren"
                         type="text"
                         name="siren"
                         value={formData.siren}
@@ -271,10 +275,11 @@ function EntityForm() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-siret" className="block text-sm font-medium text-gray-700 mb-2">
                         SIRET
                       </label>
                       <input
+                        id="entity-siret"
                         type="text"
                         name="siret"
                         value={formData.siret}
@@ -288,10 +293,11 @@ function EntityForm() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-vat_number" className="block text-sm font-medium text-gray-700 mb-2">
                         Numéro de TVA intracommunautaire
                       </label>
                       <input
+                        id="entity-vat_number"
                         type="text"
                         name="vat_number"
                         value={formData.vat_number}
@@ -302,10 +308,11 @@ function EntityForm() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-rcs_city" className="block text-sm font-medium text-gray-700 mb-2">
                         Ville RCS
                       </label>
                       <input
+                        id="entity-rcs_city"
                         type="text"
                         name="rcs_city"
                         value={formData.rcs_city}
@@ -317,10 +324,11 @@ function EntityForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-capital" className="block text-sm font-medium text-gray-700 mb-2">
                       Capital social (€)
                     </label>
                     <input
+                      id="entity-capital"
                       type="number"
                       name="capital"
                       value={formData.capital}
@@ -341,10 +349,11 @@ function EntityForm() {
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-address" className="block text-sm font-medium text-gray-700 mb-2">
                     Adresse
                   </label>
                   <input
+                    id="entity-address"
                     type="text"
                     name="address"
                     value={formData.address}
@@ -356,10 +365,11 @@ function EntityForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-city" className="block text-sm font-medium text-gray-700 mb-2">
                       Ville
                     </label>
                     <input
+                      id="entity-city"
                       type="text"
                       name="city"
                       value={formData.city}
@@ -370,10 +380,11 @@ function EntityForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-postal_code" className="block text-sm font-medium text-gray-700 mb-2">
                       Code postal
                     </label>
                     <input
+                      id="entity-postal_code"
                       type="text"
                       name="postal_code"
                       value={formData.postal_code}
@@ -393,10 +404,11 @@ function EntityForm() {
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-email" className="block text-sm font-medium text-gray-700 mb-2">
                       Email
                     </label>
                     <input
+                      id="entity-email"
                       type="email"
                       name="email"
                       value={formData.email}
@@ -407,10 +419,11 @@ function EntityForm() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-phone" className="block text-sm font-medium text-gray-700 mb-2">
                       Téléphone
                     </label>
                     <input
+                      id="entity-phone"
                       type="tel"
                       name="phone"
                       value={formData.phone}
@@ -428,8 +441,9 @@ function EntityForm() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Options</h3>
 
               <div className="space-y-4">
-                <label className="flex items-center">
+                <label htmlFor="entity-vat_applicable" className="flex items-center">
                   <input
+                    id="entity-vat_applicable"
                     type="checkbox"
                     name="vat_applicable"
                     checked={formData.vat_applicable}
@@ -441,8 +455,9 @@ function EntityForm() {
                   </span>
                 </label>
 
-                <label className="flex items-center">
+                <label htmlFor="entity-default_entity" className="flex items-center">
                   <input
+                    id="entity-default_entity"
                     type="checkbox"
                     name="default_entity"
                     checked={formData.default_entity}

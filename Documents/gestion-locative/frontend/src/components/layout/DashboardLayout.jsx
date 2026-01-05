@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
@@ -9,6 +9,7 @@ function DashboardLayout({ children, title = 'Dashboard' }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
 
   const handleLogout = async () => {
@@ -83,7 +84,9 @@ function DashboardLayout({ children, title = 'Dashboard' }) {
 
         {/* Page Content */}
         <main className="p-4 sm:p-6 lg:p-8">
-          {children}
+          <div key={location.pathname} className="page-transition">
+            {children}
+          </div>
         </main>
       </div>
     </div>
