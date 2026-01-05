@@ -387,10 +387,10 @@ function PaymentForm() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 type="submit"
-                disabled={loading}
+                loading={loading}
                 className="flex-1"
               >
-                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Enregistrer le paiement'}
+                {isEditMode ? 'Mettre à jour' : 'Enregistrer le paiement'}
               </Button>
               <Button
                 type="button"

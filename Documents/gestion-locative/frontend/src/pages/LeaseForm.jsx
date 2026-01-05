@@ -776,10 +776,10 @@ function LeaseForm() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 type="submit"
-                disabled={loading}
+                loading={loading}
                 className="flex-1"
               >
-                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour' : 'Créer le bail'}
+                {isEditMode ? 'Mettre à jour' : 'Créer le bail'}
               </Button>
               <Button
                 type="button"

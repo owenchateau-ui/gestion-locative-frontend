@@ -605,9 +605,9 @@ function TenantForm() {
           <Button type="button" variant="secondary" onClick={() => navigate('/tenants')}>
             Annuler
           </Button>
-          <Button type="submit" variant="primary" disabled={submitting}>
+          <Button type="submit" variant="primary" loading={submitting}>
             <Save className="w-4 h-4 mr-2" />
-            {submitting ? 'Enregistrement...' : 'Enregistrer'}
+            Enregistrer
           </Button>
         </div>
       </form>

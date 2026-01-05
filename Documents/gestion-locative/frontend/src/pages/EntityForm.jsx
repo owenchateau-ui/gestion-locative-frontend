@@ -460,10 +460,10 @@ function EntityForm() {
             <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
               <Button
                 type="submit"
-                disabled={loading}
+                loading={loading}
                 className="flex-1"
               >
-                {loading ? 'Enregistrement...' : isEditMode ? "Mettre à jour l'entité" : "Créer l'entité"}
+                {isEditMode ? "Mettre à jour l'entité" : "Créer l'entité"}
               </Button>
               <Button
                 type="button"

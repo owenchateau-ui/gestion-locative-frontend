@@ -565,10 +565,10 @@ function PropertyForm() {
             <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
               <Button
                 type="submit"
-                disabled={loading}
+                loading={loading}
                 className="flex-1"
               >
-                {loading ? 'Enregistrement...' : isEditMode ? 'Mettre à jour la propriété' : 'Créer la propriété'}
+                {isEditMode ? 'Mettre à jour la propriété' : 'Créer la propriété'}
               </Button>
               <Button
                 type="button"
