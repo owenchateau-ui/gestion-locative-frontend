@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useEntity } from '../context/EntityContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
@@ -15,6 +16,7 @@ function Leases() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { selectedEntity } = useEntity()
+  const { info, error: showError } = useToast()
 
   useEffect(() => {
     fetchLeases()
@@ -86,8 +88,8 @@ function Leases() {
       if (error) throw error
 
       fetchLeases()
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError(`Erreur lors de la suppression : ${err.message}`)
     }
   }
 
@@ -255,7 +257,7 @@ function Leases() {
                         </button>
                         <button
                           className="text-emerald-600 hover:text-emerald-900"
-                          onClick={() => alert('Génération PDF à venir')}
+                          onClick={() => info('Génération PDF à venir')}
                         >
                           PDF
                         </button>

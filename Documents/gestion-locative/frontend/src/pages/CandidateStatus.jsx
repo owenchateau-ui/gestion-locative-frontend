@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { useToast } from '../context/ToastContext'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
@@ -30,6 +31,7 @@ import {
 function CandidateStatus() {
   const [searchParams] = useSearchParams()
   const tokenFromUrl = searchParams.get('token')
+  const { success, error: showError } = useToast()
 
   const [searchType, setSearchType] = useState(tokenFromUrl ? 'token' : 'email')
   const [searchValue, setSearchValue] = useState(tokenFromUrl || '')
@@ -103,10 +105,10 @@ function CandidateStatus() {
       const { data: docsData } = await getDocuments(candidate.id)
       setDocuments(docsData || [])
 
-      alert('Document ajouté avec succès')
+      success('Document ajouté avec succès')
     } catch (err) {
       console.error('Error uploading document:', err)
-      alert('Erreur lors de l\'ajout du document')
+      showError('Erreur lors de l\'ajout du document')
     } finally {
       setUploading(false)
     }

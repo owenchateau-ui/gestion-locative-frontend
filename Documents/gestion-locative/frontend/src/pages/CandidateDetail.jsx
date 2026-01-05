@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -34,6 +35,7 @@ import {
 function CandidateDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { success, error: showError, warning } = useToast()
 
   const [candidate, setCandidate] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -82,10 +84,10 @@ function CandidateDetail() {
       if (error) throw error
 
       await loadCandidate()
-      alert('Candidature acceptée avec succès')
+      success('Candidature acceptée avec succès')
     } catch (err) {
       console.error('Error accepting candidate:', err)
-      alert('Erreur lors de l\'acceptation de la candidature')
+      showError('Erreur lors de l\'acceptation de la candidature')
     } finally {
       setProcessing(false)
     }
@@ -93,7 +95,7 @@ function CandidateDetail() {
 
   const handleReject = async () => {
     if (!rejectionReason.trim()) {
-      alert('Veuillez indiquer une raison de refus')
+      warning('Veuillez indiquer une raison de refus')
       return
     }
 
@@ -104,10 +106,10 @@ function CandidateDetail() {
 
       setShowRejectModal(false)
       await loadCandidate()
-      alert('Candidature refusée')
+      success('Candidature refusée')
     } catch (err) {
       console.error('Error rejecting candidate:', err)
-      alert('Erreur lors du refus de la candidature')
+      showError('Erreur lors du refus de la candidature')
     } finally {
       setProcessing(false)
     }
@@ -124,11 +126,11 @@ function CandidateDetail() {
       const { data, error } = await convertToTenant(id)
       if (error) throw error
 
-      alert('Locataire et bail créés avec succès !')
+      success('Locataire et bail créés avec succès')
       navigate(`/leases/${data.lease.id}`)
     } catch (err) {
       console.error('Error converting to tenant:', err)
-      alert(err.message || 'Erreur lors de la conversion')
+      showError(err.message || 'Erreur lors de la conversion')
     } finally {
       setProcessing(false)
     }

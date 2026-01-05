@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Plus, Trash2, Save, User, Users, Heart } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useEntity } from '../context/EntityContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
@@ -17,6 +18,7 @@ function TenantForm() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { selectedEntity } = useEntity()
+  const { warning } = useToast()
   const isEditMode = Boolean(id)
 
   const [loading, setLoading] = useState(false)
@@ -159,7 +161,7 @@ function TenantForm() {
 
   const removeTenant = (tempId) => {
     if (tenants.length <= 1) {
-      alert('Il doit y avoir au moins un locataire')
+      warning('Il doit y avoir au moins un locataire')
       return
     }
 

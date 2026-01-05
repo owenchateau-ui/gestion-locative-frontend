@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useEntity } from '../context/EntityContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
@@ -22,6 +23,7 @@ import { formatDateFR, formatDateShortFR, formatQuarter, getCurrentQuarter, getN
 function Indexation() {
   const { user } = useAuth()
   const { selectedEntity, getSelectedEntityData } = useEntity()
+  const { success, error: showError, warning } = useToast()
   const [pendingLeases, setPendingLeases] = useState([])
   const [allIndexableLeases, setAllIndexableLeases] = useState([])
   const [history, setHistory] = useState([])
@@ -122,9 +124,9 @@ function Indexation() {
       // Rafraîchir les données
       await fetchData()
 
-      alert('Indexation appliquée avec succès !')
+      success('Indexation appliquée avec succès')
     } catch (err) {
-      alert('Erreur lors de l\'application de l\'indexation : ' + err.message)
+      showError(`Erreur lors de l'application de l'indexation : ${err.message}`)
     } finally {
       setProcessingLeaseId(null)
     }
@@ -138,8 +140,9 @@ function Indexation() {
 
       // Rafraîchir les données
       await fetchData()
+      success('Lettre d\'indexation générée avec succès')
     } catch (err) {
-      alert('Erreur lors de la génération de la lettre : ' + err.message)
+      showError(`Erreur lors de la génération de la lettre : ${err.message}`)
     } finally {
       setProcessingLeaseId(null)
     }
@@ -151,7 +154,7 @@ function Indexation() {
     try {
       // Validation
       if (!newIRL.year || !newIRL.quarter || !newIRL.value) {
-        alert('Veuillez remplir tous les champs')
+        warning('Veuillez remplir tous les champs')
         return
       }
 
@@ -160,17 +163,17 @@ function Indexation() {
       const value = parseFloat(newIRL.value)
 
       if (year < 2000 || year > 2100) {
-        alert('Année invalide')
+        warning('Année invalide (doit être entre 2000 et 2100)')
         return
       }
 
       if (quarter < 1 || quarter > 4) {
-        alert('Trimestre invalide (1-4)')
+        warning('Trimestre invalide (doit être entre 1 et 4)')
         return
       }
 
       if (value <= 0) {
-        alert('Valeur IRL invalide')
+        warning('La valeur IRL doit être supérieure à 0')
         return
       }
 
@@ -193,10 +196,10 @@ function Indexation() {
 
       await fetchData()
 
-      // Message de succès amélioré
-      alert(`✅ IRL T${quarter} ${year} ajouté avec succès !\n\nValeur : ${value.toFixed(2)}`)
+      // Message de succès
+      success(`IRL T${quarter} ${year} ajouté avec succès (valeur : ${value.toFixed(2)})`)
     } catch (err) {
-      alert('Erreur lors de l\'ajout de l\'IRL : ' + err.message)
+      showError(`Erreur lors de l'ajout de l'IRL : ${err.message}`)
     }
   }
 
@@ -216,9 +219,9 @@ function Indexation() {
     try {
       await deleteIRLIndex(id)
       await fetchData()
-      alert('IRL supprimé avec succès !')
+      success(`IRL T${quarter} ${year} supprimé avec succès`)
     } catch (err) {
-      alert('Erreur lors de la suppression de l\'IRL : ' + err.message)
+      showError(`Erreur lors de la suppression de l'IRL : ${err.message}`)
     }
   }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Card from '../components/ui/Card'
 import Button from '../components/ui/Button'
@@ -18,6 +19,7 @@ function Candidates() {
 
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { success, error: showError, warning } = useToast()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const [candidates, setCandidates] = useState([])
@@ -94,10 +96,10 @@ function Candidates() {
       if (error) throw error
 
       await loadData()
-      alert('Candidature acceptée avec succès')
+      success('Candidature acceptée avec succès')
     } catch (err) {
       console.error('Error accepting candidate:', err)
-      alert('Erreur lors de l\'acceptation de la candidature')
+      showError('Erreur lors de l\'acceptation de la candidature')
     }
   }
 
@@ -110,10 +112,10 @@ function Candidates() {
       if (error) throw error
 
       await loadData()
-      alert('Candidature refusée')
+      success('Candidature refusée')
     } catch (err) {
       console.error('Error rejecting candidate:', err)
-      alert('Erreur lors du refus de la candidature')
+      showError('Erreur lors du refus de la candidature')
     }
   }
 
@@ -296,7 +298,7 @@ function Candidates() {
                   if (vacantLot) {
                     openInvitationModal(vacantLot)
                   } else {
-                    alert('Aucun lot vacant disponible')
+                    warning('Aucun lot vacant disponible')
                   }
                 }}
               >

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
@@ -39,6 +40,7 @@ function Properties() {
   const [userPlan, setUserPlan] = useState('free')
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { warning, error: showError } = useToast()
 
   useEffect(() => {
     fetchEntities()
@@ -175,19 +177,19 @@ function Properties() {
       if (error) throw error
 
       fetchProperties()
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError(`Erreur lors de la suppression : ${err.message}`)
     }
-  }, [])
+  }, [showError])
 
   const handleAddProperty = useCallback(() => {
     if (entities.length === 0) {
-      alert('Vous devez d\'abord créer une entité juridique avant d\'ajouter une propriété.')
+      warning('Vous devez d\'abord créer une entité juridique avant d\'ajouter une propriété.')
       navigate('/entities/new')
       return
     }
     navigate('/properties/new')
-  }, [entities.length, navigate])
+  }, [entities.length, navigate, warning])
 
   // Fonctions utilitaires mémoïsées
   const getCategoryLabel = useCallback((category) => {

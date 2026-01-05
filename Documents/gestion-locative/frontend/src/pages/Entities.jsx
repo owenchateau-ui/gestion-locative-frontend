@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
@@ -13,6 +14,7 @@ function Entities() {
   const [error, setError] = useState(null)
   const navigate = useNavigate()
   const { user } = useAuth()
+  const { error: showError } = useToast()
 
   useEffect(() => {
     fetchEntities()
@@ -94,8 +96,8 @@ function Entities() {
       if (error) throw error
 
       fetchEntities()
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError(`Erreur lors de la suppression : ${err.message}`)
     }
   }
 

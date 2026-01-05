@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useEntity } from '../context/EntityContext'
+import { useToast } from '../context/ToastContext'
 import DashboardLayout from '../components/layout/DashboardLayout'
 import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
@@ -17,6 +18,7 @@ function Payments() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { selectedEntity } = useEntity()
+  const { success, error: showError } = useToast()
 
   useEffect(() => {
     fetchPayments()
@@ -100,8 +102,8 @@ function Payments() {
 
       // Rafraîchir la liste
       fetchPayments()
-    } catch (error) {
-      alert('Erreur lors de la suppression : ' + error.message)
+    } catch (err) {
+      showError(`Erreur lors de la suppression : ${err.message}`)
     }
   }
 
@@ -209,8 +211,9 @@ function Payments() {
       // Télécharger le PDF
       const filename = `quittance_${leaseData.tenant.last_name}_${paymentDate.getMonth() + 1}_${paymentDate.getFullYear()}.pdf`
       doc.save(filename)
-    } catch (error) {
-      alert('Erreur lors de la génération de la quittance : ' + error.message)
+      success('Quittance générée avec succès')
+    } catch (err) {
+      showError(`Erreur lors de la génération de la quittance : ${err.message}`)
     }
   }
 
