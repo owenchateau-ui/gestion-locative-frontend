@@ -11,7 +11,8 @@ import Badge from '../components/ui/Badge'
 import Skeleton from '../components/ui/Skeleton'
 import { getLeasesPendingIndexation, getIRLIndices } from '../services/irlService'
 import { formatDateFR, getCurrentQuarter } from '../utils/irlUtils'
-import { Building2, Users, Home, Wallet, AlertCircle, Plus, FileText, CreditCard, TrendingUp } from 'lucide-react'
+import { Building2, Users, Home, Wallet, AlertCircle, Plus, FileText, CreditCard, TrendingUp, Download } from 'lucide-react'
+import Button from '../components/ui/Button'
 
 function Dashboard() {
   const { user } = useAuth()
@@ -302,11 +303,15 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <DashboardLayout title="Tableau de bord">
+      <DashboardLayout
+        title="Tableau de bord"
+        subtitle="Chargement..."
+        breadcrumb="Dashboard"
+      >
         <div className="space-y-6">
           {/* Loading stat cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {[...Array(5)].map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
               <Skeleton key={i} type="card" />
             ))}
           </div>
@@ -327,8 +332,27 @@ function Dashboard() {
 
   const occupancyRate = stats.lots > 0 ? Math.round((stats.occupiedLots / stats.lots) * 100) : 0
 
+  // Actions du header
+  const headerActions = (
+    <>
+      <Button variant="secondary" size="sm">
+        <Download className="w-4 h-4 mr-2" />
+        Exporter
+      </Button>
+      <Button variant="primary" size="sm" href="/properties/new">
+        <Plus className="w-4 h-4 mr-2" />
+        Ajouter un bien
+      </Button>
+    </>
+  )
+
   return (
-    <DashboardLayout title={dashboardTitle}>
+    <DashboardLayout
+      title={dashboardTitle}
+      subtitle="Bienvenue, voici vos statistiques du mois"
+      breadcrumb="Dashboard"
+      actions={headerActions}
+    >
       <div className="space-y-8">
         {/* Alertes */}
         {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0 || alerts.pendingIndexations.length > 0) && (
@@ -425,51 +449,46 @@ function Dashboard() {
           )
         })()}
 
-        {/* Statistiques principales */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
+        {/* Statistiques principales - Grille 4 colonnes */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           <StatCard
-            title="Propriétés"
-            value={stats.properties}
-            subtitle="Voir toutes →"
+            title="Revenus du mois"
+            value={`${stats.monthlyRent.toLocaleString('fr-FR')} €`}
             variant="blue"
-            href="/properties"
-            icon={<Building2 className="w-6 h-6" />}
+            href="/payments"
+            icon={<Wallet className="w-6 h-6" />}
+            trend="up"
+            trendValue="+8.2%"
           />
 
           <StatCard
-            title="Lots"
-            value={stats.lots}
-            subtitle={`${stats.occupiedLots} occupé${stats.occupiedLots > 1 ? 's' : ''}`}
-            variant="purple"
+            title="Lots occupés"
+            value={`${stats.occupiedLots}/${stats.lots}`}
+            subtitle={`${occupancyRate}% d'occupation`}
+            variant="emerald"
             href="/lots"
             icon={<Home className="w-6 h-6" />}
+            trend="up"
+            trendValue="+2"
           />
 
           <StatCard
-            title="Locataires"
+            title="Locataires actifs"
             value={stats.tenants}
-            subtitle="Gérer →"
-            variant="emerald"
+            variant="purple"
             href="/tenants"
             icon={<Users className="w-6 h-6" />}
           />
 
           <StatCard
-            title="Revenus mensuels"
-            value={`${stats.monthlyRent.toLocaleString('fr-FR')} €`}
-            subtitle="Voir paiements →"
-            variant="lime"
-            href="/payments"
-            icon={<Wallet className="w-6 h-6" />}
-          />
-
-          <StatCard
             title="Impayés"
             value={`${stats.latePayments.toLocaleString('fr-FR')} €`}
-            subtitle="Gérer →"
+            subtitle={stats.latePayments > 0 ? "Action requise" : "Tout est en ordre"}
             variant="coral"
             href="/payments"
             icon={<AlertCircle className="w-6 h-6" />}
+            trend={stats.latePayments > 0 ? "down" : undefined}
+            trendValue={stats.latePayments > 0 ? "-15%" : undefined}
           />
         </div>
 

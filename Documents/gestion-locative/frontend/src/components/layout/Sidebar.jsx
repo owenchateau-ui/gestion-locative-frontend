@@ -1,18 +1,26 @@
-import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
   Building2,
+  Building,
+  DoorOpen,
+  ClipboardCheck,
   Users,
+  UserPlus,
+  FileSignature,
+  ClipboardList,
   Wallet,
+  Receipt,
+  TrendingUp,
+  Calculator,
+  PiggyBank,
   FileText,
-  Wrench,
-  MessageSquare,
+  FolderOpen,
+  FileCheck,
+  PenTool,
   Home,
   Settings,
   User,
-  ChevronDown,
-  ChevronRight,
   X,
   Sun,
   Moon
@@ -20,83 +28,57 @@ import {
 import { useEntity } from '../../context/EntityContext'
 import { useTheme } from '../../context/ThemeContext'
 
-const menuStructure = [
+// Structure plate avec sections et badges - Bold Geometric Design
+const menuSections = [
   {
-    id: 'dashboard',
-    label: 'Tableau de bord',
-    icon: LayoutDashboard,
-    path: '/dashboard',
-    isCategory: false
+    id: 'main',
+    items: [
+      {
+        label: 'Tableau de bord',
+        path: '/dashboard',
+        icon: LayoutDashboard,
+        ready: true
+      }
+    ]
   },
   {
     id: 'patrimoine',
-    label: 'Patrimoine',
-    icon: Building2,
-    isCategory: true,
-    children: [
-      { label: 'Entités juridiques', path: '/entities', ready: true },
-      { label: 'Propriétés', path: '/properties', ready: true },
-      { label: 'Lots', path: '/lots', ready: true },
-      { label: 'Diagnostics', path: '/diagnostics', ready: true }
+    sectionLabel: 'PATRIMOINE',
+    items: [
+      { label: 'Entités', path: '/entities', icon: Building2, ready: true },
+      { label: 'Propriétés', path: '/properties', icon: Building, ready: true },
+      { label: 'Lots', path: '/lots', icon: DoorOpen, ready: true, badge: 12 },
+      { label: 'Diagnostics', path: '/diagnostics', icon: ClipboardCheck, ready: true }
     ]
   },
   {
     id: 'locataires',
-    label: 'Locataires',
-    icon: Users,
-    isCategory: true,
-    children: [
-      { label: 'Tous les locataires', path: '/tenants', ready: true },
-      { label: 'Candidatures', path: '/candidates', ready: true },
-      { label: 'Baux', path: '/leases', ready: true },
-      { label: 'États des lieux', path: '/inventories', ready: true }
+    sectionLabel: 'LOCATAIRES',
+    items: [
+      { label: 'Locataires', path: '/tenants', icon: Users, ready: true },
+      { label: 'Candidatures', path: '/candidates', icon: UserPlus, ready: true, badge: 2 },
+      { label: 'Baux', path: '/leases', icon: FileSignature, ready: true },
+      { label: 'États des lieux', path: '/inventories', icon: ClipboardList, ready: true }
     ]
   },
   {
     id: 'finances',
-    label: 'Finances',
-    icon: Wallet,
-    isCategory: true,
-    children: [
-      { label: 'Paiements', path: '/payments', ready: true },
-      { label: 'Quittances', path: '/receipts', ready: false },
-      { label: 'Indexation IRL', path: '/indexation', ready: true },
-      { label: 'Charges', path: '/charges', ready: true },
-      { label: 'Comptabilité', path: '/accounting', ready: false }
+    sectionLabel: 'FINANCES',
+    items: [
+      { label: 'Paiements', path: '/payments', icon: Wallet, ready: true, badge: 3 },
+      { label: 'Quittances', path: '/receipts', icon: Receipt, ready: false },
+      { label: 'Indexation IRL', path: '/indexation', icon: TrendingUp, ready: true },
+      { label: 'Charges', path: '/charges', icon: Calculator, ready: true },
+      { label: 'Comptabilité', path: '/accounting', icon: PiggyBank, ready: false }
     ]
   },
   {
     id: 'documents',
-    label: 'Documents',
-    icon: FileText,
-    isCategory: true,
-    children: [
-      { label: 'Mes documents', path: '/documents', ready: true },
-      { label: 'Modèles légaux', path: '/templates', ready: true },
-      { label: 'Signatures', path: '/signatures', ready: false }
-    ]
-  },
-  {
-    id: 'interventions',
-    label: 'Interventions',
-    icon: Wrench,
-    isCategory: true,
-    children: [
-      { label: 'Signalements', path: '/incidents', ready: false },
-      { label: 'Travaux', path: '/works', ready: false },
-      { label: 'Carnet entretien', path: '/maintenance', ready: false },
-      { label: 'Prestataires', path: '/contractors', ready: false }
-    ]
-  },
-  {
-    id: 'communication',
-    label: 'Communication',
-    icon: MessageSquare,
-    isCategory: true,
-    children: [
-      { label: 'Messagerie', path: '/messages', ready: false },
-      { label: 'Courriers auto', path: '/mailings', ready: false },
-      { label: 'Notifications', path: '/notifications', ready: false }
+    sectionLabel: 'DOCUMENTS',
+    items: [
+      { label: 'Mes documents', path: '/documents', icon: FolderOpen, ready: true },
+      { label: 'Modèles légaux', path: '/templates', icon: FileCheck, ready: true },
+      { label: 'Signatures', path: '/signatures', icon: PenTool, ready: false }
     ]
   }
 ]
@@ -109,57 +91,10 @@ const bottomMenu = [
 
 function Sidebar({ isOpen, onClose }) {
   const location = useLocation()
-  const [openCategories, setOpenCategories] = useState({})
   const { entities, selectedEntity, setSelectedEntity } = useEntity()
   const { theme, toggleTheme } = useTheme()
 
-  // Charger l'état des catégories depuis localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('sidebarOpenCategories')
-    if (saved) {
-      setOpenCategories(JSON.parse(saved))
-    } else {
-      // Par défaut, ouvrir toutes les catégories
-      const initial = {}
-      menuStructure.forEach(item => {
-        if (item.isCategory) {
-          initial[item.id] = true
-        }
-      })
-      setOpenCategories(initial)
-    }
-  }, [])
-
-  // Sauvegarder l'état dans localStorage
-  useEffect(() => {
-    localStorage.setItem('sidebarOpenCategories', JSON.stringify(openCategories))
-  }, [openCategories])
-
-  // Ouvrir automatiquement la catégorie parent si on est sur une de ses sous-pages
-  useEffect(() => {
-    menuStructure.forEach(item => {
-      if (item.isCategory && item.children) {
-        const hasActiveChild = item.children.some(child => location.pathname === child.path)
-        if (hasActiveChild && !openCategories[item.id]) {
-          setOpenCategories(prev => ({ ...prev, [item.id]: true }))
-        }
-      }
-    })
-  }, [location.pathname])
-
-  const toggleCategory = (categoryId) => {
-    setOpenCategories(prev => ({
-      ...prev,
-      [categoryId]: !prev[categoryId]
-    }))
-  }
-
   const isActive = (path) => location.pathname === path
-
-  const isParentActive = (item) => {
-    if (!item.isCategory || !item.children) return false
-    return item.children.some(child => location.pathname === child.path)
-  }
 
   return (
     <>
@@ -171,7 +106,7 @@ function Sidebar({ isOpen, onClose }) {
         />
       )}
 
-      {/* Sidebar */}
+      {/* Sidebar - Bold Geometric Design */}
       <aside
         className={`
           fixed top-0 left-0 h-full w-72
@@ -197,7 +132,7 @@ function Sidebar({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden p-2 rounded-lg text-[var(--sidebar-text-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)]"
+            className="lg:hidden p-2 rounded-xl text-[var(--sidebar-text-muted)] hover:text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] transition-all"
           >
             <X className="w-5 h-5" />
           </button>
@@ -205,13 +140,13 @@ function Sidebar({ isOpen, onClose }) {
 
         {/* Sélecteur d'entité */}
         <div className="p-4 border-b border-[var(--sidebar-border)]">
-          <label className="block text-xs font-display font-medium text-[var(--sidebar-text-muted)] mb-2 uppercase tracking-wider">
+          <label className="block text-[10px] font-display font-semibold text-[var(--sidebar-text-muted)] mb-2 uppercase tracking-wider">
             Entité active
           </label>
           <select
             value={selectedEntity || 'all'}
             onChange={(e) => setSelectedEntity(e.target.value === 'all' ? null : e.target.value)}
-            className="w-full px-3 py-2.5 bg-[var(--sidebar-hover)] border border-[var(--sidebar-border)] rounded-xl text-sm text-[var(--sidebar-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] transition-all cursor-pointer"
+            className="w-full px-3 py-2.5 bg-[var(--sidebar-hover)] border border-[var(--sidebar-border)] rounded-xl text-sm font-medium text-[var(--sidebar-text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] transition-all cursor-pointer"
           >
             <option value="all">Toutes les entités</option>
             {entities.map((entity) => (
@@ -222,79 +157,58 @@ function Sidebar({ isOpen, onClose }) {
           </select>
         </div>
 
-        {/* Navigation principale */}
+        {/* Navigation principale - Structure plate avec sections */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
-          {menuStructure.map((item) => (
-            <div key={item.id} className="mb-1">
-              {!item.isCategory ? (
-                // Item simple (Dashboard)
-                <Link
-                  to={item.path}
-                  className={`
-                    flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-                    ${isActive(item.path)
-                      ? 'bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)] shadow-sm'
-                      : 'text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
-                    }
-                  `}
-                >
-                  <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive(item.path) ? '' : 'opacity-70'}`} />
-                  <span className="font-medium font-display">{item.label}</span>
-                </Link>
-              ) : (
-                // Catégorie avec sous-menus
-                <div>
-                  <button
-                    onClick={() => toggleCategory(item.id)}
+          {menuSections.map((section) => (
+            <div key={section.id} className="mb-4">
+              {/* Label de section */}
+              {section.sectionLabel && (
+                <div className="px-3 mb-2">
+                  <span className="text-[10px] font-display font-bold text-[var(--sidebar-text-muted)] uppercase tracking-wider">
+                    {section.sectionLabel}
+                  </span>
+                </div>
+              )}
+
+              {/* Items de navigation */}
+              <div className="space-y-1">
+                {section.items.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
                     className={`
-                      w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
-                      ${isParentActive(item)
-                        ? 'text-[var(--color-electric-blue)]'
+                      flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
+                      ${isActive(item.path)
+                        ? 'bg-gradient-to-br from-[#0055FF] to-[#8B5CF6] text-white shadow-[0_0_30px_rgba(0,85,255,0.25)]'
                         : 'text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
                       }
                     `}
                   >
-                    <div className="flex items-center gap-3">
-                      <item.icon className={`w-5 h-5 flex-shrink-0 ${isParentActive(item) ? '' : 'opacity-70'}`} />
-                      <span className="font-medium font-display">{item.label}</span>
-                    </div>
-                    <div className={`transform transition-transform duration-200 ${openCategories[item.id] ? 'rotate-180' : ''}`}>
-                      <ChevronDown className="w-4 h-4 flex-shrink-0" />
-                    </div>
-                  </button>
+                    <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive(item.path) ? 'text-white' : 'opacity-70'}`} />
+                    <span className="font-display flex-1">{item.label}</span>
 
-                  {/* Sous-menus avec animation */}
-                  <div
-                    className={`
-                      overflow-hidden transition-all duration-200
-                      ${openCategories[item.id] ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}
-                    `}
-                  >
-                    <div className="mt-1 ml-4 pl-4 border-l-2 border-[var(--sidebar-border)] space-y-0.5">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.path}
-                          to={child.path}
-                          className={`
-                            flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-all duration-200
-                            ${isActive(child.path)
-                              ? 'bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)] font-medium'
-                              : 'text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
-                            }
-                          `}
-                        >
-                          <span>{child.label}</span>
-                          {!child.ready && (
-                            <span className="px-1.5 py-0.5 bg-[var(--sidebar-hover)] text-[var(--sidebar-text-muted)] text-[10px] font-medium rounded uppercase tracking-wide">
-                              Bientôt
-                            </span>
-                          )}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+                    {/* Badge de notification - Coral */}
+                    {item.badge && (
+                      <span className={`
+                        px-2 py-0.5 text-[11px] font-bold rounded-full
+                        ${isActive(item.path)
+                          ? 'bg-white/20 text-white'
+                          : 'bg-[#FF6B4A] text-white'
+                        }
+                      `}>
+                        {item.badge}
+                      </span>
+                    )}
+
+                    {/* Badge "Bientôt" */}
+                    {!item.ready && (
+                      <span className="px-1.5 py-0.5 bg-[var(--sidebar-hover)] text-[var(--sidebar-text-muted)] text-[10px] font-semibold rounded uppercase tracking-wide">
+                        Bientôt
+                      </span>
+                    )}
+                  </Link>
+                ))}
+              </div>
             </div>
           ))}
         </nav>
@@ -304,7 +218,7 @@ function Sidebar({ isOpen, onClose }) {
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
-            className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)] transition-all duration-200"
+            className="w-full flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)] transition-all duration-150"
           >
             <div className="flex items-center gap-3">
               {theme === 'dark' ? (
@@ -332,21 +246,21 @@ function Sidebar({ isOpen, onClose }) {
               key={item.path}
               to={item.path}
               className={`
-                flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl transition-all duration-200
+                flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150
                 ${item.special
                   ? 'bg-gradient-to-r from-[var(--color-electric-blue)] to-[var(--color-purple)] text-white hover:shadow-glow-blue hover:brightness-110'
                   : isActive(item.path)
-                    ? 'bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)]'
+                    ? 'bg-gradient-to-br from-[#0055FF] to-[#8B5CF6] text-white shadow-[0_0_30px_rgba(0,85,255,0.25)]'
                     : 'text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]'
                 }
               `}
             >
               <div className="flex items-center gap-3">
-                <item.icon className={`w-5 h-5 flex-shrink-0 ${item.special ? '' : 'opacity-70'}`} />
-                <span className="font-medium font-display">{item.label}</span>
+                <item.icon className={`w-5 h-5 flex-shrink-0 ${item.special || isActive(item.path) ? 'text-white' : 'opacity-70'}`} />
+                <span className="font-display">{item.label}</span>
               </div>
               {!item.ready && !item.special && (
-                <span className="px-1.5 py-0.5 bg-[var(--sidebar-hover)] text-[var(--sidebar-text-muted)] text-[10px] font-medium rounded uppercase tracking-wide">
+                <span className="px-1.5 py-0.5 bg-[var(--sidebar-hover)] text-[var(--sidebar-text-muted)] text-[10px] font-semibold rounded uppercase tracking-wide">
                   Bientôt
                 </span>
               )}

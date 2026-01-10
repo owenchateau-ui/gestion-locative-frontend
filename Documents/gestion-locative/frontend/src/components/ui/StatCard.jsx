@@ -1,65 +1,50 @@
-import { memo, useMemo } from 'react'
+import { memo, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import { MoreVertical } from 'lucide-react'
 
-// Bold Geometric variants avec gradients et glow
+// Bold Geometric variants - Style carte blanche avec icône colorée
 const VARIANTS = {
   blue: {
-    bg: 'bg-[var(--color-electric-blue)]/5 hover:bg-[var(--color-electric-blue)]/10',
-    border: 'border border-[var(--color-electric-blue)]/20',
-    icon: 'bg-gradient-to-br from-[var(--color-electric-blue)] to-[#0066FF] text-white shadow-glow-blue',
-    value: 'text-[var(--color-electric-blue)]',
-    title: 'text-[var(--text-secondary)]'
+    icon: 'bg-gradient-to-br from-[#0055FF] to-[#0066FF] text-white shadow-[0_0_20px_rgba(0,85,255,0.3)]',
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   emerald: {
-    bg: 'bg-emerald-500/5 hover:bg-emerald-500/10',
-    border: 'border border-emerald-500/20',
     icon: 'bg-gradient-to-br from-emerald-500 to-emerald-400 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]',
-    value: 'text-emerald-600 dark:text-emerald-400',
-    title: 'text-[var(--text-secondary)]'
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   purple: {
-    bg: 'bg-[var(--color-purple)]/5 hover:bg-[var(--color-purple)]/10',
-    border: 'border border-[var(--color-purple)]/20',
-    icon: 'bg-gradient-to-br from-[var(--color-purple)] to-[#A78BFA] text-white shadow-glow-purple',
-    value: 'text-[var(--color-purple)]',
-    title: 'text-[var(--text-secondary)]'
+    icon: 'bg-gradient-to-br from-[#8B5CF6] to-[#A78BFA] text-white shadow-[0_0_20px_rgba(139,92,246,0.3)]',
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   amber: {
-    bg: 'bg-amber-500/5 hover:bg-amber-500/10',
-    border: 'border border-amber-500/20',
     icon: 'bg-gradient-to-br from-amber-500 to-amber-400 text-white shadow-[0_0_20px_rgba(245,158,11,0.3)]',
-    value: 'text-amber-600 dark:text-amber-400',
-    title: 'text-[var(--text-secondary)]'
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   coral: {
-    bg: 'bg-[var(--color-vivid-coral)]/5 hover:bg-[var(--color-vivid-coral)]/10',
-    border: 'border border-[var(--color-vivid-coral)]/20',
-    icon: 'bg-gradient-to-br from-[var(--color-vivid-coral)] to-[#FF8066] text-white shadow-glow-coral',
-    value: 'text-[var(--color-vivid-coral)]',
-    title: 'text-[var(--text-secondary)]'
+    icon: 'bg-gradient-to-br from-[#FF6B4A] to-[#FF8066] text-white shadow-[0_0_20px_rgba(255,107,74,0.3)]',
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   lime: {
-    bg: 'bg-[var(--color-lime)]/5 hover:bg-[var(--color-lime)]/10',
-    border: 'border border-[var(--color-lime)]/30',
-    icon: 'bg-gradient-to-br from-[var(--color-lime)] to-[#D4F85A] text-[#0A0A0F] shadow-glow-lime',
-    value: 'text-[#7A9A00] dark:text-[var(--color-lime)]',
-    title: 'text-[var(--text-secondary)]'
+    icon: 'bg-gradient-to-br from-[#C6F135] to-[#D4F85A] text-[#0A0A0F] shadow-[0_0_20px_rgba(198,241,53,0.3)]',
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   // Legacy support
   red: {
-    bg: 'bg-[var(--color-vivid-coral)]/5 hover:bg-[var(--color-vivid-coral)]/10',
-    border: 'border border-[var(--color-vivid-coral)]/20',
-    icon: 'bg-gradient-to-br from-[var(--color-vivid-coral)] to-[#FF8066] text-white shadow-glow-coral',
-    value: 'text-[var(--color-vivid-coral)]',
-    title: 'text-[var(--text-secondary)]'
+    icon: 'bg-gradient-to-br from-[#FF6B4A] to-[#FF8066] text-white shadow-[0_0_20px_rgba(255,107,74,0.3)]',
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   },
   indigo: {
-    bg: 'bg-[var(--color-electric-blue)]/5 hover:bg-[var(--color-electric-blue)]/10',
-    border: 'border border-[var(--color-electric-blue)]/20',
-    icon: 'bg-gradient-to-br from-[var(--color-electric-blue)] to-[#0066FF] text-white shadow-glow-blue',
-    value: 'text-[var(--color-electric-blue)]',
-    title: 'text-[var(--text-secondary)]'
+    icon: 'bg-gradient-to-br from-[#0055FF] to-[#0066FF] text-white shadow-[0_0_20px_rgba(0,85,255,0.3)]',
+    trendPositive: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+    trendNegative: 'bg-[#FF6B4A]/10 text-[#FF6B4A]'
   }
 }
 
@@ -72,41 +57,56 @@ const StatCard = memo(function StatCard({
   trend,
   trendValue,
   href,
+  showMenu = false,
+  onMenuClick,
   className = ''
 }) {
   const colors = useMemo(() => VARIANTS[variant] || VARIANTS.blue, [variant])
 
   const content = (
     <>
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <p className={`text-sm font-medium font-display ${colors.title}`}>
-            {title}
-          </p>
-          <p className={`mt-2 text-3xl font-bold font-display tracking-tight ${colors.value}`}>
-            {value}
-          </p>
-          {subtitle && (
-            <p className="mt-1 text-sm text-[var(--text-muted)]">
-              {subtitle}
-            </p>
-          )}
-        </div>
+      {/* Header : Icône à gauche, Menu 3 points à droite */}
+      <div className="flex items-start justify-between mb-4">
         {icon && (
-          <div className={`p-3 rounded-xl flex-shrink-0 ${colors.icon}`}>
+          <div className={`p-3 rounded-xl ${colors.icon}`}>
             {icon}
           </div>
         )}
+        {showMenu && (
+          <button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              onMenuClick?.()
+            }}
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-elevated)] transition-colors"
+          >
+            <MoreVertical className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
+      {/* Label au-dessus de la valeur */}
+      <div className="space-y-1">
+        <p className="text-sm font-medium font-display text-[var(--text-secondary)]">
+          {title}
+        </p>
+        <p className="text-3xl font-bold font-display tracking-tight text-[var(--text)]">
+          {value}
+        </p>
+        {subtitle && (
+          <p className="text-sm text-[var(--text-muted)]">
+            {subtitle}
+          </p>
+        )}
+      </div>
+
+      {/* Trend badge en bas */}
       {trend && (
-        <div className="mt-4 pt-4 border-t border-[var(--border)] flex items-center gap-2">
+        <div className="mt-4 flex items-center gap-2">
           <span className={`
-            inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold
-            ${trend === 'up'
-              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-              : 'bg-[var(--color-vivid-coral)]/10 text-[var(--color-vivid-coral)]'
-            }
+            inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold
+            ${trend === 'up' ? colors.trendPositive : colors.trendNegative}
           `}>
             {trend === 'up' ? (
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,7 +119,7 @@ const StatCard = memo(function StatCard({
             )}
             {trendValue}
           </span>
-          <span className="text-xs text-[var(--text-muted)]">vs mois dernier</span>
+          <span className="text-xs text-[var(--text-muted)]">vs mois précédent</span>
         </div>
       )}
     </>
@@ -127,9 +127,10 @@ const StatCard = memo(function StatCard({
 
   const baseClasses = `
     p-6 rounded-2xl
+    bg-[var(--surface)]
+    border border-[var(--border)]
+    shadow-card
     transition-all duration-200
-    ${colors.bg}
-    ${colors.border}
     ${className}
   `
 
@@ -137,7 +138,7 @@ const StatCard = memo(function StatCard({
     return (
       <Link
         to={href}
-        className={`block ${baseClasses} hover:-translate-y-0.5 hover:shadow-card`}
+        className={`block ${baseClasses} hover:-translate-y-1 hover:shadow-card-hover`}
       >
         {content}
       </Link>
@@ -145,7 +146,7 @@ const StatCard = memo(function StatCard({
   }
 
   return (
-    <div className={`${baseClasses} hover:-translate-y-0.5 hover:shadow-card cursor-default`}>
+    <div className={`${baseClasses} hover:-translate-y-0.5 hover:shadow-card-hover`}>
       {content}
     </div>
   )
@@ -160,6 +161,8 @@ StatCard.propTypes = {
   trend: PropTypes.oneOf(['up', 'down']),
   trendValue: PropTypes.string,
   href: PropTypes.string,
+  showMenu: PropTypes.bool,
+  onMenuClick: PropTypes.func,
   className: PropTypes.string
 }
 
