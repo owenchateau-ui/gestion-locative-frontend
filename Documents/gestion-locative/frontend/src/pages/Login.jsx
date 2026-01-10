@@ -40,13 +40,13 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6">Connexion</h1>
+    <div className="min-h-screen bg-[var(--bg)] flex items-center justify-center">
+      <div className="bg-[var(--surface)] p-8 rounded-2xl shadow-card w-full max-w-md border border-[var(--border)] animate-fade-in">
+        <h1 className="text-2xl font-display font-bold text-center text-[var(--text)] mb-6">Connexion</h1>
 
-        
+
         {rateLimitError && (
-          <div className="bg-orange-100 border border-orange-400 text-orange-700 p-3 rounded mb-4 flex items-start">
+          <div className="bg-orange-100 dark:bg-orange-900/30 border border-orange-400 dark:border-orange-600 text-orange-700 dark:text-orange-400 p-3 rounded-xl mb-4 flex items-start">
             <svg
               className="w-5 h-5 mr-2 mt-0.5 flex-shrink-0"
               fill="currentColor"
@@ -66,31 +66,31 @@ function Login() {
         )}
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>
+          <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-3 rounded-xl mb-4">{error}</div>
         )}
 
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label htmlFor="login-email" className="block text-gray-700 mb-2">Email</label>
+            <label htmlFor="login-email" className="block text-sm font-display font-medium text-[var(--text)] mb-2">Email</label>
             <input
               id="login-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
               placeholder="votre@email.com"
               required
             />
           </div>
 
           <div className="mb-6">
-            <label htmlFor="login-password" className="block text-gray-700 mb-2">Mot de passe</label>
+            <label htmlFor="login-password" className="block text-sm font-display font-medium text-[var(--text)] mb-2">Mot de passe</label>
             <input
               id="login-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
               placeholder="••••••••"
               required
             />
@@ -99,22 +99,22 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-[var(--color-electric-blue)] to-[#0066FF] text-white py-3 rounded-xl font-display font-semibold hover:brightness-110 hover:shadow-glow-blue disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {loading ? 'Connexion...' : 'Se connecter'}
           </button>
         </form>
 
-        <p className="text-center text-gray-600 mt-4">
+        <p className="text-center text-[var(--text-secondary)] mt-4">
           Pas encore de compte ?{' '}
-          <Link to="/register" className="text-blue-600 hover:underline">
+          <Link to="/register" className="text-[var(--color-electric-blue)] hover:underline">
             S'inscrire
           </Link>
         </p>
 
-        
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <p className="text-xs text-gray-500 text-center">
+
+        <div className="mt-6 pt-4 border-t border-[var(--border)]">
+          <p className="text-xs text-[var(--text-muted)] text-center">
             Protection active : 5 tentatives maximum par minute
           </p>
         </div>

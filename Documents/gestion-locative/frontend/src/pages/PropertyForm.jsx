@@ -198,8 +198,8 @@ function PropertyForm() {
     return (
       <DashboardLayout title="Ajouter une propriété">
         <Card className="text-center py-12">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucune entité juridique</h3>
-          <p className="text-gray-600 mb-6">
+          <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-2">Aucune entité juridique</h3>
+          <p className="text-[var(--text-secondary)] mb-6">
             Vous devez d'abord créer une entité juridique avant d'ajouter une propriété
           </p>
           <Button onClick={() => navigate('/entities/new')}>
@@ -215,17 +215,17 @@ function PropertyForm() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">
             {isEditMode ? 'Modifier la propriété' : 'Ajouter une propriété'}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Renseignez les informations de la propriété immobilière (immeuble, maison, terrain...)
           </p>
         </div>
 
         <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6">
               {error}
             </div>
           )}
@@ -233,12 +233,12 @@ function PropertyForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Informations générales */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations générales</h3>
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations générales</h3>
 
               <div className="space-y-6">
                 {/* Entité propriétaire */}
                 <div>
-                  <label htmlFor="property-entity_id" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-entity_id" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Entité propriétaire *
                   </label>
                   <select
@@ -246,7 +246,7 @@ function PropertyForm() {
                     name="entity_id"
                     value={formData.entity_id}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     required
                   >
                     <option value="">Sélectionnez une entité</option>
@@ -261,7 +261,7 @@ function PropertyForm() {
 
                 {/* Nom */}
                 <div>
-                  <label htmlFor="property-name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-name" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Nom de la propriété *
                   </label>
                   <input
@@ -270,7 +270,7 @@ function PropertyForm() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     placeholder="Ex: Immeuble Rue de la Paix, Maison Bordeaux..."
                     required
                   />
@@ -278,7 +278,7 @@ function PropertyForm() {
 
                 {/* Catégorie */}
                 <div>
-                  <label htmlFor="property-category" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-category" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Catégorie de propriété *
                   </label>
                   <select
@@ -286,7 +286,7 @@ function PropertyForm() {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     required
                   >
                     {categoryOptions.map(option => (
@@ -295,7 +295,7 @@ function PropertyForm() {
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
                     Un immeuble/bâtiment peut contenir plusieurs lots (appartements, parkings, etc.)
                   </p>
                 </div>
@@ -303,13 +303,13 @@ function PropertyForm() {
             </div>
 
             {/* Localisation */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Localisation</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Localisation</h3>
 
               <div className="space-y-6">
                 {/* Adresse */}
                 <div>
-                  <label htmlFor="property-address" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-address" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Adresse *
                   </label>
                   <input
@@ -318,7 +318,7 @@ function PropertyForm() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     placeholder="15 rue de la République"
                     required
                   />
@@ -327,7 +327,7 @@ function PropertyForm() {
                 {/* Ville et Code postal */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="property-city" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-city" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Ville *
                     </label>
                     <input
@@ -336,13 +336,13 @@ function PropertyForm() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Paris"
                       required
                     />
                   </div>
                   <div>
-                    <label htmlFor="property-postal_code" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-postal_code" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Code postal *
                     </label>
                     <input
@@ -351,7 +351,7 @@ function PropertyForm() {
                       name="postal_code"
                       value={formData.postal_code}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="75001"
                       required
                     />
@@ -361,13 +361,13 @@ function PropertyForm() {
             </div>
 
             {/* Caractéristiques */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Caractéristiques</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Caractéristiques</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="property-construction_year" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-construction_year" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Année de construction
                     </label>
                     <input
@@ -376,14 +376,14 @@ function PropertyForm() {
                       name="construction_year"
                       value={formData.construction_year}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="1990"
                       min="1800"
                       max={new Date().getFullYear() + 5}
                     />
                   </div>
                   <div>
-                    <label htmlFor="property-acquisition_date" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-acquisition_date" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Date d'acquisition
                     </label>
                     <input
@@ -392,14 +392,14 @@ function PropertyForm() {
                       name="acquisition_date"
                       value={formData.acquisition_date}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="property-acquisition_price" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-acquisition_price" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Prix d'acquisition (€)
                     </label>
                     <input
@@ -408,14 +408,14 @@ function PropertyForm() {
                       name="acquisition_price"
                       value={formData.acquisition_price}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="250000"
                       step="0.01"
                       min="0"
                     />
                   </div>
                   <div>
-                    <label htmlFor="property-current_value" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="property-current_value" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Valeur actuelle estimée (€)
                     </label>
                     <input
@@ -424,7 +424,7 @@ function PropertyForm() {
                       name="current_value"
                       value={formData.current_value}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="280000"
                       step="0.01"
                       min="0"
@@ -435,30 +435,30 @@ function PropertyForm() {
             </div>
 
             {/* Copropriété */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Copropriété</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Copropriété</h3>
 
               <div className="space-y-6">
                 {/* Checkbox copropriété */}
-                <label htmlFor="property-is_coproperty" className="flex items-center">
+                <label htmlFor="property-is_coproperty" className="flex items-center cursor-pointer">
                   <input
                     id="property-is_coproperty"
                     type="checkbox"
                     name="is_coproperty"
                     checked={formData.is_coproperty}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
+                  <span className="ml-2 text-sm text-[var(--text)]">
                     Cette propriété est en copropriété
                   </span>
                 </label>
 
                 {/* Champs copropriété (affichés seulement si cochée) */}
                 {formData.is_coproperty && (
-                  <div className="space-y-6 pl-6 border-l-2 border-blue-200">
+                  <div className="space-y-6 pl-6 border-l-2 border-[var(--color-electric-blue)]/30">
                     <div>
-                      <label htmlFor="property-coproperty_lots" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="property-coproperty_lots" className="block text-sm font-medium text-[var(--text)] mb-2">
                         Nombre de lots dans la copropriété
                       </label>
                       <input
@@ -467,14 +467,14 @@ function PropertyForm() {
                         name="coproperty_lots"
                         value={formData.coproperty_lots}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                         placeholder="20"
                         min="1"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="property-syndic_name" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="property-syndic_name" className="block text-sm font-medium text-[var(--text)] mb-2">
                         Nom du syndic
                       </label>
                       <input
@@ -483,14 +483,14 @@ function PropertyForm() {
                         name="syndic_name"
                         value={formData.syndic_name}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                         placeholder="Syndic Foncia"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
-                        <label htmlFor="property-syndic_email" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="property-syndic_email" className="block text-sm font-medium text-[var(--text)] mb-2">
                           Email du syndic
                         </label>
                         <input
@@ -499,12 +499,12 @@ function PropertyForm() {
                           name="syndic_email"
                           value={formData.syndic_email}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                           placeholder="syndic@example.com"
                         />
                       </div>
                       <div>
-                        <label htmlFor="property-syndic_phone" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="property-syndic_phone" className="block text-sm font-medium text-[var(--text)] mb-2">
                           Téléphone du syndic
                         </label>
                         <input
@@ -513,14 +513,14 @@ function PropertyForm() {
                           name="syndic_phone"
                           value={formData.syndic_phone}
                           onChange={handleChange}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                           placeholder="01 23 45 67 89"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label htmlFor="property-syndic_fees" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="property-syndic_fees" className="block text-sm font-medium text-[var(--text)] mb-2">
                         Charges de syndic mensuelles (€)
                       </label>
                       <input
@@ -529,7 +529,7 @@ function PropertyForm() {
                         name="syndic_fees"
                         value={formData.syndic_fees}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                         placeholder="150.00"
                         step="0.01"
                         min="0"
@@ -541,13 +541,13 @@ function PropertyForm() {
             </div>
 
             {/* Informations additionnelles */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations additionnelles</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations additionnelles</h3>
 
               <div className="space-y-6">
                 {/* Description */}
                 <div>
-                  <label htmlFor="property-description" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-description" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Description
                   </label>
                   <textarea
@@ -555,7 +555,7 @@ function PropertyForm() {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     rows="3"
                     placeholder="Description générale de la propriété..."
                   />
@@ -563,7 +563,7 @@ function PropertyForm() {
 
                 {/* Notes */}
                 <div>
-                  <label htmlFor="property-notes" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="property-notes" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Notes privées
                   </label>
                   <textarea
@@ -571,7 +571,7 @@ function PropertyForm() {
                     name="notes"
                     value={formData.notes}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     rows="3"
                     placeholder="Notes internes (non visibles par les locataires)..."
                   />

@@ -173,17 +173,17 @@ function EntityForm() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">
             {isEditMode ? "Modifier l'entité" : "Ajouter une entité juridique"}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Renseignez les informations de votre entité (SCI, SARL, nom propre...)
           </p>
         </div>
 
         <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6">
               {error}
             </div>
           )}
@@ -191,11 +191,11 @@ function EntityForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Informations générales */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations générales</h3>
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations générales</h3>
 
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="entity-name" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-name" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Nom de l'entité *
                   </label>
                   <input
@@ -204,14 +204,14 @@ function EntityForm() {
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                     placeholder="Ex: SCI Famille Dupont, Mon patrimoine..."
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="entity-entity_type" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-entity_type" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Type d'entité *
                   </label>
                   <select
@@ -219,7 +219,7 @@ function EntityForm() {
                     name="entity_type"
                     value={formData.entity_type}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                     required
                   >
                     {entityTypeOptions.map(option => (
@@ -231,7 +231,7 @@ function EntityForm() {
                 </div>
 
                 <div>
-                  <label htmlFor="entity-color" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-color" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Couleur de différenciation
                   </label>
                   <div className="flex items-center space-x-3">
@@ -241,9 +241,9 @@ function EntityForm() {
                       name="color"
                       value={formData.color}
                       onChange={handleChange}
-                      className="h-10 w-20 border border-gray-300 rounded cursor-pointer"
+                      className="h-10 w-20 border border-[var(--border)] rounded-xl cursor-pointer"
                     />
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm text-[var(--text-secondary)]">
                       Couleur utilisée pour identifier l'entité dans l'interface
                     </span>
                   </div>
@@ -253,13 +253,13 @@ function EntityForm() {
 
             {/* Informations légales */}
             {requiresLegalInfo && (
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations légales</h3>
+              <div className="border-t border-[var(--border)] pt-6">
+                <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations légales</h3>
 
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="entity-siren" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-siren" className="block text-sm font-medium text-[var(--text)] mb-2">
                         SIREN
                       </label>
                       <input
@@ -268,14 +268,14 @@ function EntityForm() {
                         name="siren"
                         value={formData.siren}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                         placeholder="123456789"
                         maxLength="9"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="entity-siret" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-siret" className="block text-sm font-medium text-[var(--text)] mb-2">
                         SIRET
                       </label>
                       <input
@@ -284,7 +284,7 @@ function EntityForm() {
                         name="siret"
                         value={formData.siret}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                         placeholder="12345678900001"
                         maxLength="14"
                       />
@@ -293,7 +293,7 @@ function EntityForm() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label htmlFor="entity-vat_number" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-vat_number" className="block text-sm font-medium text-[var(--text)] mb-2">
                         Numéro de TVA intracommunautaire
                       </label>
                       <input
@@ -302,13 +302,13 @@ function EntityForm() {
                         name="vat_number"
                         value={formData.vat_number}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                         placeholder="FR12345678900"
                       />
                     </div>
 
                     <div>
-                      <label htmlFor="entity-rcs_city" className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="entity-rcs_city" className="block text-sm font-medium text-[var(--text)] mb-2">
                         Ville RCS
                       </label>
                       <input
@@ -317,14 +317,14 @@ function EntityForm() {
                         name="rcs_city"
                         value={formData.rcs_city}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                         placeholder="Paris"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="entity-capital" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-capital" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Capital social (€)
                     </label>
                     <input
@@ -333,7 +333,7 @@ function EntityForm() {
                       name="capital"
                       value={formData.capital}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                       placeholder="10000"
                       step="0.01"
                       min="0"
@@ -344,12 +344,12 @@ function EntityForm() {
             )}
 
             {/* Adresse */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Adresse du siège</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Adresse du siège</h3>
 
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="entity-address" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="entity-address" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Adresse
                   </label>
                   <input
@@ -358,14 +358,14 @@ function EntityForm() {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                     placeholder="15 rue de la République"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="md:col-span-2">
-                    <label htmlFor="entity-city" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-city" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Ville
                     </label>
                     <input
@@ -374,13 +374,13 @@ function EntityForm() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                       placeholder="Paris"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="entity-postal_code" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-postal_code" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Code postal
                     </label>
                     <input
@@ -389,7 +389,7 @@ function EntityForm() {
                       name="postal_code"
                       value={formData.postal_code}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                       placeholder="75001"
                     />
                   </div>
@@ -398,13 +398,13 @@ function EntityForm() {
             </div>
 
             {/* Contact */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations de contact</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations de contact</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="entity-email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-email" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Email
                     </label>
                     <input
@@ -413,13 +413,13 @@ function EntityForm() {
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                       placeholder="contact@sci-dupont.fr"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="entity-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="entity-phone" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Téléphone
                     </label>
                     <input
@@ -428,7 +428,7 @@ function EntityForm() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent"
                       placeholder="06 12 34 56 78"
                     />
                   </div>
@@ -437,34 +437,34 @@ function EntityForm() {
             </div>
 
             {/* Options */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Options</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Options</h3>
 
               <div className="space-y-4">
-                <label htmlFor="entity-vat_applicable" className="flex items-center">
+                <label htmlFor="entity-vat_applicable" className="flex items-center cursor-pointer">
                   <input
                     id="entity-vat_applicable"
                     type="checkbox"
                     name="vat_applicable"
                     checked={formData.vat_applicable}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
+                  <span className="ml-2 text-sm text-[var(--text)]">
                     Assujetti à la TVA (la TVA s'applique aux loyers)
                   </span>
                 </label>
 
-                <label htmlFor="entity-default_entity" className="flex items-center">
+                <label htmlFor="entity-default_entity" className="flex items-center cursor-pointer">
                   <input
                     id="entity-default_entity"
                     type="checkbox"
                     name="default_entity"
                     checked={formData.default_entity}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">
+                  <span className="ml-2 text-sm text-[var(--text)]">
                     Définir comme entité par défaut (sélectionnée automatiquement dans l'interface)
                   </span>
                 </label>
@@ -472,7 +472,7 @@ function EntityForm() {
             </div>
 
             {/* Boutons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-[var(--border)]">
               <Button
                 type="submit"
                 loading={loading}

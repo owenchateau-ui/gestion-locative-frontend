@@ -10,6 +10,7 @@ import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
 import ExportButton from '../components/ui/ExportButton'
+import Alert from '../components/ui/Alert'
 import { countPendingCandidates } from '../services/candidateService'
 import { Home } from 'lucide-react'
 
@@ -246,10 +247,10 @@ function Lots() {
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
             <div className="space-y-2">
-              <div className="animate-pulse bg-gray-200 rounded h-8 w-56" />
-              <div className="animate-pulse bg-gray-200 rounded h-4 w-20" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-8 w-56" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-4 w-20" />
             </div>
-            <div className="animate-pulse bg-gray-200 rounded h-10 w-36" />
+            <div className="animate-pulse bg-[var(--border)] rounded-xl h-10 w-36" />
           </div>
           {/* Table skeleton */}
           <Card padding={false}>
@@ -266,8 +267,8 @@ function Lots() {
         {/* Header avec actions */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Mes lots (unités locatives)</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-2xl font-display font-bold text-[var(--text)]">Mes lots (unités locatives)</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
               {lots.length} lot{lots.length > 1 ? 's' : ''}
             </p>
           </div>
@@ -292,13 +293,13 @@ function Lots() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Filtre par entité */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-display font-medium text-[var(--text)] mb-2">
                   Filtrer par entité :
                 </label>
                 <select
                   value={selectedEntity}
                   onChange={(e) => setSelectedEntity(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
                 >
                   <option value="all">Toutes les entités</option>
                   {entities.map((entity) => (
@@ -311,13 +312,13 @@ function Lots() {
 
               {/* Filtre par propriété */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-display font-medium text-[var(--text)] mb-2">
                   Filtrer par propriété :
                 </label>
                 <select
                   value={selectedProperty}
                   onChange={(e) => setSelectedProperty(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={filteredProperties.length === 0}
                 >
                   <option value="all">Toutes les propriétés</option>
@@ -333,9 +334,7 @@ function Lots() {
         )}
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
+          <Alert variant="error">{error}</Alert>
         )}
 
         {lots.length === 0 ? (
@@ -356,56 +355,56 @@ function Lots() {
         ) : (
           <Card padding={false}>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Référence
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Nom
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Propriété
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Étage
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Surface
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Loyer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Candidatures
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {lots.map((lot) => (
-                    <tr key={lot.id} className="hover:bg-gray-50">
+                    <tr key={lot.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {lot.reference || '-'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {lot.name}
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {lot.properties_new.name}
                         </div>
                         <div className="flex items-center mt-1">
@@ -413,7 +412,7 @@ function Lots() {
                             className="w-2 h-2 rounded-full mr-1"
                             style={{ backgroundColor: lot.properties_new.entities.color }}
                           />
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-[var(--text-muted)]">
                             {lot.properties_new.entities.name}
                           </span>
                         </div>
@@ -422,26 +421,26 @@ function Lots() {
                         {getLotTypeBadge(lot.lot_type)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {lot.floor !== null ? `${lot.floor}${lot.floor === 0 ? ' (RDC)' : lot.floor === 1 ? 'er' : 'ème'}` : '-'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {lot.surface_area ? `${lot.surface_area} m²` : '-'}
                         </div>
                         {lot.nb_rooms && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             {lot.nb_rooms} pièce{lot.nb_rooms > 1 ? 's' : ''}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-emerald-600">
+                        <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                           {lot.rent_amount.toFixed(2)} €
                         </div>
                         {lot.charges_amount > 0 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             + {lot.charges_amount.toFixed(2)} € charges
                           </div>
                         )}
@@ -456,30 +455,30 @@ function Lots() {
                               e.stopPropagation()
                               navigate(`/candidates?lot=${lot.id}`)
                             }}
-                            className="inline-flex items-center px-2.5 py-1.5 bg-blue-100 text-blue-800 text-xs font-medium rounded-full hover:bg-blue-200 transition"
+                            className="inline-flex items-center px-2.5 py-1.5 bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)] text-xs font-medium rounded-full hover:bg-[var(--color-electric-blue)]/20 transition-colors"
                           >
                             {candidatesCounts[lot.id]} candidature{candidatesCounts[lot.id] > 1 ? 's' : ''}
                           </button>
                         ) : (
-                          <span className="text-xs text-gray-400">-</span>
+                          <span className="text-xs text-[var(--text-muted)]">-</span>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                         <button
                           onClick={() => navigate(`/lots/${lot.id}`)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-[var(--color-purple)] hover:text-[var(--color-purple-light)] transition-colors"
                         >
                           Voir
                         </button>
                         <button
                           onClick={() => navigate(`/lots/${lot.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleDelete(lot.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-[var(--color-vivid-coral)] hover:text-[var(--color-coral-dark)] transition-colors"
                         >
                           Supprimer
                         </button>

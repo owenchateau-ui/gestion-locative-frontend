@@ -51,21 +51,21 @@ function Modal({
       onClick={closeOnOverlayClick ? onClose : undefined}
     >
       <div
-        className={`relative w-full ${sizeClass} bg-white rounded-lg shadow-2xl animate-scale-in`}
+        className={`relative w-full ${sizeClass} bg-[var(--surface)] rounded-2xl shadow-2xl animate-scale-in border border-[var(--border)]`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border)]">
             {title && (
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="text-xl font-display font-semibold text-[var(--text)]">
                 {title}
               </h2>
             )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700"
+                className="p-2 rounded-xl hover:bg-[var(--surface-elevated)] transition-colors text-[var(--text-muted)] hover:text-[var(--text)]"
                 aria-label="Fermer"
               >
                 <X className="w-5 h-5" />

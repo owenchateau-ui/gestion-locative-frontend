@@ -88,7 +88,7 @@ function Profile() {
     return (
       <DashboardLayout title="Mon profil">
         <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+          <div className="text-xl text-[var(--text-muted)]">Chargement...</div>
         </div>
       </DashboardLayout>
     )
@@ -99,21 +99,21 @@ function Profile() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Mon profil</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">Mon profil</h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Gérez vos informations personnelles
           </p>
         </div>
 
         <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-100 text-green-700 p-4 rounded-lg mb-6">
+            <div className="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 p-4 rounded-xl mb-6">
               Profil mis à jour avec succès !
             </div>
           )}
@@ -121,7 +121,7 @@ function Profile() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email (non modifiable) */}
             <div>
-              <label htmlFor="profile-email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="profile-email" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Email
               </label>
               <input
@@ -129,9 +129,9 @@ function Profile() {
                 type="email"
                 value={formData.email}
                 disabled
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed text-gray-500"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface-elevated)] cursor-not-allowed text-[var(--text-muted)]"
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 L'email ne peut pas être modifié
               </p>
             </div>
@@ -139,7 +139,7 @@ function Profile() {
             {/* Prénom et Nom */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="profile-first_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="profile-first_name" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Prénom *
                 </label>
                 <input
@@ -148,13 +148,13 @@ function Profile() {
                   name="first_name"
                   value={formData.first_name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   placeholder="Jean"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="profile-last_name" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="profile-last_name" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Nom *
                 </label>
                 <input
@@ -163,7 +163,7 @@ function Profile() {
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   placeholder="Dupont"
                   required
                 />
@@ -172,7 +172,7 @@ function Profile() {
 
             {/* Téléphone */}
             <div>
-              <label htmlFor="profile-phone" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="profile-phone" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Téléphone
               </label>
               <input
@@ -181,7 +181,7 @@ function Profile() {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 placeholder="06 12 34 56 78"
               />
             </div>

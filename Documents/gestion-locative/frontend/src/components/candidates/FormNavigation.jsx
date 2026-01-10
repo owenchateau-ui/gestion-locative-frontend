@@ -16,7 +16,7 @@ const FormNavigation = memo(function FormNavigation({
   const isLastStep = currentStep === totalSteps
 
   return (
-    <div className="flex justify-between pt-6 border-t border-gray-200 mt-8">
+    <div className="flex justify-between pt-6 border-t border-[var(--border)] mt-8">
       {!isFirstStep ? (
         <Button
           variant="secondary"

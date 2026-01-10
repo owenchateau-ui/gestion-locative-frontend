@@ -5,7 +5,7 @@
 function Skeleton({ type = 'text', count = 1, className = '' }) {
   const skeletons = Array.from({ length: count }, (_, index) => index)
 
-  const baseClass = 'animate-pulse bg-gray-200 rounded'
+  const baseClass = 'animate-pulse bg-[var(--surface-elevated)] rounded-xl'
 
   const types = {
     text: 'h-4 w-full',
@@ -26,7 +26,7 @@ function Skeleton({ type = 'text', count = 1, className = '' }) {
     return (
       <div className={`space-y-4 ${className}`}>
         {skeletons.map((index) => (
-          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+          <div key={index} className="bg-[var(--surface)] rounded-2xl shadow-sm border border-[var(--border)] p-6 space-y-4">
             <div className={`${baseClass} h-6 w-1/2`} />
             <div className={`${baseClass} h-4 w-full`} />
             <div className={`${baseClass} h-4 w-5/6`} />
@@ -42,13 +42,13 @@ function Skeleton({ type = 'text', count = 1, className = '' }) {
     return (
       <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 ${className}`}>
         {skeletons.map((index) => (
-          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div key={index} className="bg-[var(--surface)] rounded-2xl shadow-sm border border-[var(--border)] p-6">
             <div className="flex items-center justify-between">
               <div className="space-y-2 flex-1">
                 <div className={`${baseClass} h-4 w-1/2`} />
                 <div className={`${baseClass} h-8 w-3/4`} />
               </div>
-              <div className={`${baseClass} h-12 w-12 rounded-lg`} />
+              <div className={`${baseClass} h-12 w-12 rounded-xl`} />
             </div>
           </div>
         ))}
@@ -61,7 +61,7 @@ function Skeleton({ type = 'text', count = 1, className = '' }) {
     return (
       <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 ${className}`}>
         {skeletons.map((index) => (
-          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-4">
+          <div key={index} className="bg-[var(--surface)] rounded-2xl shadow-sm border border-[var(--border)] p-6 space-y-4">
             <div className="flex items-start gap-3">
               <div className={`${baseClass} h-12 w-12 rounded-full`} />
               <div className="flex-1 space-y-2">
@@ -69,11 +69,11 @@ function Skeleton({ type = 'text', count = 1, className = '' }) {
                 <div className={`${baseClass} h-4 w-1/3`} />
               </div>
             </div>
-            <div className="space-y-2 pt-3 border-t">
+            <div className="space-y-2 pt-3 border-t border-[var(--border)]">
               <div className={`${baseClass} h-4 w-full`} />
               <div className={`${baseClass} h-4 w-4/5`} />
             </div>
-            <div className="flex gap-2 pt-3 border-t">
+            <div className="flex gap-2 pt-3 border-t border-[var(--border)]">
               <div className={`${baseClass} h-8 flex-1`} />
               <div className={`${baseClass} h-8 w-8`} />
               <div className={`${baseClass} h-8 w-8`} />
@@ -89,7 +89,7 @@ function Skeleton({ type = 'text', count = 1, className = '' }) {
     return (
       <div className={`space-y-2 ${className}`}>
         {skeletons.map((index) => (
-          <div key={index} className="flex items-center gap-4 p-4 bg-white border-b border-gray-100">
+          <div key={index} className="flex items-center gap-4 p-4 bg-[var(--surface)] border-b border-[var(--border)]">
             <div className={`${baseClass} h-4 w-1/6`} />
             <div className={`${baseClass} h-4 w-1/4`} />
             <div className={`${baseClass} h-4 w-1/5`} />

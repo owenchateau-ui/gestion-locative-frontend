@@ -92,9 +92,9 @@ function LeaseForm() {
           const { data, error } = await supabase
             .from('tenants')
             .select(`
-              tenant_groups(
+              tenant_groups!group_id(
                 housing_assistance,
-                tenants(monthly_income, other_income)
+                tenants!group_id(monthly_income, other_income)
               )
             `)
             .eq('id', formData.tenant_id)
@@ -331,17 +331,17 @@ function LeaseForm() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">
             {isEditMode ? 'Modifier le bail' : 'Créer un bail'}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Renseignez les informations du bail
           </p>
         </div>
 
         <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6">
               {error}
             </div>
           )}
@@ -349,7 +349,7 @@ function LeaseForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Sélection du lot */}
             <div>
-              <label htmlFor="lease-lot_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lease-lot_id" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Lot à louer *
               </label>
               <select
@@ -357,7 +357,7 @@ function LeaseForm() {
                 name="lot_id"
                 value={formData.lot_id}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 required
               >
                 <option value="">Sélectionnez un lot</option>
@@ -369,14 +369,14 @@ function LeaseForm() {
                   </option>
                 ))}
               </select>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-[var(--text-muted)] mt-1">
                 Format : Propriété - Lot
               </p>
             </div>
 
             {/* Sélection du locataire */}
             <div>
-              <label htmlFor="lease-tenant_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lease-tenant_id" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Locataire *
               </label>
               <select
@@ -384,7 +384,7 @@ function LeaseForm() {
                 name="tenant_id"
                 value={formData.tenant_id}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 required
               >
                 <option value="">Sélectionnez un locataire</option>
@@ -399,7 +399,7 @@ function LeaseForm() {
             {/* Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="lease-start_date" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-start_date" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Date de début *
                 </label>
                 <input
@@ -408,12 +408,12 @@ function LeaseForm() {
                   name="start_date"
                   value={formData.start_date}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="lease-end_date" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-end_date" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Date de fin (optionnel)
                 </label>
                 <input
@@ -422,16 +422,16 @@ function LeaseForm() {
                   name="end_date"
                   value={formData.end_date}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 />
-                <p className="text-xs text-gray-500 mt-1">Laissez vide pour reconduction tacite</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1">Laissez vide pour reconduction tacite</p>
               </div>
             </div>
 
             {/* Loyer, charges et dépôt */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="lease-rent_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-rent_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Loyer (€) *
                 </label>
                 <input
@@ -440,7 +440,7 @@ function LeaseForm() {
                   name="rent_amount"
                   value={formData.rent_amount}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   placeholder="950.00"
                   step="0.01"
                   min="0"
@@ -448,7 +448,7 @@ function LeaseForm() {
                 />
               </div>
               <div>
-                <label htmlFor="lease-charges_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-charges_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Charges (€)
                 </label>
                 <input
@@ -457,14 +457,14 @@ function LeaseForm() {
                   name="charges_amount"
                   value={formData.charges_amount}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   placeholder="80.00"
                   step="0.01"
                   min="0"
                 />
               </div>
               <div>
-                <label htmlFor="lease-deposit_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-deposit_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Dépôt de garantie (€)
                 </label>
                 <input
@@ -473,7 +473,7 @@ function LeaseForm() {
                   name="deposit_amount"
                   value={formData.deposit_amount}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   placeholder="950.00"
                   step="0.01"
                   min="0"
@@ -484,7 +484,7 @@ function LeaseForm() {
             {/* Jour de paiement, type et statut */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label htmlFor="lease-payment_day" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-payment_day" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Jour de paiement *
                 </label>
                 <input
@@ -493,15 +493,15 @@ function LeaseForm() {
                   name="payment_day"
                   value={formData.payment_day}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   min="1"
                   max="28"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">Entre 1 et 28</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1">Entre 1 et 28</p>
               </div>
               <div>
-                <label htmlFor="lease-lease_type" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-lease_type" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Type de bail *
                 </label>
                 <select
@@ -509,7 +509,7 @@ function LeaseForm() {
                   name="lease_type"
                   value={formData.lease_type}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   required
                 >
                   <option value="empty">Vide</option>
@@ -517,7 +517,7 @@ function LeaseForm() {
                 </select>
               </div>
               <div>
-                <label htmlFor="lease-status" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="lease-status" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Statut *
                 </label>
                 <select
@@ -525,7 +525,7 @@ function LeaseForm() {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   required
                 >
                   <option value="draft">Brouillon</option>
@@ -537,8 +537,8 @@ function LeaseForm() {
             </div>
 
             {/* Section APL/CAF */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">APL / CAF</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">APL / CAF</h3>
 
               {/* Versement direct CAF */}
               <div className="mb-4">
@@ -549,13 +549,13 @@ function LeaseForm() {
                     name="caf_direct_payment"
                     checked={formData.caf_direct_payment}
                     onChange={handleChange}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    className="w-4 h-4 text-[var(--color-electric-blue)] border-[var(--border)] rounded focus:ring-2 focus:ring-[var(--color-electric-blue)]"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-[var(--text)]">
                     Les APL sont versées directement au bailleur
                   </span>
                 </label>
-                <p className="text-xs text-gray-500 mt-1 ml-7">
+                <p className="text-xs text-[var(--text-muted)] mt-1 ml-7">
                   Cochez cette case si vous recevez les APL directement de la CAF
                 </p>
               </div>
@@ -564,7 +564,7 @@ function LeaseForm() {
               {formData.caf_direct_payment && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ml-7">
                   <div>
-                    <label htmlFor="lease-caf_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lease-caf_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Montant mensuel APL (€)
                     </label>
                     <input
@@ -573,17 +573,17 @@ function LeaseForm() {
                       name="caf_amount"
                       value={formData.caf_amount}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="200.00"
                       step="0.01"
                       min="0"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
                       Montant versé par la CAF chaque mois
                     </p>
                   </div>
                   <div>
-                    <label htmlFor="lease-caf_payment_day" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lease-caf_payment_day" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Jour de versement CAF
                     </label>
                     <input
@@ -592,11 +592,11 @@ function LeaseForm() {
                       name="caf_payment_day"
                       value={formData.caf_payment_day}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       min="1"
                       max="28"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
                       Généralement le 5 du mois
                     </p>
                   </div>
@@ -605,8 +605,8 @@ function LeaseForm() {
 
               {/* Calcul du reste à charge */}
               {formData.caf_direct_payment && formData.caf_amount && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg ml-7">
-                  <div className="text-sm text-gray-700">
+                <div className="mt-4 p-4 bg-[var(--color-electric-blue)]/10 dark:bg-[var(--color-electric-blue)]/20 rounded-xl ml-7">
+                  <div className="text-sm text-[var(--text)]">
                     <div className="flex justify-between mb-1">
                       <span>Loyer + charges :</span>
                       <span className="font-medium">
@@ -615,13 +615,13 @@ function LeaseForm() {
                     </div>
                     <div className="flex justify-between mb-1">
                       <span>APL versées :</span>
-                      <span className="font-medium text-green-600">
+                      <span className="font-medium text-emerald-600 dark:text-emerald-400">
                         - {parseFloat(formData.caf_amount || 0).toFixed(2)} €
                       </span>
                     </div>
-                    <div className="flex justify-between pt-2 border-t border-blue-200 font-semibold">
+                    <div className="flex justify-between pt-2 border-t border-[var(--color-electric-blue)]/30 font-semibold">
                       <span>Reste à charge locataire :</span>
-                      <span className="text-blue-700">
+                      <span className="text-[var(--color-electric-blue)]">
                         {(
                           parseFloat(formData.rent_amount || 0) +
                           parseFloat(formData.charges_amount || 0) -
@@ -673,8 +673,8 @@ function LeaseForm() {
             </div>
 
             {/* Section Indexation des loyers */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Indexation des loyers (IRL)</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Indexation des loyers (IRL)</h3>
 
               {/* Activer l'indexation */}
               <div className="space-y-4">
@@ -685,9 +685,9 @@ function LeaseForm() {
                     name="indexation_enabled"
                     checked={formData.indexation_enabled}
                     onChange={handleChange}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    className="w-4 h-4 text-[var(--color-electric-blue)] border-[var(--border)] rounded focus:ring-2 focus:ring-[var(--color-electric-blue)]"
                   />
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-[var(--text)]">
                     Activer l'indexation annuelle du loyer
                   </span>
                 </label>
@@ -696,12 +696,12 @@ function LeaseForm() {
                 {formData.indexation_enabled && (
                   <div className="ml-7 space-y-4">
                     {/* Message d'aide */}
-                    <div className="p-3 bg-blue-50 rounded-lg">
+                    <div className="p-3 bg-[var(--color-electric-blue)]/10 dark:bg-[var(--color-electric-blue)]/20 rounded-xl">
                       <div className="flex items-start gap-2">
-                        <svg className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-[var(--color-electric-blue)] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <p className="text-sm text-gray-700">
+                        <p className="text-sm text-[var(--text)]">
                           Le trimestre de référence est généralement celui indiqué dans votre contrat de bail. Par défaut, il correspond à la date de signature.
                         </p>
                       </div>
@@ -710,14 +710,14 @@ function LeaseForm() {
                     {/* Selects trimestre et année */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="lease-irl_reference_quarter" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="lease-irl_reference_quarter" className="block text-sm font-medium text-[var(--text)] mb-2">
                           Trimestre de référence IRL *
                         </label>
                         <select
                           id="lease-irl_reference_quarter"
                           value={irlReferenceQuarter}
                           onChange={(e) => setIrlReferenceQuarter(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                           required={formData.indexation_enabled}
                         >
                           <option value="">Sélectionner un trimestre</option>
@@ -728,14 +728,14 @@ function LeaseForm() {
                         </select>
                       </div>
                       <div>
-                        <label htmlFor="lease-irl_reference_year" className="block text-sm font-medium text-gray-700 mb-2">
+                        <label htmlFor="lease-irl_reference_year" className="block text-sm font-medium text-[var(--text)] mb-2">
                           Année de référence *
                         </label>
                         <select
                           id="lease-irl_reference_year"
                           value={irlReferenceYear}
                           onChange={(e) => setIrlReferenceYear(e.target.value)}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                          className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                           required={formData.indexation_enabled}
                         >
                           <option value="">Sélectionner une année</option>
@@ -748,18 +748,18 @@ function LeaseForm() {
 
                     {/* Affichage de l'IRL sélectionné */}
                     {irlReferenceQuarter && irlReferenceYear && (
-                      <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                      <div className="p-3 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
                         {irlLoading ? (
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-[var(--text-secondary)]">
                             Chargement de l'IRL...
                           </p>
                         ) : currentIRL ? (
-                          <p className="text-sm text-gray-900">
+                          <p className="text-sm text-[var(--text)]">
                             <span className="font-medium">IRL T{irlReferenceQuarter} {irlReferenceYear} :</span>{' '}
-                            <span className="font-bold text-emerald-700">{parseFloat(currentIRL.value).toFixed(2)}</span>
+                            <span className="font-bold text-emerald-700 dark:text-emerald-400">{parseFloat(currentIRL.value).toFixed(2)}</span>
                           </p>
                         ) : (
-                          <p className="text-sm text-orange-600">
+                          <p className="text-sm text-orange-600 dark:text-orange-400">
                             <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
@@ -775,7 +775,7 @@ function LeaseForm() {
 
             {/* Clauses particulières */}
             <div>
-              <label htmlFor="lease-special_clauses" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="lease-special_clauses" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Clauses particulières
               </label>
               <textarea
@@ -783,7 +783,7 @@ function LeaseForm() {
                 name="special_clauses"
                 value={formData.special_clauses}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 rows="6"
                 placeholder="Le locataire s'engage à..."
               />

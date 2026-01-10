@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { Menu } from 'lucide-react'
+import { Menu, User, LogOut, Settings, Bell } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { supabase } from '../../lib/supabase'
 import Sidebar from './Sidebar'
@@ -11,6 +11,18 @@ function DashboardLayout({ children, title = 'Dashboard' }) {
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
+  const userMenuRef = useRef(null)
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -18,63 +30,90 @@ function DashboardLayout({ children, title = 'Dashboard' }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Nouveau Sidebar */}
+    <div className="min-h-screen bg-[var(--bg)] transition-colors duration-200">
+      {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-72">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-white shadow">
+        <header className="sticky top-0 z-30 bg-[var(--surface)]/80 backdrop-blur-xl border-b border-[var(--border)]">
           <div className="flex items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               {/* Mobile menu button */}
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="text-gray-500 lg:hidden hover:text-gray-700"
+                className="p-2 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] lg:hidden transition-all duration-200"
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               </button>
-              <h2 className="text-xl font-semibold text-gray-900">{title}</h2>
+              <div>
+                <h1 className="text-xl font-display font-bold text-[var(--text)]">{title}</h1>
+              </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* Notifications */}
+              <button className="relative p-2.5 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] transition-all duration-200">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--color-vivid-coral)] rounded-full" />
+              </button>
+
               {/* User Menu */}
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="flex items-center gap-2 p-1.5 pl-1.5 pr-3 hover:bg-[var(--surface-hover)] rounded-xl transition-all duration-200"
                 >
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-9 h-9 bg-gradient-to-br from-[var(--color-electric-blue)] to-[var(--color-purple)] rounded-xl flex items-center justify-center text-white font-display font-semibold text-sm shadow-sm">
                     {user?.email?.charAt(0).toUpperCase()}
                   </div>
-                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className={`w-4 h-4 text-[var(--text-muted)] transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 border border-gray-200 z-50">
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-xs text-gray-500">Connecté en tant que</p>
-                      <p className="text-sm font-medium text-gray-900 truncate">{user?.email}</p>
+                  <div className="absolute right-0 mt-2 w-56 bg-[var(--surface)] rounded-2xl shadow-lg border border-[var(--border)] overflow-hidden z-50 animate-scale-in">
+                    <div className="px-4 py-3 border-b border-[var(--border)] bg-[var(--surface-elevated)]">
+                      <p className="text-xs text-[var(--text-muted)] font-display uppercase tracking-wider">Connecté en tant que</p>
+                      <p className="text-sm font-medium text-[var(--text)] truncate mt-0.5">{user?.email}</p>
                     </div>
-                    <Link
-                      to="/profile"
-                      onClick={() => setUserMenuOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                    >
-                      Mon profil
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setUserMenuOpen(false)
-                        handleLogout()
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                    >
-                      Déconnexion
-                    </button>
+                    <div className="p-2">
+                      <Link
+                        to="/profile"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] rounded-xl transition-all duration-200"
+                      >
+                        <User className="w-4 h-4" />
+                        Mon profil
+                      </Link>
+                      <Link
+                        to="/settings"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--surface-hover)] rounded-xl transition-all duration-200"
+                      >
+                        <Settings className="w-4 h-4" />
+                        Paramètres
+                      </Link>
+                    </div>
+                    <div className="p-2 border-t border-[var(--border)]">
+                      <button
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          handleLogout()
+                        }}
+                        className="flex items-center gap-3 w-full px-3 py-2.5 text-sm text-[var(--color-vivid-coral)] hover:bg-[var(--color-vivid-coral)]/10 rounded-xl transition-all duration-200"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Déconnexion
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -84,7 +123,7 @@ function DashboardLayout({ children, title = 'Dashboard' }) {
 
         {/* Page Content */}
         <main className="p-4 sm:p-6 lg:p-8">
-          <div key={location.pathname} className="page-transition">
+          <div key={location.pathname} className="animate-fade-in">
             {children}
           </div>
         </main>

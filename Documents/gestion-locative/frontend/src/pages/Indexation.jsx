@@ -234,7 +234,7 @@ function Indexation() {
     return (
       <DashboardLayout title={pageTitle}>
         <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+          <div className="text-xl text-[var(--text-secondary)]">Chargement...</div>
         </div>
       </DashboardLayout>
     )
@@ -245,8 +245,8 @@ function Indexation() {
       <div className="space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Indexation automatique des loyers (IRL)</h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">Indexation automatique des loyers (IRL)</h2>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Gérez les révisions annuelles de loyers conformément à l'indice de référence des loyers (IRL)
           </p>
         </div>
@@ -297,39 +297,39 @@ function Indexation() {
         <Card title="Indexations à venir (60 jours)" subtitle={`${pendingLeases.length} bail${pendingLeases.length > 1 ? 'x' : ''} dont la date anniversaire approche`}>
           {pendingLeases.length === 0 ? (
             <div className="text-center py-8">
-              <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-gray-600">Aucun bail à indexer pour le moment</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-[var(--text-secondary)]">Aucun bail à indexer pour le moment</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">
                 Les baux dont la date anniversaire approche apparaîtront ici
               </p>
             </div>
           ) : (
             <div className="space-y-4">
               {pendingLeases.map((lease) => (
-                <div key={lease.id} className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                <div key={lease.id} className="border border-[var(--border)] rounded-xl p-4 hover:border-[var(--color-electric-blue)] transition-colors">
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     {/* Informations du bail */}
                     <div className="flex-1 space-y-2">
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-display font-semibold text-[var(--text)]">
                           {lease.lot.properties_new.name} - {lease.lot.name}
                         </h3>
                         {lease.daysUntilAnniversary <= 30 && (
                           <Badge variant="danger">Urgent</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-[var(--text-secondary)]">
                         <span className="font-medium">Locataire :</span> {lease.tenant.first_name} {lease.tenant.last_name}
                       </p>
                       <div className="space-y-2 text-sm">
                         {/* Date de début et référence */}
-                        <div className="p-3 bg-gray-50 rounded-lg">
-                          <p className="text-gray-700">
+                        <div className="p-3 bg-[var(--surface-hover)] rounded-xl">
+                          <p className="text-[var(--text)]">
                             <span className="font-medium">Bail démarré le :</span>{' '}
-                            <span className="text-gray-900">{formatDateFR(lease.start_date)}</span>
-                            {' '}→ Référence : <span className="font-semibold text-blue-700">
+                            <span className="text-[var(--text)]">{formatDateFR(lease.start_date)}</span>
+                            {' '}→ Référence : <span className="font-semibold text-[var(--color-electric-blue)]">
                               {lease.indexationCalculation.oldIRLQuarter} (IRL: {lease.indexationCalculation.oldIRLValue})
                             </span>
                           </p>
@@ -337,25 +337,25 @@ function Indexation() {
 
                         {/* Date anniversaire */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <div className="p-3 bg-blue-50 rounded-lg">
-                            <p className="text-xs text-gray-600 mb-1">Date anniversaire</p>
-                            <p className="font-semibold text-blue-700">
+                          <div className="p-3 bg-[var(--color-electric-blue)]/10 rounded-xl">
+                            <p className="text-xs text-[var(--text-secondary)] mb-1">Date anniversaire</p>
+                            <p className="font-semibold text-[var(--color-electric-blue)]">
                               {formatDateFR(lease.anniversaryDate)}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-[var(--text-muted)] mt-1">
                               Dans {lease.daysUntilAnniversary} jour{lease.daysUntilAnniversary > 1 ? 's' : ''}
                             </p>
                           </div>
 
-                          <div className="p-3 bg-blue-50 rounded-lg">
-                            <p className="text-xs text-gray-600 mb-1">Nouvelle référence IRL</p>
-                            <p className="font-semibold text-blue-700">
+                          <div className="p-3 bg-[var(--color-electric-blue)]/10 rounded-xl">
+                            <p className="text-xs text-[var(--text-secondary)] mb-1">Nouvelle référence IRL</p>
+                            <p className="font-semibold text-[var(--color-electric-blue)]">
                               {lease.indexationCalculation.newIRLQuarter}
                               {lease.indexationCalculation.newIRLEstimated && (
                                 <span className="ml-1 text-orange-600">*</span>
                               )}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-[var(--text-muted)] mt-1">
                               Valeur : {lease.indexationCalculation.newIRLValue}
                             </p>
                             {lease.indexationCalculation.newIRLEstimated && (
@@ -367,25 +367,25 @@ function Indexation() {
                         </div>
 
                         {/* Calcul du loyer */}
-                        <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-200">
+                        <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
                           <div className="flex items-center justify-between">
                             <div>
-                              <p className="text-xs text-gray-600">Loyer actuel</p>
-                              <p className="text-lg font-semibold text-gray-900">
+                              <p className="text-xs text-[var(--text-secondary)]">Loyer actuel</p>
+                              <p className="text-lg font-semibold text-[var(--text)]">
                                 {lease.indexationCalculation.oldRent.toFixed(2)} €
                               </p>
                             </div>
                             <div className="text-center px-4">
-                              <svg className="w-6 h-6 text-gray-400 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-6 h-6 text-[var(--text-muted)] mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                               </svg>
-                              <p className={`text-xs font-semibold mt-1 ${lease.indexationCalculation.increasePercentage > 3 ? 'text-orange-600' : 'text-emerald-600'}`}>
+                              <p className={`text-xs font-semibold mt-1 ${lease.indexationCalculation.increasePercentage > 3 ? 'text-orange-600' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                 +{lease.indexationCalculation.increasePercentage.toFixed(2)}%
                               </p>
                             </div>
                             <div className="text-right">
-                              <p className="text-xs text-gray-600">Nouveau loyer</p>
-                              <p className="text-lg font-bold text-emerald-600">
+                              <p className="text-xs text-[var(--text-secondary)]">Nouveau loyer</p>
+                              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                                 {lease.indexationCalculation.newRent.toFixed(2)} €
                               </p>
                             </div>
@@ -432,102 +432,102 @@ function Indexation() {
         <Card title="Tous les baux indexables" subtitle={`${allIndexableLeases.length} bail${allIndexableLeases.length > 1 ? 'x' : ''} avec indexation activée`}>
           {allIndexableLeases.length === 0 ? (
             <div className="text-center py-8">
-              <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <p className="text-gray-600">Aucun bail avec indexation activée</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-[var(--text-secondary)]">Aucun bail avec indexation activée</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">
                 Activez l'indexation lors de la création d'un bail
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Bien / Lot
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Locataire
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Début du bail
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Référence IRL
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Loyer actuel
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Anniversaire
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Prochain IRL
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Jours restants
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {allIndexableLeases.map((lease) => (
-                    <tr key={lease.id} className="hover:bg-gray-50">
+                    <tr key={lease.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {lease.lot.properties_new.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[var(--text-muted)]">
                           {lease.lot.name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {lease.tenant.first_name} {lease.tenant.last_name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {formatDateShortFR(lease.start_date)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {lease.indexationCalculation ? (
                           <div className="text-sm">
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium text-[var(--text)]">
                               {lease.indexationCalculation.oldIRLQuarter}
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-[var(--text-muted)]">
                               IRL: {lease.indexationCalculation.oldIRLValue}
                             </div>
                           </div>
                         ) : (
-                          <div className="text-sm text-gray-400">
+                          <div className="text-sm text-[var(--text-muted)]">
                             {formatQuarter(lease.referenceQuarter, lease.referenceYear)}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[var(--text)]">
                           {parseFloat(lease.rent_amount).toFixed(2)} €
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {formatDateShortFR(lease.anniversaryDate)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {lease.indexationCalculation ? (
                           <div className="text-sm">
-                            <div className={`font-medium ${lease.indexationCalculation.newIRLEstimated ? 'text-orange-600' : 'text-blue-700'}`}>
+                            <div className={`font-medium ${lease.indexationCalculation.newIRLEstimated ? 'text-orange-600' : 'text-[var(--color-electric-blue)]'}`}>
                               {lease.indexationCalculation.newIRLQuarter}
                               {lease.indexationCalculation.newIRLEstimated && (
                                 <span className="ml-1">*</span>
                               )}
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-[var(--text-muted)]">
                               IRL: {lease.indexationCalculation.newIRLValue}
                             </div>
                             {lease.indexationCalculation.newIRLEstimated && (
@@ -547,8 +547,8 @@ function Indexation() {
                           lease.daysUntilAnniversary <= 60
                             ? 'text-orange-600'
                             : lease.daysUntilAnniversary <= 180
-                            ? 'text-blue-600'
-                            : 'text-gray-600'
+                            ? 'text-[var(--color-electric-blue)]'
+                            : 'text-[var(--text-secondary)]'
                         }`}>
                           {lease.daysUntilAnniversary} jour{lease.daysUntilAnniversary > 1 ? 's' : ''}
                         </div>
@@ -565,80 +565,80 @@ function Indexation() {
         <Card title="Historique des indexations" subtitle={`${history.length} indexation${history.length > 1 ? 's' : ''} effectuée${history.length > 1 ? 's' : ''}`}>
           {history.length === 0 ? (
             <div className="text-center py-8">
-              <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              <p className="text-gray-600">Aucune indexation effectuée</p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-[var(--text-secondary)]">Aucune indexation effectuée</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">
                 L'historique des révisions de loyers apparaîtra ici
               </p>
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Bien / Lot
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Locataire
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Ancien loyer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Nouveau loyer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Augmentation
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       IRL
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Lettre
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {history.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50">
+                    <tr key={item.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{formatDateShortFR(item.applied_at)}</div>
+                        <div className="text-sm text-[var(--text)]">{formatDateShortFR(item.applied_at)}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {item.lease.lot.properties_new.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[var(--text-muted)]">
                           {item.lease.lot.name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {item.lease.tenant.first_name} {item.lease.tenant.last_name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{parseFloat(item.old_rent).toFixed(2)} €</div>
+                        <div className="text-sm text-[var(--text)]">{parseFloat(item.old_rent).toFixed(2)} €</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-emerald-600">{parseFloat(item.new_rent).toFixed(2)} €</div>
+                        <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{parseFloat(item.new_rent).toFixed(2)} €</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           +{parseFloat(item.increase_percentage).toFixed(2)}%
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-xs text-gray-600">
+                        <div className="text-xs text-[var(--text-secondary)]">
                           {item.old_irl_quarter} → {item.new_irl_quarter}
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-[var(--text-muted)]">
                           {parseFloat(item.old_irl_value).toFixed(2)} → {parseFloat(item.new_irl_value).toFixed(2)}
                         </div>
                       </td>
@@ -671,9 +671,9 @@ function Indexation() {
           >
             <div className="space-y-4">
               {/* Calendrier de publication INSEE */}
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="text-sm font-semibold text-gray-900 mb-2">📅 Calendrier de publication INSEE</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-700">
+              <div className="p-4 bg-[var(--color-electric-blue)]/10 rounded-xl border border-[var(--color-electric-blue)]/20">
+                <h4 className="text-sm font-display font-semibold text-[var(--text)] mb-2">📅 Calendrier de publication INSEE</h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-[var(--text)]">
                   <div><strong>T1 :</strong> mi-avril</div>
                   <div><strong>T2 :</strong> mi-juillet</div>
                   <div><strong>T3 :</strong> mi-octobre</div>
@@ -683,12 +683,12 @@ function Indexation() {
 
               {/* Bouton pour afficher le formulaire */}
               <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[var(--text-secondary)]">
                   <a
                     href="https://www.insee.fr/fr/statistiques/serie/001515333"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline"
+                    className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] underline transition-colors"
                   >
                     Consulter les valeurs officielles sur le site de l'INSEE →
                   </a>
@@ -707,11 +707,11 @@ function Indexation() {
 
             {/* Formulaire d'ajout d'IRL */}
             {showIRLForm && (
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="text-sm font-semibold text-gray-900 mb-3">Ajouter un nouvel indice IRL</h3>
+              <div className="bg-[var(--color-electric-blue)]/10 p-4 rounded-xl border border-[var(--color-electric-blue)]/20">
+                <h3 className="text-sm font-display font-semibold text-[var(--text)] mb-3">Ajouter un nouvel indice IRL</h3>
                 <form onSubmit={handleAddIRL} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text)] mb-1">
                       Année *
                     </label>
                     <input
@@ -720,19 +720,19 @@ function Indexation() {
                       max="2100"
                       value={newIRL.year}
                       onChange={(e) => setNewIRL({ ...newIRL, year: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
                       placeholder="2025"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text)] mb-1">
                       Trimestre *
                     </label>
                     <select
                       value={newIRL.quarter}
                       onChange={(e) => setNewIRL({ ...newIRL, quarter: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
                       required
                     >
                       <option value="">Sélectionner</option>
@@ -743,7 +743,7 @@ function Indexation() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-[var(--text)] mb-1">
                       Valeur IRL *
                     </label>
                     <input
@@ -752,7 +752,7 @@ function Indexation() {
                       min="0"
                       value={newIRL.value}
                       onChange={(e) => setNewIRL({ ...newIRL, value: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
                       placeholder="148.50"
                       required
                     />
@@ -780,35 +780,35 @@ function Indexation() {
             {/* Tableau des IRL */}
             {irlIndices.length === 0 ? (
               <div className="text-center py-8">
-                <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-12 h-12 mx-auto text-[var(--text-muted)] mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
-                <p className="text-gray-600">Aucun indice IRL enregistré</p>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-[var(--text-secondary)]">Aucun indice IRL enregistré</p>
+                <p className="text-sm text-[var(--text-muted)] mt-1">
                   Commencez par ajouter des indices IRL pour calculer les indexations
                 </p>
               </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                  <table className="min-w-full divide-y divide-[var(--border)]">
+                    <thead className="bg-[var(--surface-elevated)]">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                           Période
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                           Valeur IRL
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                           Variation
                         </th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-6 py-4 text-right text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                       {(showAllIndices ? irlIndices : irlIndices.slice(0, 10)).map((irl, index) => {
                         const prevIRL = irlIndices[index + 1]
                         const variation = prevIRL
@@ -816,26 +816,26 @@ function Indexation() {
                           : null
 
                         return (
-                          <tr key={irl.id} className="hover:bg-gray-50">
+                          <tr key={irl.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">
+                              <div className="text-sm font-medium text-[var(--text)]">
                                 T{irl.quarter} {irl.year}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-semibold text-blue-700">
+                              <div className="text-sm font-semibold text-[var(--color-electric-blue)]">
                                 {parseFloat(irl.value).toFixed(2)}
                               </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               {variation !== null ? (
                                 <div className={`text-sm font-medium ${
-                                  parseFloat(variation) > 0 ? 'text-emerald-600' : 'text-red-600'
+                                  parseFloat(variation) > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'
                                 }`}>
                                   {parseFloat(variation) > 0 ? '+' : ''}{variation}%
                                 </div>
                               ) : (
-                                <div className="text-sm text-gray-400">-</div>
+                                <div className="text-sm text-[var(--text-muted)]">-</div>
                               )}
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap text-right">

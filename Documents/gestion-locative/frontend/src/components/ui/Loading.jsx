@@ -45,10 +45,10 @@ function Loading({
   const SpinnerLoader = () => (
     <div className={`flex flex-col items-center gap-3 ${center ? 'justify-center min-h-64' : ''}`}>
       <div className="relative">
-        <div className={`${sizes[size]} border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin`} />
+        <div className={`${sizes[size]} border-4 border-[var(--border)] border-t-[var(--color-electric-blue)] rounded-full animate-spin`} />
       </div>
       {message && (
-        <p className={`${textSizes[size]} text-gray-600 animate-pulse`}>
+        <p className={`${textSizes[size]} text-[var(--text-secondary)] animate-pulse`}>
           {message}
         </p>
       )}
@@ -59,12 +59,12 @@ function Loading({
   const DotsLoader = () => (
     <div className={`flex flex-col items-center gap-3 ${center ? 'justify-center min-h-64' : ''}`}>
       <div className="flex gap-2">
-        <div className={`${sizes[size]} bg-blue-600 rounded-full animate-bounce`} style={{ animationDelay: '0ms' }} />
-        <div className={`${sizes[size]} bg-blue-600 rounded-full animate-bounce`} style={{ animationDelay: '150ms' }} />
-        <div className={`${sizes[size]} bg-blue-600 rounded-full animate-bounce`} style={{ animationDelay: '300ms' }} />
+        <div className={`${sizes[size]} bg-[var(--color-electric-blue)] rounded-full animate-bounce`} style={{ animationDelay: '0ms' }} />
+        <div className={`${sizes[size]} bg-[var(--color-electric-blue)] rounded-full animate-bounce`} style={{ animationDelay: '150ms' }} />
+        <div className={`${sizes[size]} bg-[var(--color-electric-blue)] rounded-full animate-bounce`} style={{ animationDelay: '300ms' }} />
       </div>
       {message && (
-        <p className={`${textSizes[size]} text-gray-600`}>
+        <p className={`${textSizes[size]} text-[var(--text-secondary)]`}>
           {message}
         </p>
       )}
@@ -76,9 +76,9 @@ function Loading({
     <div className="space-y-4 animate-pulse">
       {Array.from({ length: count }).map((_, index) => (
         <div key={index} className="space-y-3">
-          <div className="h-4 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-5/6" />
+          <div className="h-4 bg-[var(--surface-elevated)] rounded-xl w-3/4" />
+          <div className="h-4 bg-[var(--surface-elevated)] rounded-xl w-full" />
+          <div className="h-4 bg-[var(--surface-elevated)] rounded-xl w-5/6" />
         </div>
       ))}
     </div>
@@ -88,12 +88,12 @@ function Loading({
   const PulseLoader = () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {Array.from({ length: count }).map((_, index) => (
-        <div key={index} className="bg-white rounded-lg shadow-sm p-6 animate-pulse">
+        <div key={index} className="bg-[var(--surface)] rounded-2xl shadow-sm p-6 animate-pulse border border-[var(--border)]">
           <div className="space-y-4">
-            <div className="h-6 bg-gray-200 rounded w-1/2" />
-            <div className="h-4 bg-gray-200 rounded w-3/4" />
-            <div className="h-4 bg-gray-200 rounded w-full" />
-            <div className="h-10 bg-gray-200 rounded w-1/3" />
+            <div className="h-6 bg-[var(--surface-elevated)] rounded-xl w-1/2" />
+            <div className="h-4 bg-[var(--surface-elevated)] rounded-xl w-3/4" />
+            <div className="h-4 bg-[var(--surface-elevated)] rounded-xl w-full" />
+            <div className="h-10 bg-[var(--surface-elevated)] rounded-xl w-1/3" />
           </div>
         </div>
       ))}
@@ -120,7 +120,7 @@ function Loading({
   // Wrapper fullScreen si nécessaire
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-[var(--background)] flex items-center justify-center z-50">
         {content}
       </div>
     )

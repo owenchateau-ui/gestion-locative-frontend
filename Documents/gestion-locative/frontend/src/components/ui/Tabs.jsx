@@ -15,7 +15,7 @@ function Tabs({ tabs, defaultTab, onChange }) {
   return (
     <div>
       {/* Tab Headers */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-[var(--border)]">
         <div className="flex space-x-8">
           {tabs.map((tab) => {
             const isActive = tab.id === activeTab
@@ -26,10 +26,10 @@ function Tabs({ tabs, defaultTab, onChange }) {
                 onClick={() => handleTabChange(tab.id)}
                 disabled={tab.disabled}
                 className={`
-                  relative px-1 py-4 text-sm font-medium transition-colors
+                  relative px-1 py-4 text-sm font-medium font-display transition-colors
                   ${isActive
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-500 hover:text-gray-700 border-b-2 border-transparent'
+                    ? 'text-[var(--color-electric-blue)] border-b-2 border-[var(--color-electric-blue)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)] border-b-2 border-transparent'
                   }
                   ${tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `}
@@ -41,8 +41,8 @@ function Tabs({ tabs, defaultTab, onChange }) {
                     <span className={`
                       ml-2 px-2 py-0.5 text-xs font-semibold rounded-full
                       ${isActive
-                        ? 'bg-blue-100 text-blue-600'
-                        : 'bg-gray-100 text-gray-600'
+                        ? 'bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)]'
+                        : 'bg-[var(--surface-elevated)] text-[var(--text-secondary)]'
                       }
                     `}>
                       {tab.badge}

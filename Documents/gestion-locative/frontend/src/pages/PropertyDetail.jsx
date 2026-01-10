@@ -9,6 +9,7 @@ import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import StatCard from '../components/ui/StatCard'
+import Alert from '../components/ui/Alert'
 
 function PropertyDetail() {
   const { id } = useParams()
@@ -153,7 +154,7 @@ function PropertyDetail() {
     return (
       <DashboardLayout title="Détail propriété">
         <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+          <div className="text-xl text-[var(--text-muted)]">Chargement...</div>
         </div>
       </DashboardLayout>
     )
@@ -163,8 +164,8 @@ function PropertyDetail() {
     return (
       <DashboardLayout title="Propriété introuvable">
         <Card className="text-center py-12">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Propriété introuvable</h3>
-          <p className="text-gray-600 mb-6">
+          <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-2">Propriété introuvable</h3>
+          <p className="text-[var(--text-secondary)] mb-6">
             La propriété demandée n'existe pas ou a été supprimée.
           </p>
           <Button onClick={() => navigate('/properties')}>
@@ -193,7 +194,7 @@ function PropertyDetail() {
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-gray-900">{property.name}</h2>
+                <h2 className="text-2xl font-display font-bold text-[var(--text)]">{property.name}</h2>
                 <Badge variant="info">{getCategoryLabel(property.category)}</Badge>
               </div>
               <div className="flex items-center space-x-2 mb-3">
@@ -201,17 +202,17 @@ function PropertyDetail() {
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: property.entities.color }}
                 />
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {property.entities.name}
                 </span>
               </div>
-              <p className="text-gray-600">
+              <p className="text-[var(--text-secondary)]">
                 {property.address}
                 <br />
                 {property.postal_code} {property.city}
               </p>
               {property.description && (
-                <p className="text-sm text-gray-500 mt-3">
+                <p className="text-sm text-[var(--text-muted)] mt-3">
                   {property.description}
                 </p>
               )}
@@ -228,9 +229,9 @@ function PropertyDetail() {
         </Card>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
+          <Alert variant="error">
             {error}
-          </div>
+          </Alert>
         )}
 
         {/* Statistiques */}
@@ -290,42 +291,42 @@ function PropertyDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {property.construction_year && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Année de construction</p>
-                  <p className="text-lg font-semibold text-gray-900">{property.construction_year}</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Année de construction</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">{property.construction_year}</p>
                 </div>
               )}
               {property.acquisition_date && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Date d'acquisition</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Date d'acquisition</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">
                     {new Date(property.acquisition_date).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
               )}
               {property.acquisition_price && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Prix d'acquisition</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Prix d'acquisition</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">
                     {property.acquisition_price.toLocaleString('fr-FR')} €
                   </p>
                 </div>
               )}
               {property.current_value && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Valeur actuelle</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Valeur actuelle</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">
                     {property.current_value.toLocaleString('fr-FR')} €
                   </p>
                 </div>
               )}
               {property.is_coproperty && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Copropriété</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Copropriété</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">
                     Oui ({property.coproperty_lots} lots)
                   </p>
                   {property.syndic_name && (
-                    <p className="text-sm text-gray-600 mt-1">
+                    <p className="text-sm text-[var(--text-muted)] mt-1">
                       Syndic : {property.syndic_name}
                     </p>
                   )}
@@ -351,10 +352,10 @@ function PropertyDetail() {
 
           {lots.length === 0 ? (
             <div className="text-center py-8">
-              <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-16 h-16 mx-auto text-[var(--text-muted)] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
               </svg>
-              <p className="text-gray-600 mb-4">
+              <p className="text-[var(--text-secondary)] mb-4">
                 Aucun lot dans cette propriété
               </p>
               <Button onClick={() => navigate(`/lots/new?property=${id}`)}>
@@ -363,63 +364,63 @@ function PropertyDetail() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Nom / Référence
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Surface
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Loyer
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {lots.map((lot) => (
-                    <tr key={lot.id} className="hover:bg-gray-50">
+                    <tr key={lot.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {lot.name}
                         </div>
                         {lot.reference && (
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-[var(--text-muted)]">
                             Réf: {lot.reference}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {getLotTypeLabel(lot.lot_type)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {lot.surface_area ? `${lot.surface_area} m²` : '-'}
                         </div>
                         {lot.nb_rooms && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             {lot.nb_rooms} pièce{lot.nb_rooms > 1 ? 's' : ''}
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[var(--text)]">
                           {lot.rent_amount.toFixed(2)} €
                         </div>
                         {lot.charges_amount > 0 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             + {lot.charges_amount.toFixed(2)} € charges
                           </div>
                         )}
@@ -430,13 +431,13 @@ function PropertyDetail() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                         <button
                           onClick={() => navigate(`/lots/${lot.id}`)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-[var(--color-purple)] hover:text-[var(--color-purple-light)] transition-colors"
                         >
                           Voir
                         </button>
                         <button
                           onClick={() => navigate(`/lots/${lot.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                         >
                           Modifier
                         </button>

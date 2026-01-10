@@ -1,7 +1,7 @@
 # CLAUDE.md - SaaS Gestion Locative
 
 > Ce fichier sert de référence pour tout assistant IA travaillant sur ce projet.
-> Dernière mise à jour : 4 Janvier 2026 - Sécurité RLS V2 Complète
+> Dernière mise à jour : 6 Janvier 2026 - Conformité Légale Baux (Loi ALUR)
 
 ---
 
@@ -37,6 +37,7 @@
 12. [Schéma de base de données](#️-schéma-de-base-de-données)
 13. [Variables d'environnement](#-variables-denvironnement)
 14. [Commandes utiles](#-commandes-utiles)
+15. [Directives pour les sous-agents](#-directives-pour-les-sous-agents)
 
 ---
 
@@ -161,45 +162,92 @@ Permet de gérer les biens immobiliers, les locataires, les baux et le suivi des
 
 **Note ✨** : Les éléments marqués ✨ sont nouveaux depuis la dernière mise à jour
 
-### 🎨 Design System actuel
+### 🎨 Design System "Bold Geometric"
 
-#### Palette de couleurs
-```css
-Primary     : blue-600 (#2563EB)
-Secondary   : slate-600 (#475569)
-Success     : emerald-500 (#10B981)
-Warning     : amber-500 (#F59E0B)
-Danger      : red-500 (#EF4444)
-Info        : blue-500 (#3B82F6)
-Background  : gray-50 (#F9FAFB)
-Sidebar     : slate-900 (#0F172A)
-Text        : gray-900 (#111827)
-Muted       : gray-500 (#6B7280)
-```
+> Documentation complète : voir `DESIGN_SYSTEM_BOLD_GEOMETRIC.md`
+
+Le design system "Bold Geometric" est caractérisé par des formes géométriques audacieuses, des couleurs vives, des effets glow, et une typographie moderne.
+
+#### Couleurs principales (Variables CSS)
+
+| Couleur | Variable | Valeur | Usage |
+|---------|----------|--------|-------|
+| **Electric Blue** | `--color-electric-blue` | `#0055FF` | Actions primaires, liens |
+| **Vivid Coral** | `--color-vivid-coral` | `#FF6B4A` | Danger, suppression |
+| **Lime** | `--color-lime` | `#C6F135` | Succès alternatif |
+| **Purple** | `--color-purple` | `#8B5CF6` | Accents premium |
+| **Success** | Emerald-500 | `#10B981` | Validations |
+| **Warning** | Amber-500 | `#F59E0B` | Alertes |
+
+#### Couleurs de surface
+
+| Mode | Background | Surface | Border | Text |
+|------|------------|---------|--------|------|
+| **Clair** | `#F1F3F9` | `#FFFFFF` | `#E2E8F0` | `#1E293B` |
+| **Sombre** | `#0A0A0F` | `#12121A` | `#2A2A3C` | `#F1F5F9` |
 
 #### Typographie
+
+| Niveau | Classes Tailwind | Police |
+|--------|------------------|--------|
+| **Display** | `font-display` | Space Grotesk |
+| **Body** | `font-body` (défaut) | DM Sans |
+| **H1** | `text-3xl font-display font-bold` | 30px |
+| **H2** | `text-2xl font-display font-bold` | 24px |
+| **H3** | `text-xl font-display font-semibold` | 20px |
+| **Labels** | `text-sm font-display font-medium` | 14px |
+
+#### Border Radius
+
+| Élément | Tailwind | Valeur |
+|---------|----------|--------|
+| Inputs, Badges, Nav | `rounded-xl` | 12px |
+| Cards, Modals | `rounded-2xl` | 16px |
+| Avatars, Badges ronds | `rounded-full` | 9999px |
+
+#### Effets Glow
+
 ```css
-Titres H1   : text-3xl font-bold (30px)
-Titres H2   : text-2xl font-bold (24px)
-Titres H3   : text-xl font-semibold (20px)
-Body        : text-base (16px)
-Small       : text-sm (14px)
-Tiny        : text-xs (12px)
+shadow-glow-blue   → hover sur boutons primaires
+shadow-glow-coral  → hover sur boutons danger
+shadow-glow-lime   → hover sur boutons success alternatif
+shadow-glow-purple → hover sur boutons premium
 ```
 
-#### Espacements
-```css
-Layout      : space-y-6 (gap vertical 24px)
-Cards       : p-6 (padding 24px)
-Forms       : space-y-6 (gap vertical 24px)
-Grilles     : gap-6 (24px entre colonnes)
-```
+#### Animations
+
+| Animation | Classe | Usage |
+|-----------|--------|-------|
+| Fade In | `animate-fade-in` | Pages, modals |
+| Slide Up | `animate-slide-up` | Cards, notifications |
+| Card Enter | `animate-card-enter` | Listes de cards |
 
 #### Composants standards
-- **Inputs** : `px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500`
-- **Selects** : Mêmes classes que inputs
-- **Boutons** : Variants via composant Button
-- **Cards** : `bg-white rounded-lg shadow-sm`
+
+- **Inputs** : `px-4 py-3 bg-[var(--surface)] border border-[var(--border)] rounded-xl focus:ring-2 focus:ring-[var(--color-electric-blue)]`
+- **Cards** : `bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 hover:-translate-y-0.5 hover:shadow-card-hover`
+- **Boutons** : Gradient + glow via composant Button (`hover:shadow-glow-blue`)
+- **Tables headers** : `bg-[var(--surface-elevated)] text-xs font-display font-semibold uppercase`
+
+#### Exemple de code
+
+```jsx
+// Titre de page
+<h1 className="text-3xl font-display font-bold text-[var(--text)]">
+  Dashboard
+</h1>
+
+// Card interactive
+<div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6
+                transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card-hover">
+  Contenu
+</div>
+
+// Bouton primaire
+<Button variant="primary" className="hover:shadow-glow-blue">
+  Créer
+</Button>
+```
 
 ---
 
@@ -2159,6 +2207,68 @@ CREATE INDEX idx_diagnostics_expiration ON diagnostics(expiration_date) WHERE ex
 - [ ] Créer EntityDetail.jsx avec Tabs pour différentes sections
 - [ ] Vérification responsive sur toutes les pages existantes
 
+### ✅ Phase 2.7 : Conformité Légale Baux - Loi ALUR (TERMINÉ)
+
+**Date : 6 Janvier 2026**
+
+#### ✅ Constantes légales centralisées
+- [x] **Fichier `constants/legalConstants.js`** : Toutes les règles légales centralisées
+- [x] **LEASE_LEGAL_RULES** : Configuration par type de bail
+  - Non meublé : 36 mois min, dépôt max 1 mois
+  - Meublé : 12 mois min, dépôt max 2 mois
+  - Étudiant : 9 mois min, dépôt max 2 mois
+  - Mobilité : 1-10 mois, dépôt interdit
+- [x] **Fonctions utilitaires** :
+  - `validateLeaseDuration()` : Valide durée selon type
+  - `validateDepositAmount()` : Valide dépôt selon type
+  - `calculateDurationMonths()` : Calcul durée en mois
+  - `formatDuration()` : Formatage "X ans" ou "X mois"
+  - `getMaxDepositAmount()` : Retourne le maximum légal
+  - `getMinDurationMonths()` : Retourne la durée minimale
+
+#### ✅ Validation frontend temps réel (LeaseForm.jsx)
+- [x] **États de validation** : `durationError` et `depositError`
+- [x] **useEffect pour durée** : Validation automatique quand dates ou type changent
+- [x] **useEffect pour dépôt** : Validation automatique quand montants ou type changent
+- [x] **Affichage visuel** :
+  - 🔴 Alerte rouge si durée < minimum légal
+  - 🔴 Alerte rouge si dépôt > maximum légal
+  - 💡 Indication du maximum légal sous le champ dépôt
+- [x] **Blocage soumission** : Impossible de créer un bail non conforme
+
+#### ✅ Validation backend (Trigger PostgreSQL)
+- [x] **Migration SQL** : `20260106_add_lease_legal_validation.sql`
+- [x] **Fonction `validate_lease_legal_rules()`** :
+  - Trigger BEFORE INSERT OR UPDATE
+  - Vérifie durée minimale selon type de bail
+  - Vérifie durée maximale (bail mobilité uniquement)
+  - Vérifie dépôt de garantie maximum
+  - Interdit dépôt pour bail mobilité
+  - Lève exception avec message explicite si non conforme
+- [x] **Double sécurité** : Frontend + Backend pour garantir conformité
+
+#### 📁 Fichiers créés/modifiés
+- ✨ `constants/legalConstants.js` - CRÉÉ (173 lignes)
+- ⚡ `pages/LeaseForm.jsx` - Ajout validation temps réel
+- ✨ `supabase/migrations/20260106_add_lease_legal_validation.sql` - CRÉÉ
+- ✨ `ANALYSE_IMPACT_LEGAL_VALIDATION.md` - CRÉÉ
+
+#### 🎯 Impact
+- **Conformité loi ALUR** : 100% des baux créés respectent la législation
+- **Prévention erreurs** : Impossible de créer un bail non conforme
+- **Feedback utilisateur** : Messages d'erreur explicites avec références légales
+- **Sécurité juridique** : Double validation frontend + backend
+- **Maintenance simplifiée** : Constantes centralisées faciles à mettre à jour
+
+#### 📋 Règles légales implémentées (Loi ALUR)
+
+| Type de bail | Durée min | Durée max | Dépôt max |
+|--------------|-----------|-----------|-----------|
+| Non meublé | 36 mois | - | 1 mois loyer HC |
+| Meublé | 12 mois | - | 2 mois loyer HC |
+| Étudiant meublé | 9 mois | - | 2 mois loyer HC |
+| Mobilité | 1 mois | 10 mois | Interdit |
+
 ### 🚧 Phase 3 : Documents et États des Lieux
 
 #### Semaine 1 : Bibliothèque de documents
@@ -2590,6 +2700,1121 @@ git branch -d feature/nouvelle-fonctionnalite
 
 ---
 
+## 🤖 DIRECTIVES POUR LES SOUS-AGENTS
+
+> **Note importante** : Ces directives sont destinées aux sous-agents (assistants IA spécialisés) travaillant sur ce projet de gestion locative. Elles garantissent la cohérence, la qualité et la sécurité des modifications, en particulier sur les modules financiers et légaux critiques.
+
+---
+
+### 🎯 Principes Fondamentaux
+
+#### 1. Toujours Lire Avant d'Agir
+```
+AVANT toute modification :
+1. Lire METHODO_MODIFICATIONS.md (obligatoire)
+2. Lire cette section DIRECTIVES POUR LES SOUS-AGENTS
+3. Analyser l'impact sur : DB → RLS → Services → Frontend
+4. Créer un fichier ANALYSE_IMPACT_[FEATURE].md
+```
+
+#### 2. Approche Systémique Complète
+**JAMAIS de modification partielle**. Une modification doit toujours couvrir tous les niveaux :
+- ✅ Base de données (si nécessaire)
+- ✅ RLS policies (si nouvelles colonnes ou tables)
+- ✅ Services backend (services/*.js)
+- ✅ Composants frontend (pages/, components/)
+- ✅ Documentation (CLAUDE.md)
+
+#### 3. Isolation Multi-Tenant Stricte
+**CRITIQUE** : Ce projet gère plusieurs bailleurs (multi-tenant). Toute modification touchant aux données DOIT respecter l'isolation via RLS.
+- **Architecture** : `auth.uid()` → `users.supabase_uid` → `users.id` → `entities.user_id`
+- **Vérification** : Toute nouvelle table avec des données utilisateur DOIT avoir des RLS policies
+- **Helpers RLS** : Utiliser `get_app_user_id()`, `user_owns_entity()`, `user_owns_property()`, `user_owns_lot()`, `user_owns_tenant()`, `user_owns_tenant_group()`
+
+---
+
+### 🚦 Règles de Coordination Entre Sous-Agents
+
+#### Attribution des Modules
+
+| Module | Agent Responsable | Fichiers Clés | Interdictions |
+|--------|-------------------|---------------|---------------|
+| **Entités** | Agent Patrimoine | `entities/`, `services/entityService.js` | Modification RLS sans sync |
+| **Propriétés & Lots** | Agent Patrimoine | `properties/`, `lots/`, `services/propertyService.js`, `services/lotService.js` | Modifier hiérarchie sans consensus |
+| **Locataires & Groupes** | Agent Locataires | `tenants/`, `components/tenants/`, `services/tenantGroupService.js` | Modifier calcul taux d'effort sans validation |
+| **Baux** | Agent Contractuel | `leases/`, `services/leaseService.js` | Modifier durée ou dates sans vérifier conformité ALUR |
+| **Paiements & Quittances** | Agent Financier | `payments/`, `services/paymentService.js` | Modifier montants sans traçabilité complète |
+| **Indexation IRL** | Agent Financier | `indexation/`, `services/indexationService.js` | Modifier formule calcul sans valider avec données INSEE |
+| **Documents** | Agent Documents | `documents/`, `services/documentService.js` | Modifier RLS storage sans tester isolation |
+| **Candidatures** | Agent Recrutement | `candidates/`, `services/candidateService.js` | Modifier scoring sans documenter algorithme |
+| **Base de Données** | Agent Database | `supabase/migrations/` | Modifier schéma sans migration versionnée |
+| **Sécurité RLS** | Agent Sécurité | `supabase/migrations/*RLS*.sql` | Désactiver RLS ou modifier policies sans tests multi-tenant |
+
+#### Points de Synchronisation Obligatoires
+
+**AVANT de modifier :**
+1. **Calculs financiers** (loyer, charges, régularisation, taux d'effort)
+   - Consulter Agent Financier
+   - Vérifier impact sur quittances, indexation, paiements
+   - Valider formules avec exemples concrets
+
+2. **Schéma de base de données**
+   - Consulter Agent Database
+   - Créer migration SQL versionnée
+   - Mettre à jour RLS policies (consulter Agent Sécurité)
+   - Tester isolation multi-tenant
+
+3. **Hiérarchie Entité → Propriété → Lot → Bail**
+   - Consulter Agent Patrimoine ET Agent Contractuel
+   - Vérifier cascades de suppression
+   - Tester références croisées
+
+4. **Documents et Storage**
+   - Consulter Agent Documents
+   - Vérifier RLS sur Supabase Storage
+   - Tester upload/download avec différents utilisateurs
+
+#### Workflow de Coordination
+
+```mermaid
+graph TD
+    A[Demande utilisateur] --> B{Type de modification}
+    B -->|Financier| C[Agent Financier]
+    B -->|Patrimoine| D[Agent Patrimoine]
+    B -->|Locataires| E[Agent Locataires]
+    B -->|Database| F[Agent Database]
+
+    C --> G{Impact DB ou RLS?}
+    D --> G
+    E --> G
+
+    G -->|Oui| H[Consulter Agent Database]
+    H --> I[Consulter Agent Sécurité]
+    I --> J[Créer migration]
+    J --> K[Mettre à jour RLS]
+    K --> L[Mettre à jour Services]
+
+    G -->|Non| L
+    L --> M[Mettre à jour Frontend]
+    M --> N[Tests complets]
+    N --> O[Documentation]
+```
+
+---
+
+### ✅ Standards de Qualité - Gestion Locative
+
+#### Validation des Calculs Financiers
+
+**TOUS les calculs doivent être vérifiés avec des cas de test concrets :**
+
+```javascript
+// ✅ BON : Calcul documenté avec exemple
+/**
+ * Calcule le loyer net après déduction des aides au logement
+ *
+ * @example
+ * // Loyer 800€ + Charges 150€ = 950€ total
+ * // Aides CAF 200€
+ * // Loyer net = 950€ - 200€ = 750€
+ *
+ * @param {number} rentAmount - Montant du loyer (en euros)
+ * @param {number} chargesAmount - Montant des charges (en euros)
+ * @param {number} housingAssistance - Aides au logement (en euros)
+ * @returns {number} Loyer net après aides
+ */
+const calculateNetRent = (rentAmount, chargesAmount, housingAssistance) => {
+  const totalRent = rentAmount + chargesAmount
+  const netRent = totalRent - (housingAssistance || 0)
+  return Math.max(0, netRent) // Ne peut pas être négatif
+}
+
+// ❌ MAUVAIS : Calcul sans documentation ni validation
+const calculateNetRent = (r, c, a) => r + c - a
+```
+
+**Calculs financiers critiques à protéger :**
+1. **Taux d'effort** : `(loyer_net / revenus_groupe) * 100` ≤ 33% (idéal)
+2. **Loyer net** : `loyer + charges - aides_CAF`
+3. **Révision IRL** : `ancien_loyer * (nouvel_IRL / ancien_IRL)` (conforme loi)
+4. **Régularisation charges** : `provisions_versées - charges_réelles`
+5. **Rendement locatif** : `(revenus_annuels / valeur_bien) * 100`
+
+#### Scénarios de Test Obligatoires
+
+**Avant chaque commit touchant aux modules financiers ou contractuels :**
+
+| Scénario | Description | Validation |
+|----------|-------------|------------|
+| **Création bail** | Créer bail avec locataire, lot, dates, loyer, charges | Vérifier taux d'effort, aides CAF pré-remplies, conformité ALUR |
+| **Appel de loyer** | Générer échéances mensuelles automatiques | Vérifier montants, dates, statuts (pending) |
+| **Quittancement** | Enregistrer paiement → générer quittance PDF | Vérifier montant exact, mentions légales, envoi email |
+| **Révision IRL** | Indexer loyer selon IRL trimestre N | Vérifier formule, nouveau montant, date d'effet, lettre générée |
+| **Régularisation charges** | Calculer ajustement annuel provisions vs réel | Vérifier montant à rembourser/réclamer, document généré |
+| **Changement locataire** | Fin bail ancien locataire → nouveau bail | Vérifier statuts, historique, documents, isolation données |
+| **Multi-tenant isolation** | Créer 2 comptes utilisateurs distincts | Vérifier qu'aucune donnée ne fuite entre comptes |
+
+#### Cohérence des Données
+
+**Relations à vérifier systématiquement :**
+- Un **bail** DOIT avoir exactement 1 lot ET 1 groupe de locataires
+- Un **paiement** DOIT être lié à 1 bail existant
+- Un **document** avec `tenant_group_id` DOIT avoir un groupe existant
+- Un **lot** avec statut `occupied` DOIT avoir au moins 1 bail actif
+- Un **locataire** DOIT appartenir à exactement 1 groupe de locataires
+- Une **propriété** DOIT appartenir à exactement 1 entité
+
+**Vérifications automatiques à implémenter :**
+```sql
+-- Exemple : Vérifier cohérence statut lot vs baux actifs
+SELECT l.id, l.name, l.status, COUNT(le.id) as active_leases
+FROM lots l
+LEFT JOIN leases le ON le.lot_id = l.id AND le.status = 'active'
+GROUP BY l.id
+HAVING (l.status = 'occupied' AND COUNT(le.id) = 0)
+    OR (l.status = 'vacant' AND COUNT(le.id) > 0);
+```
+
+#### Conformité Légale Française
+
+**Vérifications obligatoires :**
+
+| Règle Légale | Implémentation | Validation |
+|--------------|----------------|------------|
+| **Loi ALUR - Bail type** | Utiliser modèle officiel avec mentions obligatoires | Vérifier présence clauses, DPE, annexes |
+| **Loi ALUR - Durée bail** | 3 ans minimum (non meublé), 1 an (meublé) | Bloquer création si durée < minimum |
+| **Encadrement loyers** | Vérifier loyer ≤ loyer de référence majoré (si zone tendue) | Alerte si dépassement, bloquer si > 20% |
+| **Révision IRL** | Indexation max 1x/an, selon IRL publié INSEE | Vérifier date dernière révision, source IRL |
+| **Préavis locataire** | 3 mois (non meublé), 1 mois (meublé ou zone tendue) | Calculer date de sortie automatiquement |
+| **Dépôt de garantie** | Max 1 mois (non meublé), 2 mois (meublé) | Bloquer si dépassement |
+| **Quittance gratuite** | Envoi gratuit obligatoire si demandé | Ne jamais facturer l'envoi |
+| **RGPD** | Consentement, droit à l'oubli, portabilité | Isolation RLS, export données, suppression complète |
+
+---
+
+### 🔒 Gestion des Fichiers Critiques
+
+#### Fichiers Interdits de Modification Sans Validation Experte
+
+**NIVEAU ROUGE 🔴 : Modification interdite sans accord explicite de 2+ agents**
+
+| Fichier | Raison | Procédure |
+|---------|--------|-----------|
+| `supabase/migrations/20260104_RLS_CORRECT_FINAL_v2.sql` | RLS policies production | Créer NOUVELLE migration, ne JAMAIS modifier l'ancienne |
+| `supabase/migrations/20260105_MIGRATE_LEASES_TO_TENANT_GROUPS.sql` | Migration données critique | Si erreur, créer migration correctrice |
+| `services/paymentService.js` (calculs) | Formules financières validées | Créer version V2, garder V1 en commentaire |
+| `services/indexationService.js` (IRL) | Calcul légal révision loyer | Valider formule avec exemples INSEE officiels |
+| `supabase/20260104_RESTORE_DATA_FINAL.sql` | Backup données production | Ne JAMAIS toucher, créer nouveau backup |
+
+**NIVEAU ORANGE 🟠 : Modification autorisée après analyse d'impact**
+
+| Fichier | Contrainte | Checklist |
+|---------|------------|-----------|
+| `services/leaseService.js` | Gère cycle de vie baux | ☐ Vérifier dates ☐ Vérifier statuts ☐ Tester transitions |
+| `services/tenantGroupService.js` | Calcul taux d'effort | ☐ Valider formule ☐ Tester avec aides CAF ☐ Cas limites |
+| `components/documents/DocumentTreeView.jsx` | Hiérarchie complexe | ☐ Tester isolation RLS ☐ Vérifier performance ☐ Logs debug |
+| Schema de base de données (toute table) | Impact RLS + références | ☐ Migration SQL ☐ RLS policies ☐ Tests multi-tenant ☐ Cascades |
+
+**NIVEAU VERT 🟢 : Modification libre après lecture du contexte**
+
+- Composants UI (`components/ui/`)
+- Pages de liste (`pages/*List.jsx`)
+- Styles CSS (`index.css`)
+- Documentation (`*.md` sauf `METHODO_MODIFICATIONS.md`)
+
+#### Ordre de Priorité d'Exploration
+
+**Quand vous rejoignez le projet ou démarrez une nouvelle feature :**
+
+```
+1️⃣ COMPRENDRE LES DONNÉES
+   ├─ Lire : CLAUDE.md (section "Schéma de base de données")
+   ├─ Lire : supabase/migrations/ (comprendre évolution schéma)
+   └─ Explorer : Structure Entité → Propriété → Lot → Bail → Paiement
+
+2️⃣ COMPRENDRE LA SÉCURITÉ
+   ├─ Lire : CLAUDE.md (section "Sécurité et RLS")
+   ├─ Lire : 20260104_RLS_CORRECT_FINAL_v2.sql
+   └─ Comprendre : Mapping auth.uid() → users.supabase_uid → users.id
+
+3️⃣ COMPRENDRE LE MÉTIER
+   ├─ Lire : services/*.js (logique métier)
+   ├─ Identifier : Calculs financiers critiques
+   └─ Documenter : Règles de gestion spécifiques
+
+4️⃣ COMPRENDRE L'INTERFACE
+   ├─ Explorer : pages/ (flux utilisateur)
+   ├─ Identifier : Composants réutilisables (components/)
+   └─ Tester : Parcourir application en tant que bailleur
+
+5️⃣ PLANIFIER LA MODIFICATION
+   ├─ Créer : ANALYSE_IMPACT_[FEATURE].md
+   ├─ Lister : Fichiers impactés (DB, RLS, Services, Frontend)
+   └─ Valider : Approche avec autres agents concernés
+```
+
+---
+
+### 🎓 Domaines Métier à Maîtriser
+
+#### 1. Cycle de Vie d'un Bail
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ CYCLE DE VIE COMPLET D'UN BAIL                          │
+└─────────────────────────────────────────────────────────┘
+
+1. CANDIDATURE
+   ├─ Candidat remplit formulaire public
+   ├─ Upload documents (pièce ID, justificatifs revenus, garant)
+   ├─ Calcul automatique scoring + taux d'effort
+   └─ Validation/Refus bailleur
+
+2. CRÉATION BAIL
+   ├─ Sélection lot vacant
+   ├─ Sélection/Création groupe locataires
+   ├─ Dates : début, fin, durée (≥ 3 ans non meublé, ≥ 1 an meublé)
+   ├─ Montants : loyer, charges, dépôt garantie
+   ├─ Aides CAF : pré-remplissage automatique
+   ├─ Validation taux d'effort (alerte si > 33%)
+   └─ Génération bail PDF conforme ALUR
+
+3. VIE DU BAIL
+   ├─ Génération échéances mensuelles (appels de loyer)
+   ├─ Enregistrement paiements → génération quittances
+   ├─ Révision annuelle loyer (indexation IRL)
+   ├─ Régularisation annuelle charges
+   ├─ Gestion documents (assurance, attestations, courriers)
+   └─ Interventions maintenance si demandées
+
+4. RENOUVELLEMENT
+   ├─ Alerte J-90 avant fin bail
+   ├─ Proposition renouvellement ou congé
+   ├─ Si renouvellement : création avenant ou nouveau bail
+   └─ Si congé : procédure résiliation
+
+5. RÉSILIATION
+   ├─ Préavis locataire (3 mois non meublé, 1 mois meublé)
+   ├─ État des lieux sortie (comparaison avec entrée)
+   ├─ Restitution dépôt garantie (- retenues éventuelles)
+   ├─ Archivage documents
+   └─ Libération lot (statut → vacant)
+```
+
+**Code à respecter pour les transitions de statut :**
+```javascript
+// États possibles d'un bail
+const LEASE_STATUSES = {
+  draft: 'Brouillon',
+  active: 'Actif',
+  expired: 'Expiré',
+  terminated: 'Résilié',
+  renewed: 'Renouvelé'
+}
+
+// Transitions valides
+const VALID_TRANSITIONS = {
+  draft: ['active', 'terminated'],
+  active: ['expired', 'terminated', 'renewed'],
+  expired: ['renewed', 'terminated'],
+  terminated: [], // État final
+  renewed: []     // État final
+}
+```
+
+#### 2. Gestion des Appels de Loyer et Quittancement
+
+**Principe** : Génération automatique des échéances mensuelles, enregistrement paiements, quittancement.
+
+**Workflow :**
+```
+1. GÉNÉRATION ÉCHÉANCES (automatique ou manuelle)
+   ├─ Pour chaque bail actif
+   ├─ Créer paiement avec statut 'pending'
+   ├─ Date : 1er du mois (ou date personnalisée)
+   ├─ Montant : loyer + charges - aides CAF (si versement direct)
+   └─ Envoi email avis d'échéance J-5
+
+2. ENREGISTREMENT PAIEMENT
+   ├─ Bailleur enregistre paiement reçu
+   ├─ Date de paiement réelle
+   ├─ Montant payé (peut être partiel)
+   ├─ Mode de paiement (virement, chèque, espèces)
+   └─ Statut → 'paid' (ou 'partial' si partiel)
+
+3. GÉNÉRATION QUITTANCE
+   ├─ Automatique dès statut 'paid'
+   ├─ PDF conforme loi ALUR avec mentions obligatoires
+   ├─ Envoi email automatique au locataire
+   └─ Archivage dans documents
+
+4. RELANCES AUTOMATIQUES (si impayé)
+   ├─ J+3 : Rappel amical (email)
+   ├─ J+7 : Rappel formel (email + SMS)
+   ├─ J+15 : Mise en demeure (courrier recommandé)
+   └─ Alerte bailleur + suggestion procédure impayés
+```
+
+**Validations obligatoires :**
+```javascript
+// ✅ Vérifier qu'un paiement est lié à un bail actif
+const validatePayment = async (payment) => {
+  const lease = await getLeaseById(payment.lease_id)
+
+  if (!lease) {
+    throw new Error('Bail introuvable')
+  }
+
+  if (lease.status !== 'active') {
+    throw new Error('Le bail n\'est pas actif')
+  }
+
+  if (payment.amount <= 0) {
+    throw new Error('Le montant doit être positif')
+  }
+
+  if (payment.payment_date > new Date()) {
+    throw new Error('La date de paiement ne peut pas être dans le futur')
+  }
+}
+```
+
+#### 3. Calcul et Régularisation des Charges
+
+**Principe** : Locataire paie provisions mensuelles, régularisation annuelle selon charges réelles.
+
+**Types de charges :**
+- **Récupérables** : Eau, chauffage collectif, ascenseur, ordures ménagères, entretien parties communes
+- **Non récupérables** : Gros travaux, réparations propriétaire, taxe foncière
+
+**Workflow régularisation :**
+```
+1. PROVISIONS MENSUELLES
+   ├─ Montant estimatif inclus dans loyer
+   ├─ Basé sur charges année N-1
+   └─ Versées chaque mois par locataire
+
+2. CHARGES RÉELLES ANNÉE N
+   ├─ Bailleur totalise charges récupérables payées
+   ├─ Exclusion charges non récupérables
+   └─ Calcul : Total charges réelles
+
+3. RÉGULARISATION
+   ├─ Provisions versées = charges_amount * 12
+   ├─ Différence = provisions_versées - charges_réelles
+   ├─ Si différence > 0 : Remboursement au locataire
+   ├─ Si différence < 0 : Complément à réclamer
+   └─ Génération lettre régularisation conforme
+
+4. AJUSTEMENT PROVISIONS N+1
+   ├─ Nouvelles provisions = charges_réelles / 12
+   └─ Avenant au bail si modification > 10%
+```
+
+**Code de calcul :**
+```javascript
+/**
+ * Calcule la régularisation annuelle des charges
+ *
+ * @example
+ * // Provisions 150€/mois * 12 = 1800€
+ * // Charges réelles = 1650€
+ * // Remboursement locataire = 150€
+ */
+const calculateChargesReconciliation = (lease, realCharges) => {
+  const provisionsVersees = lease.charges_amount * 12
+  const difference = provisionsVersees - realCharges
+
+  return {
+    provisionsVersees,
+    chargesReelles: realCharges,
+    difference,
+    type: difference > 0 ? 'remboursement' : 'complement',
+    montant: Math.abs(difference),
+    // Nouveau montant provision mensuelle pour année suivante
+    nouvelleProvision: Math.ceil(realCharges / 12)
+  }
+}
+```
+
+#### 4. États des Lieux et Dépôts de Garantie
+
+**Workflow :**
+```
+1. ÉTAT DES LIEUX ENTRÉE
+   ├─ Formulaire structuré pièce par pièce
+   ├─ Notation état (Neuf, Bon, Moyen, Mauvais, Vétuste)
+   ├─ Photos obligatoires pour chaque pièce/équipement
+   ├─ Signature électronique bailleur + locataire
+   └─ Archivage PDF + photos
+
+2. DÉPÔT DE GARANTIE
+   ├─ Montant : Max 1 mois loyer (non meublé) ou 2 mois (meublé)
+   ├─ Encaissement à l'entrée
+   ├─ Pas de révision pendant le bail
+   └─ Conservation sur compte séquestre (recommandé)
+
+3. ÉTAT DES LIEUX SORTIE
+   ├─ Même formulaire que l'entrée
+   ├─ Comparaison automatique avec EDL entrée
+   ├─ Détection différences (dégradations)
+   └─ Signature électronique
+
+4. RESTITUTION DÉPÔT
+   ├─ Calcul retenues pour dégradations
+   ├─ Vétusté déduite selon barème légal
+   ├─ Délai : 1 mois (si EDL sortie) ou 2 mois (sans EDL)
+   ├─ Génération lettre restitution avec détail
+   └─ Virement au locataire
+```
+
+**Barème vétusté légal (exemple) :**
+```javascript
+const VETUSTE_BAREMES = {
+  peinture: { duree: 7, // ans
+    calcul: (age) => Math.min(100, (age / 7) * 100)
+  },
+  moquette: { duree: 8,
+    calcul: (age) => Math.min(100, (age / 8) * 100)
+  },
+  robinetterie: { duree: 10,
+    calcul: (age) => Math.min(100, (age / 10) * 100)
+  }
+}
+```
+
+#### 5. Reporting Propriétaire et Déclarations Fiscales
+
+**Reporting mensuel/annuel :**
+- Revenus locatifs (loyers + charges récupérées)
+- Charges et dépenses (travaux, honoraires, intérêts emprunt)
+- Taux d'occupation (lots occupés / total lots)
+- Rendement locatif brut et net
+- Impayés et relances
+
+**Aide déclaration 2044 (revenus fonciers) :**
+```
+REVENUS
+├─ Loyers perçus (hors charges)
+└─ Provisions charges récupérées
+
+CHARGES DÉDUCTIBLES
+├─ Charges non récupérées (copropriété, taxe foncière)
+├─ Travaux d'entretien et réparation
+├─ Frais de gestion (logiciel, comptable)
+├─ Assurances (PNO, GLI)
+├─ Intérêts d'emprunt (si acquisition à crédit)
+└─ Amortissements (si LMNP/LMP)
+
+RÉSULTAT FONCIER = Revenus - Charges déductibles
+```
+
+**Code de génération rapport :**
+```javascript
+const generateAnnualTaxReport = async (entityId, year) => {
+  const revenus = await getAnnualRentIncome(entityId, year)
+  const charges = await getDeductibleExpenses(entityId, year)
+
+  return {
+    year,
+    entityId,
+    revenus: {
+      loyers: revenus.rents,
+      charges_recuperees: revenus.recoveredCharges,
+      total: revenus.rents + revenus.recoveredCharges
+    },
+    charges: {
+      copropriete: charges.copropriete,
+      taxe_fonciere: charges.taxeFonciere,
+      travaux: charges.travaux,
+      assurances: charges.assurances,
+      interets_emprunt: charges.interetsEmprunt,
+      frais_gestion: charges.fraisGestion,
+      total: charges.total
+    },
+    resultat_foncier: (revenus.rents + revenus.recoveredCharges) - charges.total,
+    documents: {
+      quittances: await getQuittancesPDF(entityId, year),
+      factures: await getInvoicesPDF(entityId, year)
+    }
+  }
+}
+```
+
+---
+
+### 📣 Communication et Reporting
+
+#### Format de Communication Entre Agents
+
+**Quand vous travaillez sur une modification :**
+
+```markdown
+🤖 **Agent [Votre Nom]** - [Date]
+
+📋 **Tâche** : [Description courte]
+
+🎯 **Modules impactés** :
+- [ ] Base de données (tables : ...)
+- [ ] RLS policies
+- [ ] Services backend (fichiers : ...)
+- [ ] Frontend (pages/composants : ...)
+- [ ] Documentation
+
+🔍 **Analyse d'impact métier** :
+- Impact financier : [Oui/Non] - [Détail]
+- Impact juridique : [Oui/Non] - [Détail]
+- Impact multi-tenant : [Oui/Non] - [Test effectué ?]
+
+⚠️ **Alertes** :
+- [Liste des risques identifiés]
+
+✅ **Validation requise de** :
+- [ ] Agent Database (si modif schéma)
+- [ ] Agent Sécurité (si modif RLS)
+- [ ] Agent Financier (si calculs)
+
+📝 **Fichiers modifiés** :
+1. [chemin/fichier1.js] - [Raison]
+2. [chemin/fichier2.jsx] - [Raison]
+
+🧪 **Tests effectués** :
+- [ ] Test unitaire calcul
+- [ ] Test isolation multi-tenant
+- [ ] Test interface utilisateur
+- [ ] Test edge cases
+
+📚 **Documentation mise à jour** :
+- [ ] CLAUDE.md
+- [ ] ANALYSE_IMPACT_[FEATURE].md
+- [ ] Commentaires code
+```
+
+#### Alertes Obligatoires
+
+**🚨 Alerte CRITIQUE** : Modifier immédiatement si vous détectez :
+1. **Faille sécurité RLS** : Données visibles entre utilisateurs différents
+2. **Erreur calcul financier** : Montant incorrect sur quittance, loyer, régularisation
+3. **Non-conformité légale** : Durée bail < 3 ans, dépôt garantie > 1 mois, etc.
+4. **Perte de données** : Migration SQL sans sauvegarde, suppression en cascade non voulue
+
+**⚠️ Alerte IMPORTANTE** : Signaler avant de continuer si :
+1. **Modification formule de calcul** : Taux d'effort, IRL, charges, rendement
+2. **Changement hiérarchie données** : Relations Entité/Propriété/Lot/Bail
+3. **Nouveau champ financier** : Impact sur reporting, déclarations fiscales
+4. **Modification RLS** : Ajout/suppression policy, changement helper function
+
+#### Documentation des Choix d'Implémentation
+
+**Toujours documenter POURQUOI, pas seulement QUOI :**
+
+```javascript
+// ✅ BON : Explication du choix technique ET juridique
+/**
+ * Calcul du préavis de résiliation pour un locataire
+ *
+ * Conformité loi ALUR :
+ * - Non meublé : 3 mois (sauf zone tendue : 1 mois)
+ * - Meublé : 1 mois
+ * - Étudiant meublé : 1 mois
+ *
+ * @see https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028806830
+ */
+const calculateNotificationPeriod = (lease) => {
+  if (lease.furnished) {
+    return 1 // mois
+  }
+
+  // Non meublé : vérifier si zone tendue
+  if (lease.lot.property.city_code && ZONE_TENDUE_CITIES.includes(lease.lot.property.city_code)) {
+    return 1 // mois (zone tendue)
+  }
+
+  return 3 // mois (défaut non meublé)
+}
+
+// ❌ MAUVAIS : Pas d'explication légale
+const calculateNotificationPeriod = (lease) => {
+  return lease.furnished ? 1 : 3
+}
+```
+
+---
+
+### ⚙️ Contraintes Techniques Spécifiques
+
+#### 1. Traçabilité et Auditabilité
+
+**TOUTE donnée financière DOIT être traçable :**
+
+```sql
+-- ✅ BON : Table avec audit trail complet
+CREATE TABLE payments (
+  id UUID PRIMARY KEY,
+  lease_id UUID NOT NULL,
+  amount DECIMAL(10,2) NOT NULL,
+  payment_date DATE NOT NULL,
+  status VARCHAR(20) NOT NULL,
+
+  -- Audit trail
+  created_at TIMESTAMP DEFAULT NOW(),
+  created_by UUID REFERENCES users(id),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  updated_by UUID REFERENCES users(id),
+
+  -- Historique modifications
+  previous_amount DECIMAL(10,2), -- Si montant modifié
+  modification_reason TEXT        -- Raison de la modification
+)
+
+-- Trigger de traçabilité
+CREATE TRIGGER payments_audit_trigger
+  BEFORE UPDATE ON payments
+  FOR EACH ROW
+  EXECUTE FUNCTION audit_changes();
+```
+
+**Fonction d'audit générique :**
+```sql
+CREATE OR REPLACE FUNCTION audit_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  NEW.updated_by = get_app_user_id();
+
+  -- Si modification de montant, garder trace
+  IF OLD.amount != NEW.amount THEN
+    NEW.previous_amount = OLD.amount;
+
+    -- Logger dans table audit séparée
+    INSERT INTO audit_log (
+      table_name, record_id, field_name, old_value, new_value, changed_by
+    ) VALUES (
+      TG_TABLE_NAME, NEW.id, 'amount', OLD.amount, NEW.amount, get_app_user_id()
+    );
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+#### 2. Stockage des Montants en Centimes
+
+**TOUJOURS stocker les montants en centimes pour éviter erreurs de flottants :**
+
+```javascript
+// ✅ BON : Conversion euros → centimes
+const convertEurosToCents = (euros) => Math.round(euros * 100)
+const convertCentsToEuros = (cents) => cents / 100
+
+// Exemple utilisation
+const rentAmount = 850.50 // Saisie utilisateur en euros
+const rentInCents = convertEurosToCents(rentAmount) // 85050 centimes
+// Stockage en DB : 85050 (INTEGER)
+
+// Lors de l'affichage
+const displayAmount = convertCentsToEuros(rentInCents).toFixed(2) // "850.50"
+
+// ❌ MAUVAIS : Stocker en euros avec DECIMAL peut causer des erreurs d'arrondi
+const rentAmount = 850.50
+// Stockage direct : 850.5000000001 (erreur flottant)
+```
+
+**Adaptation schéma DB :**
+```sql
+-- Si vous créez une NOUVELLE table avec montants
+CREATE TABLE new_table (
+  id UUID PRIMARY KEY,
+  amount_cents INTEGER NOT NULL, -- Montant en centimes
+  -- OU si vous DEVEZ utiliser DECIMAL :
+  amount DECIMAL(10,2) NOT NULL CHECK (amount >= 0)
+)
+
+-- Pour les tables existantes, ne PAS modifier le type
+-- Utiliser les fonctions de conversion dans le code
+```
+
+#### 3. Historique des Modifications
+
+**Tables sensibles nécessitant historisation complète :**
+- `leases` : Changements durée, montants, dates
+- `payments` : Modifications montant, statut, date
+- `lots` : Changements loyer, charges, DPE
+- `indexation_history` : Déjà implémenté ✅
+
+**Pattern d'historisation :**
+```sql
+-- Table principale
+CREATE TABLE leases (
+  id UUID PRIMARY KEY,
+  lot_id UUID,
+  tenant_group_id UUID,
+  rent_amount DECIMAL(10,2),
+  start_date DATE,
+  end_date DATE,
+  status VARCHAR(20),
+  -- ... autres champs
+  version INTEGER DEFAULT 1 -- Numéro de version
+)
+
+-- Table historique
+CREATE TABLE leases_history (
+  history_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  lease_id UUID REFERENCES leases(id),
+  version INTEGER,
+
+  -- Snapshot complet de la ligne
+  lot_id UUID,
+  tenant_group_id UUID,
+  rent_amount DECIMAL(10,2),
+  start_date DATE,
+  end_date DATE,
+  status VARCHAR(20),
+
+  -- Métadonnées de l'historisation
+  changed_at TIMESTAMP DEFAULT NOW(),
+  changed_by UUID REFERENCES users(id),
+  change_type VARCHAR(20), -- 'INSERT', 'UPDATE', 'DELETE'
+  change_reason TEXT
+)
+
+-- Trigger automatique d'historisation
+CREATE TRIGGER lease_history_trigger
+  AFTER INSERT OR UPDATE OR DELETE ON leases
+  FOR EACH ROW
+  EXECUTE FUNCTION save_to_history();
+```
+
+#### 4. Pattern d'Implémentation Standard
+
+**Pour toute nouvelle feature, suivre ce pattern :**
+
+```
+📁 NOUVEAU MODULE : [NomModule]
+
+1️⃣ BASE DE DONNÉES
+   ├─ supabase/migrations/[DATE]_create_[module].sql
+   │  ├─ CREATE TABLE [module] (...)
+   │  ├─ CREATE INDEX ...
+   │  ├─ Triggers d'audit si données sensibles
+   │  └─ Données initiales (INSERT) si nécessaire
+   │
+   └─ supabase/migrations/[DATE]_rls_[module].sql
+      ├─ Helper function user_owns_[module]()
+      └─ 4 policies : SELECT, INSERT, UPDATE, DELETE
+
+2️⃣ SERVICES (Backend Logic)
+   ├─ services/[module]Service.js
+   │  ├─ CRUD complet (create, get, getById, update, delete)
+   │  ├─ Fonctions métier spécifiques
+   │  ├─ Validations métier
+   │  └─ Exports : TOUTES les fonctions + constantes
+   │
+   └─ constants/[module]Constants.js (si nécessaire)
+      └─ Énumérations, valeurs par défaut, configs
+
+3️⃣ COMPOSANTS FRONTEND
+   ├─ components/[module]/
+   │  ├─ [Module]Card.jsx (affichage liste)
+   │  ├─ [Module]Form.jsx (création/édition - si non page)
+   │  └─ [Module]DetailSections.jsx (sections page détail)
+   │
+   └─ pages/
+      ├─ [Module]s.jsx (liste avec filtres, stats, actions)
+      ├─ [Module]Form.jsx (formulaire création/édition)
+      └─ [Module]Detail.jsx (page détail complète)
+
+4️⃣ DOCUMENTATION
+   ├─ ANALYSE_IMPACT_[MODULE].md
+   │  ├─ Contexte et objectifs
+   │  ├─ Analyse d'impact (DB, RLS, Services, Frontend)
+   │  ├─ Plan d'exécution étape par étape
+   │  └─ Tests de validation
+   │
+   └─ CLAUDE.md
+      ├─ Ajouter dans "État actuel du projet"
+      ├─ Ajouter dans "Routes" si nouvelles pages
+      └─ Mettre à jour "Roadmap" et date de dernière màj
+```
+
+**Exemple concret : Module "Interventions Maintenance"**
+```
+✅ FAIT :
+1. supabase/migrations/20260110_create_maintenance.sql
+2. supabase/migrations/20260110_rls_maintenance.sql
+3. services/maintenanceService.js
+4. components/maintenance/MaintenanceCard.jsx
+5. components/maintenance/MaintenanceForm.jsx
+6. pages/Maintenances.jsx
+7. pages/MaintenanceForm.jsx
+8. pages/MaintenanceDetail.jsx
+9. ANALYSE_IMPACT_MAINTENANCE.md
+10. Mise à jour CLAUDE.md
+
+📝 À TESTER :
+- [ ] Isolation RLS (2 comptes utilisateurs)
+- [ ] Création intervention depuis portail locataire
+- [ ] Upload photos avant/après
+- [ ] Calcul coût total interventions par lot
+- [ ] Génération rapport annuel interventions
+```
+
+---
+
+### 🔄 Gestion des Migrations de Données
+
+#### Règles Absolues
+
+1. **JAMAIS modifier une migration déjà appliquée en production**
+   - Si erreur détectée : créer migration correctrice
+   - Garder trace de l'erreur dans un fichier `MIGRATION_ERRORS.md`
+
+2. **TOUJOURS tester les migrations sur copie locale avant production**
+   ```bash
+   # 1. Backup local
+   npx supabase db dump > backup_$(date +%Y%m%d_%H%M%S).sql
+
+   # 2. Test migration
+   npx supabase migration up
+
+   # 3. Vérifier données
+   npx supabase db reset
+   ```
+
+3. **TOUJOURS inclure rollback (si possible)**
+   ```sql
+   -- Migration : Ajouter colonne
+   BEGIN;
+
+   ALTER TABLE leases ADD COLUMN new_field VARCHAR(100);
+
+   -- Rollback possible :
+   -- ALTER TABLE leases DROP COLUMN new_field;
+
+   COMMIT;
+   ```
+
+4. **TOUJOURS versionner selon date ISO : `YYYYMMDD_HHMMSS`**
+   ```
+   ✅ BON : 20260106_143022_add_maintenance_module.sql
+   ❌ MAUVAIS : migration_maintenance.sql
+   ```
+
+#### Template de Migration Complète
+
+```sql
+-- =====================================================
+-- MIGRATION : [Nom de la migration]
+-- Date : [Date lisible]
+-- Auteur : [Agent responsable]
+-- Description : [Description détaillée]
+-- =====================================================
+
+BEGIN;
+
+-- ===== ÉTAPE 1 : VÉRIFICATIONS PRÉLIMINAIRES =====
+
+DO $$
+DECLARE
+  table_exists BOOLEAN;
+BEGIN
+  SELECT EXISTS (
+    SELECT FROM information_schema.tables
+    WHERE table_name = 'nom_table'
+  ) INTO table_exists;
+
+  IF table_exists THEN
+    RAISE NOTICE '✅ Table existe déjà, skip création';
+  ELSE
+    RAISE NOTICE '🔄 Création de la table...';
+  END IF;
+END $$;
+
+-- ===== ÉTAPE 2 : MODIFICATIONS SCHÉMA =====
+
+-- Création table principale
+CREATE TABLE IF NOT EXISTS nom_table (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  -- Colonnes métier
+  name VARCHAR(255) NOT NULL,
+  amount DECIMAL(10,2),
+
+  -- Foreign keys
+  entity_id UUID NOT NULL REFERENCES entities(id) ON DELETE CASCADE,
+
+  -- Audit trail
+  created_at TIMESTAMP DEFAULT NOW(),
+  created_by UUID REFERENCES users(id),
+  updated_at TIMESTAMP DEFAULT NOW(),
+  updated_by UUID REFERENCES users(id)
+);
+
+-- Index pour performances
+CREATE INDEX IF NOT EXISTS idx_nom_table_entity ON nom_table(entity_id);
+CREATE INDEX IF NOT EXISTS idx_nom_table_created ON nom_table(created_at);
+
+-- ===== ÉTAPE 3 : MIGRATION DONNÉES EXISTANTES (si applicable) =====
+
+-- Exemple : Migrer données d'une ancienne table vers nouvelle structure
+INSERT INTO nom_table (id, name, entity_id, created_at)
+SELECT
+  id,
+  old_name,
+  old_entity_id,
+  created_at
+FROM old_table
+WHERE NOT EXISTS (
+  SELECT 1 FROM nom_table WHERE nom_table.id = old_table.id
+);
+
+-- ===== ÉTAPE 4 : RLS POLICIES =====
+
+-- Activer RLS
+ALTER TABLE nom_table ENABLE ROW LEVEL SECURITY;
+
+-- Helper function
+CREATE OR REPLACE FUNCTION user_owns_nom_table(table_uuid UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1
+    FROM nom_table t
+    JOIN entities e ON t.entity_id = e.id
+    WHERE t.id = table_uuid
+      AND e.user_id = get_app_user_id()
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
+
+-- Policies
+CREATE POLICY nom_table_select_policy ON nom_table
+  FOR SELECT
+  USING (user_owns_entity(entity_id));
+
+CREATE POLICY nom_table_insert_policy ON nom_table
+  FOR INSERT
+  WITH CHECK (user_owns_entity(entity_id));
+
+CREATE POLICY nom_table_update_policy ON nom_table
+  FOR UPDATE
+  USING (user_owns_entity(entity_id))
+  WITH CHECK (user_owns_entity(entity_id));
+
+CREATE POLICY nom_table_delete_policy ON nom_table
+  FOR DELETE
+  USING (user_owns_entity(entity_id));
+
+-- ===== ÉTAPE 5 : VÉRIFICATIONS FINALES =====
+
+DO $$
+DECLARE
+  row_count INTEGER;
+  policy_count INTEGER;
+BEGIN
+  -- Vérifier nombre de lignes migrées
+  SELECT COUNT(*) INTO row_count FROM nom_table;
+
+  -- Vérifier policies créées
+  SELECT COUNT(*) INTO policy_count
+  FROM pg_policies
+  WHERE tablename = 'nom_table';
+
+  RAISE NOTICE '====================================';
+  RAISE NOTICE '✅ MIGRATION TERMINÉE';
+  RAISE NOTICE '====================================';
+  RAISE NOTICE '📊 Lignes dans nom_table : %', row_count;
+  RAISE NOTICE '🔒 Policies RLS créées : %', policy_count;
+  RAISE NOTICE '====================================';
+
+  IF policy_count < 4 THEN
+    RAISE WARNING '⚠️ Policies RLS incomplètes ! Attendu : 4, Créé : %', policy_count;
+  END IF;
+END $$;
+
+COMMIT;
+
+-- =====================================================
+-- ROLLBACK (à exécuter manuellement si nécessaire)
+-- =====================================================
+-- BEGIN;
+-- DROP TABLE IF EXISTS nom_table CASCADE;
+-- DROP FUNCTION IF EXISTS user_owns_nom_table(UUID);
+-- COMMIT;
+```
+
+---
+
+### 🎯 Checklist Sous-Agent Avant Commit
+
+**AVANT CHAQUE COMMIT, vérifier :**
+
+#### ✅ Sécurité et Isolation
+- [ ] Si nouvelle table : RLS policies créées et testées
+- [ ] Si nouvelle colonne sensible : RLS policies mises à jour
+- [ ] Test isolation multi-tenant effectué (2 comptes utilisateurs différents)
+- [ ] Aucune donnée sensible en clair (emails, mots de passe, etc.)
+- [ ] Mapping `auth.uid()` → `users.id` respecté partout
+
+#### ✅ Financier et Légal
+- [ ] Si calcul financier : formule validée avec exemples concrets
+- [ ] Si montants : stockage cohérent (DECIMAL ou centimes INTEGER)
+- [ ] Si durée bail : conformité loi ALUR (≥ 3 ans non meublé, ≥ 1 an meublé)
+- [ ] Si dépôt garantie : vérification max (1 mois non meublé, 2 mois meublé)
+- [ ] Si révision loyer : formule IRL correcte et source INSEE vérifiée
+
+#### ✅ Base de Données
+- [ ] Si modification schéma : migration SQL créée et testée
+- [ ] Si nouvelle table : indexes créés sur foreign keys et champs recherchés
+- [ ] Si données sensibles : audit trail (created_at, created_by, updated_at, updated_by)
+- [ ] Si suppression : cascades vérifiées (ON DELETE CASCADE/SET NULL)
+- [ ] Migration testée sur copie locale avant production
+
+#### ✅ Code et Architecture
+- [ ] Services backend : validations métier implémentées
+- [ ] Composants frontend : gestion erreurs et loading states
+- [ ] Réutilisation composants UI existants (Button, Card, Modal, etc.)
+- [ ] Respect design system (couleurs, espacements, typographie)
+- [ ] Code commenté pour logique complexe ou règles légales
+
+#### ✅ Documentation
+- [ ] CLAUDE.md mis à jour (État actuel, Routes, Roadmap)
+- [ ] Fichier ANALYSE_IMPACT_[FEATURE].md créé (si feature majeure)
+- [ ] Commentaires JSDoc sur fonctions publiques
+- [ ] README.md mis à jour si nouveaux scripts ou commandes
+
+#### ✅ Tests
+- [ ] Tests manuels effectués sur tous les scénarios critiques
+- [ ] Cas limites testés (montants 0, dates passées, champs vides)
+- [ ] Responsive testé (mobile, tablette, desktop)
+- [ ] Aucune erreur console navigateur
+- [ ] Aucune erreur SQL dans logs Supabase
+
+---
+
+### 📖 Ressources et Références
+
+**Législation française** :
+- [Loi ALUR complète](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000028772256/)
+- [Code civil - Bail d'habitation](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070721/LEGISCTA000006150338/)
+- [Barème vétusté CLAMEUR](https://www.clameur.fr/bareme-vetuste-logement/)
+- [IRL - Indice Référence Loyers INSEE](https://www.insee.fr/fr/statistiques/serie/001515333)
+
+**Documentation technique** :
+- [Supabase RLS Policies](https://supabase.com/docs/guides/auth/row-level-security)
+- [PostgreSQL Triggers](https://www.postgresql.org/docs/current/triggers.html)
+- [React Context API](https://react.dev/reference/react/createContext)
+- [TailwindCSS Components](https://tailwindcss.com/docs)
+
+**Fichiers du projet à lire en priorité** :
+1. `METHODO_MODIFICATIONS.md` - Méthodologie obligatoire
+2. `CLAUDE.md` - Documentation complète du projet
+3. `supabase/migrations/20260104_RLS_CORRECT_FINAL_v2.sql` - RLS de référence
+4. `services/*.js` - Logique métier de chaque module
+5. `ANALYSE_IMPACT_*.md` - Analyses d'impact des features majeures
+
+---
+
 ## ✅ CHECKLIST DÉVELOPPEMENT
 
 ### Avant de commencer une feature
@@ -2624,12 +3849,14 @@ git branch -d feature/nouvelle-fonctionnalite
 > Référez-vous toujours à ce document avant de faire des modifications importantes.
 > Mettez-le à jour dès qu'une décision architecturale est prise.
 >
-> **Dernière mise à jour** : 2 Janvier 2026
+> **Dernière mise à jour** : 6 Janvier 2026 - Conformité Légale Baux (Loi ALUR)
 > **Statut actuel** :
 > - Phase 0 (MVP Initial) : ✅ TERMINÉ
 > - Phase 1 (Architecture Multi-Entités) : ✅ TERMINÉ
 > - Phase 2 (Indexation IRL) : ✅ TERMINÉ
-> - Phase 2.5 (Candidatures et Tenant Groups) : ✅ TERMINÉ ✨ NOUVEAU
+> - Phase 2.5 (Candidatures et Tenant Groups) : ✅ TERMINÉ
+> - Phase 2.6 (Aides au logement et Amélioration baux) : ✅ TERMINÉ
+> - Phase 2.7 (Conformité Légale Baux - Loi ALUR) : ✅ TERMINÉ ✨ NOUVEAU
 > - Phase 3 (Documents et États des Lieux) : 🔜 À VENIR
 > - Phase 4 (Automatisation Communication) : 🔜 À VENIR
 > - Phase 5 (Monétisation et Fiscalité) : 🔜 À VENIR

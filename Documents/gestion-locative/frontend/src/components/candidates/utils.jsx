@@ -41,7 +41,7 @@ export const formatError = (err) => {
 export const ErrorMessage = ({ error }) => {
   if (!error) return null
   return (
-    <p className="text-red-500 text-sm mt-1 flex items-center gap-1">
+    <p className="text-red-500 dark:text-red-400 text-sm mt-1 flex items-center gap-1">
       <AlertCircle className="w-4 h-4 flex-shrink-0" />
       <span>{formatError(error)}</span>
     </p>

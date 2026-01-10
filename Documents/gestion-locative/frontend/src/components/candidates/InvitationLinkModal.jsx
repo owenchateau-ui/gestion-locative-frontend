@@ -88,22 +88,22 @@ function InvitationLinkModal({ lot, onClose, onSuccess }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-[var(--surface)] rounded-2xl border border-[var(--border)] max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
           <div className="flex items-center gap-3">
-            <LinkIcon className="w-6 h-6 text-blue-500" />
+            <LinkIcon className="w-6 h-6 text-[var(--color-electric-blue)]" />
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Lien d'invitation</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-xl font-bold font-display text-[var(--text)]">Lien d'invitation</h2>
+              <p className="text-sm text-[var(--text-secondary)]">
                 {lot.name} - {lot.properties_new?.name}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
           >
             <X className="w-6 h-6" />
           </button>
@@ -122,15 +122,15 @@ function InvitationLinkModal({ lot, onClose, onSuccess }) {
           ) : (
             <>
               {/* Statistiques */}
-              <div className="bg-blue-50 rounded-lg p-4">
+              <div className="bg-[var(--color-electric-blue)]/10 rounded-xl p-4 border border-[var(--color-electric-blue)]/30">
                 <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-blue-600" />
+                  <Users className="w-5 h-5 text-[var(--color-electric-blue)]" />
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">
+                    <p className="text-sm text-[var(--color-electric-blue)] font-medium">
                       {candidatesCount} candidature{candidatesCount !== 1 ? 's' : ''} reçue
                       {candidatesCount !== 1 ? 's' : ''}
                     </p>
-                    <p className="text-xs text-blue-500">
+                    <p className="text-xs text-[var(--color-electric-blue)]/80">
                       {candidatesCount === 0
                         ? 'Partagez ce lien pour recevoir des candidatures'
                         : 'via ce lien d\'invitation'}
@@ -142,7 +142,7 @@ function InvitationLinkModal({ lot, onClose, onSuccess }) {
               {/* Lien d'invitation */}
               {invitationLink && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                     Lien d'invitation actif
                   </label>
                   <div className="flex gap-2">
@@ -150,7 +150,7 @@ function InvitationLinkModal({ lot, onClose, onSuccess }) {
                       type="text"
                       value={getFullUrl()}
                       readOnly
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm"
+                      className="flex-1 px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface-elevated)] text-[var(--text)] text-sm"
                     />
                     <Button
                       variant={copied ? 'success' : 'primary'}
@@ -170,18 +170,18 @@ function InvitationLinkModal({ lot, onClose, onSuccess }) {
                       )}
                     </Button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-[var(--text-muted)] mt-2">
                     Créé le {new Date(invitationLink.created_at).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
               )}
 
               {/* Instructions */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-medium text-gray-900 mb-2">
+              <div className="bg-[var(--surface-elevated)] rounded-xl p-4 border border-[var(--border)]">
+                <h3 className="text-sm font-medium font-display text-[var(--text)] mb-2">
                   Comment utiliser ce lien ?
                 </h3>
-                <ul className="text-sm text-gray-600 space-y-1 list-disc list-inside">
+                <ul className="text-sm text-[var(--text-secondary)] space-y-1 list-disc list-inside">
                   <li>Partagez ce lien avec vos candidats potentiels</li>
                   <li>Ils pourront remplir le formulaire de candidature en ligne</li>
                   <li>Vous recevrez leurs informations et documents automatiquement</li>

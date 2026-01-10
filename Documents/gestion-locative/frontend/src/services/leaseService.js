@@ -123,3 +123,39 @@ export const fetchLeasePayments = async (leaseId) => {
   if (error) throw error
   return data || []
 }
+
+/**
+ * Récupère tous les baux actifs avec leurs lots et locataires
+ * Utilisé notamment pour les états des lieux
+ */
+export const getAllLeases = async () => {
+  const { data, error } = await supabase
+    .from('leases')
+    .select(`
+      *,
+      lot:lots(
+        id,
+        name,
+        reference,
+        address,
+        property:properties_new(
+          id,
+          name,
+          address,
+          city,
+          postal_code,
+          entity:entities(id, name)
+        )
+      ),
+      tenant_group:tenant_groups(
+        id,
+        group_type,
+        tenants!group_id(id, first_name, last_name, email, phone)
+      )
+    `)
+    .eq('status', 'active')
+    .order('start_date', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}

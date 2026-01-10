@@ -10,6 +10,7 @@ import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
+import Alert from '../components/ui/Alert'
 import ExportButton from '../components/ui/ExportButton'
 import jsPDF from 'jspdf'
 import { CreditCard } from 'lucide-react'
@@ -62,7 +63,7 @@ function Payments() {
               last_name,
               group_id,
               is_main_tenant,
-              tenant_groups(id, name, group_type)
+              tenant_groups!group_id(id, name, group_type)
             )
           )
         `)
@@ -250,16 +251,16 @@ function Payments() {
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
             <div className="space-y-2">
-              <div className="animate-pulse bg-gray-200 rounded h-8 w-36" />
-              <div className="animate-pulse bg-gray-200 rounded h-4 w-24" />
+              <div className="animate-skeleton bg-[var(--border)] rounded-lg h-8 w-36" />
+              <div className="animate-skeleton bg-[var(--border)] rounded-lg h-4 w-24" />
             </div>
-            <div className="animate-pulse bg-gray-200 rounded h-10 w-48" />
+            <div className="animate-skeleton bg-[var(--border)] rounded-xl h-10 w-48" />
           </div>
           {/* Filter skeleton */}
           <Card>
             <div className="flex items-center gap-4">
-              <div className="animate-pulse bg-gray-200 rounded h-5 w-32" />
-              <div className="animate-pulse bg-gray-200 rounded h-10 w-36" />
+              <div className="animate-skeleton bg-[var(--border)] rounded-lg h-5 w-32" />
+              <div className="animate-skeleton bg-[var(--border)] rounded-xl h-10 w-36" />
             </div>
           </Card>
           {/* Table skeleton */}
@@ -277,8 +278,8 @@ function Payments() {
         {/* Header avec actions */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Paiements</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-2xl font-display font-bold text-[var(--text)]">Paiements</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
               {payments.length} paiement{payments.length > 1 ? 's' : ''}
             </p>
           </div>
@@ -303,11 +304,11 @@ function Payments() {
         {/* Filtres */}
         <Card>
           <div className="flex items-center gap-4">
-            <label className="text-gray-700 font-semibold">Filtrer par statut :</label>
+            <label className="text-[var(--text)] font-display font-semibold">Filtrer par statut :</label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
             >
               <option value="tous">Tous</option>
               <option value="pending">En attente</option>
@@ -319,9 +320,9 @@ function Payments() {
         </Card>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
+          <Alert variant="error" title="Erreur">
             {error}
-          </div>
+          </Alert>
         )}
 
         {payments.length === 0 ? (
@@ -341,50 +342,50 @@ function Payments() {
         ) : (
           <Card padding={false}>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Bien / Lot
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Locataire
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Montant
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Date échéance
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Date paiement
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {payments.map((payment) => (
-                    <tr key={payment.id} className="hover:bg-gray-50">
+                    <tr key={payment.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {payment.lease.lot.properties_new.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[var(--text-muted)]">
                           {payment.lease.lot.name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {payment.lease.tenant.tenant_groups?.name ||
                             `${payment.lease.tenant.first_name} ${payment.lease.tenant.last_name}`}
                         </div>
                         {payment.lease.tenant.tenant_groups && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             {payment.lease.tenant.tenant_groups.group_type === 'couple' && '👫 Couple'}
                             {payment.lease.tenant.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
                             {payment.lease.tenant.tenant_groups.group_type === 'individual' && '👤 Individuel'}
@@ -392,17 +393,17 @@ function Payments() {
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-display font-semibold text-[var(--text)]">
                           {payment.amount.toFixed(2)} €
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {formatDate(payment.due_date)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {formatDate(payment.payment_date)}
                         </div>
                       </td>
@@ -413,20 +414,20 @@ function Payments() {
                         {payment.status === 'paid' && (
                           <button
                             onClick={() => generateReceipt(payment)}
-                            className="text-emerald-600 hover:text-emerald-900"
+                            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
                           >
                             Quittance
                           </button>
                         )}
                         <button
                           onClick={() => navigate(`/payments/${payment.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleDelete(payment.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-[var(--color-vivid-coral)] hover:text-[var(--color-coral-dark)] transition-colors"
                         >
                           Supprimer
                         </button>

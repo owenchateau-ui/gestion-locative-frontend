@@ -188,17 +188,17 @@ function PaymentForm() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">
             {isEditMode ? 'Modifier le paiement' : 'Enregistrer un paiement'}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Renseignez les informations du paiement
           </p>
         </div>
 
         <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6">
               {error}
             </div>
           )}
@@ -206,7 +206,7 @@ function PaymentForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Sélection du bail */}
             <div>
-              <label htmlFor="payment-lease_id" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-lease_id" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Bail *
               </label>
               <select
@@ -214,7 +214,7 @@ function PaymentForm() {
                 name="lease_id"
                 value={formData.lease_id}
                 onChange={handleLeaseChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 required
                 disabled={isEditMode}
               >
@@ -226,7 +226,7 @@ function PaymentForm() {
                 ))}
               </select>
               {isEditMode && (
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-[var(--text-muted)] mt-1">
                   Le bail ne peut pas être modifié après la création du paiement
                 </p>
               )}
@@ -234,7 +234,7 @@ function PaymentForm() {
 
             {/* Montant */}
             <div>
-              <label htmlFor="payment-amount" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Montant total (€) *
               </label>
               <input
@@ -243,7 +243,7 @@ function PaymentForm() {
                 name="amount"
                 value={formData.amount}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 placeholder="1030.00"
                 step="0.01"
                 min="0"
@@ -252,11 +252,11 @@ function PaymentForm() {
 
               {/* Afficher le détail si CAF */}
               {selectedLease && selectedLease.caf_direct_payment && (
-                <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-xs font-semibold text-blue-800 mb-2">
+                <div className="mt-2 p-3 bg-[var(--color-electric-blue)]/10 dark:bg-[var(--color-electric-blue)]/20 rounded-xl border border-[var(--color-electric-blue)]/30">
+                  <p className="text-xs font-display font-semibold text-[var(--color-electric-blue)] mb-2">
                     Bail avec APL en versement direct
                   </p>
-                  <div className="text-xs text-gray-700 space-y-1">
+                  <div className="text-xs text-[var(--text)] space-y-1">
                     <div className="flex justify-between">
                       <span>Loyer :</span>
                       <span className="font-medium">{parseFloat(selectedLease.rent_amount || 0).toFixed(2)} €</span>
@@ -265,17 +265,17 @@ function PaymentForm() {
                       <span>Charges :</span>
                       <span className="font-medium">{parseFloat(selectedLease.charges_amount || 0).toFixed(2)} €</span>
                     </div>
-                    <div className="flex justify-between pt-1 border-t border-blue-200">
+                    <div className="flex justify-between pt-1 border-t border-[var(--color-electric-blue)]/30">
                       <span>Total loyer :</span>
                       <span className="font-medium">
                         {(parseFloat(selectedLease.rent_amount || 0) + parseFloat(selectedLease.charges_amount || 0)).toFixed(2)} €
                       </span>
                     </div>
-                    <div className="flex justify-between text-green-700">
+                    <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                       <span>APL CAF :</span>
                       <span className="font-medium">- {parseFloat(selectedLease.caf_amount || 0).toFixed(2)} €</span>
                     </div>
-                    <div className="flex justify-between pt-1 border-t border-blue-200 font-semibold text-blue-900">
+                    <div className="flex justify-between pt-1 border-t border-[var(--color-electric-blue)]/30 font-semibold text-[var(--color-electric-blue)]">
                       <span>Reste à charge locataire :</span>
                       <span>
                         {(
@@ -290,7 +290,7 @@ function PaymentForm() {
               )}
 
               {!selectedLease?.caf_direct_payment && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Montant pré-rempli avec loyer + charges du bail sélectionné
                 </p>
               )}
@@ -299,7 +299,7 @@ function PaymentForm() {
             {/* Dates */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label htmlFor="payment-due_date" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="payment-due_date" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Date d'échéance *
                 </label>
                 <input
@@ -308,12 +308,12 @@ function PaymentForm() {
                   name="due_date"
                   value={formData.due_date}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                   required
                 />
               </div>
               <div>
-                <label htmlFor="payment-payment_date" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="payment-payment_date" className="block text-sm font-medium text-[var(--text)] mb-2">
                   Date de paiement
                 </label>
                 <input
@@ -322,14 +322,14 @@ function PaymentForm() {
                   name="payment_date"
                   value={formData.payment_date}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 />
               </div>
             </div>
 
             {/* Mode de paiement */}
             <div>
-              <label htmlFor="payment-payment_method" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-payment_method" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Mode de paiement
               </label>
               <select
@@ -337,7 +337,7 @@ function PaymentForm() {
                 name="payment_method"
                 value={formData.payment_method}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
               >
                 <option value="">Non spécifié</option>
                 <option value="bank_transfer">Virement</option>
@@ -348,7 +348,7 @@ function PaymentForm() {
                 <option value="other">Autre</option>
               </select>
               {formData.payment_method === 'caf' && (
-                <p className="text-xs text-blue-600 mt-1">
+                <p className="text-xs text-[var(--color-electric-blue)] mt-1">
                   Versement des APL directement par la CAF
                 </p>
               )}
@@ -356,7 +356,7 @@ function PaymentForm() {
 
             {/* Statut */}
             <div>
-              <label htmlFor="payment-status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-status" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Statut *
               </label>
               <select
@@ -364,7 +364,7 @@ function PaymentForm() {
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 required
               >
                 <option value="pending">En attente</option>
@@ -376,7 +376,7 @@ function PaymentForm() {
 
             {/* Notes */}
             <div>
-              <label htmlFor="payment-notes" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="payment-notes" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Notes
               </label>
               <textarea
@@ -384,7 +384,7 @@ function PaymentForm() {
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 rows="3"
                 placeholder="Notes optionnelles sur ce paiement..."
               />

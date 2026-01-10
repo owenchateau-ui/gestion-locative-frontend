@@ -249,7 +249,7 @@ function PublicCandidateForm() {
   // États de chargement et d'erreur
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
         <Loading message="Chargement..." />
       </div>
     )
@@ -257,7 +257,7 @@ function PublicCandidateForm() {
 
   if (error && !lot) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <Alert variant="error" title="Erreur">
             {typeof error === 'string' ? error : formatError(error)}
@@ -270,23 +270,23 @@ function PublicCandidateForm() {
   // Écran de succès
   if (currentStep === 7 && successToken) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center p-4">
         <Card className="max-w-2xl w-full" padding>
           <div className="text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <CheckCircle className="w-16 h-16 text-emerald-500 dark:text-emerald-400 mx-auto mb-4" />
+            <h1 className="text-2xl font-display font-bold text-[var(--text)] mb-4">
               Candidature envoyée avec succès !
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[var(--text-secondary)] mb-6">
               Votre candidature a bien été reçue. Le propriétaire va l'examiner et vous
               contactera prochainement.
             </p>
-            <div className="bg-blue-50 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-900 font-medium mb-2">
+            <div className="bg-[var(--color-electric-blue)]/10 dark:bg-[var(--color-electric-blue)]/20 rounded-xl p-4 mb-6">
+              <p className="text-sm text-[var(--text)] font-medium mb-2">
                 Votre numéro de suivi :
               </p>
-              <p className="text-lg font-mono font-bold text-blue-600">{successToken}</p>
-              <p className="text-xs text-blue-700 mt-2">
+              <p className="text-lg font-mono font-bold text-[var(--color-electric-blue)]">{successToken}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-2">
                 Conservez ce numéro pour suivre l'état de votre candidature
               </p>
             </div>
@@ -304,24 +304,24 @@ function PublicCandidateForm() {
 
   // Formulaire principal
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-[var(--background)] py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* En-tête avec infos du lot */}
         <Card className="mb-6" padding>
           <div className="flex items-start gap-4">
-            <Building className="w-12 h-12 text-blue-500" />
+            <Building className="w-12 h-12 text-[var(--color-electric-blue)]" />
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-display font-bold text-[var(--text)] mb-2">
                 Candidature pour {lot.name}
               </h1>
-              <div className="flex items-center gap-2 text-gray-600 mb-1">
+              <div className="flex items-center gap-2 text-[var(--text-secondary)] mb-1">
                 <Home className="w-4 h-4" />
                 <span className="text-sm">
                   {lot.properties_new?.address}, {lot.properties_new?.postal_code}{' '}
                   {lot.properties_new?.city}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-gray-600">
+              <div className="flex items-center gap-2 text-[var(--text-secondary)]">
                 <Euro className="w-4 h-4" />
                 <span className="text-sm">
                   Loyer : {formatCurrency(lot.rent_amount)}
@@ -347,10 +347,10 @@ function PublicCandidateForm() {
         )}
 
         {Object.keys(errors).length > 0 && !error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
             <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-red-600" />
-              <p className="text-red-700 font-medium">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <p className="text-red-700 dark:text-red-400 font-medium">
                 Veuillez corriger les erreurs ci-dessous avant de continuer.
               </p>
             </div>
@@ -423,7 +423,7 @@ function PublicCandidateForm() {
 
           {/* Navigation (sauf étape 0 qui a sa propre navigation) */}
           {currentStep > 0 && currentStep < 7 && (
-            <div className="flex justify-between mt-8 pt-6 border-t">
+            <div className="flex justify-between mt-8 pt-6 border-t border-[var(--border)]">
               <Button variant="outline" onClick={handlePrevious} disabled={submitting}>
                 Précédent
               </Button>

@@ -244,7 +244,7 @@ function CandidateDetail() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-display font-bold text-[var(--text)]">
                   {candidate.first_name} {candidate.last_name}
                   {candidate.application_type === 'couple' && ' + 1 autre'}
                   {candidate.application_type === 'colocation' && ` + ${(candidate.nb_applicants || 2) - 1} autres`}
@@ -252,7 +252,7 @@ function CandidateDetail() {
                 {getStatusBadge(candidate.status)}
                 {getApplicationTypeBadge()}
               </div>
-              <div className="flex flex-col gap-1 text-sm text-gray-500">
+              <div className="flex flex-col gap-1 text-sm text-[var(--text-secondary)]">
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   {candidate.email}
@@ -312,36 +312,36 @@ function CandidateDetail() {
           <Card title="Informations du lot" padding>
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <Building className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Building className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Lot</p>
-                  <p className="text-base font-medium text-gray-900">
+                  <p className="text-sm text-[var(--text-secondary)]">Lot</p>
+                  <p className="text-base font-medium text-[var(--text)]">
                     {candidate.lots?.name}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+                <MapPin className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Adresse</p>
-                  <p className="text-base text-gray-900">
+                  <p className="text-sm text-[var(--text-secondary)]">Adresse</p>
+                  <p className="text-base text-[var(--text)]">
                     {candidate.lots?.properties_new?.address}
                   </p>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-[var(--text-secondary)]">
                     {candidate.lots?.properties_new?.postal_code}{' '}
                     {candidate.lots?.properties_new?.city}
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Euro className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Loyer</p>
-                  <p className="text-base font-medium text-gray-900">
+                  <p className="text-sm text-[var(--text-secondary)]">Loyer</p>
+                  <p className="text-base font-medium text-[var(--text)]">
                     {formatCurrency(candidate.lots?.rent_amount)}
                   </p>
                   {candidate.lots?.charges_amount > 0 && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-[var(--text-secondary)]">
                       + {formatCurrency(candidate.lots?.charges_amount)} de charges
                     </p>
                   )}
@@ -354,7 +354,7 @@ function CandidateDetail() {
           <Card title="Score de solvabilité" padding>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Score</span>
+                <span className="text-sm text-[var(--text-secondary)]">Score</span>
                 <Badge
                   variant={
                     candidate.solvability_score >= 3
@@ -368,30 +368,30 @@ function CandidateDetail() {
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Revenus totaux</span>
-                <span className="text-base font-medium text-gray-900">
+                <span className="text-sm text-[var(--text-secondary)]">Revenus totaux</span>
+                <span className="text-base font-medium text-[var(--text)]">
                   {formatCurrency(totalIncome)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Loyer demandé</span>
-                <span className="text-base font-medium text-gray-900">
+                <span className="text-sm text-[var(--text-secondary)]">Loyer demandé</span>
+                <span className="text-base font-medium text-[var(--text)]">
                   {formatCurrency(rentAmount)}
                 </span>
               </div>
-              <div className="flex items-center justify-between pt-4 border-t">
-                <span className="text-sm font-medium text-gray-700">Ratio revenus/loyer</span>
+              <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">
+                <span className="text-sm font-medium text-[var(--text)]">Ratio revenus/loyer</span>
                 <div className="flex items-center gap-2">
                   <TrendingUp
                     className={`w-5 h-5 ${
                       incomeRatio >= 3
-                        ? 'text-green-500'
+                        ? 'text-emerald-500 dark:text-emerald-400'
                         : incomeRatio >= 2
-                        ? 'text-orange-500'
-                        : 'text-red-500'
+                        ? 'text-orange-500 dark:text-orange-400'
+                        : 'text-red-500 dark:text-red-400'
                     }`}
                   />
-                  <span className="text-lg font-bold text-gray-900">{incomeRatio}x</span>
+                  <span className="text-lg font-display font-bold text-[var(--text)]">{incomeRatio}x</span>
                 </div>
               </div>
               {incomeRatio < 3 && (
@@ -413,26 +413,26 @@ function CandidateDetail() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-gray-400 mt-0.5" />
+              <User className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Nom complet</p>
-                <p className="text-base text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">Nom complet</p>
+                <p className="text-base text-[var(--text)]">
                   {candidate.first_name} {candidate.last_name}
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+              <Calendar className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Date de naissance</p>
-                <p className="text-base text-gray-900">{formatDate(candidate.birth_date)}</p>
+                <p className="text-sm text-[var(--text-secondary)]">Date de naissance</p>
+                <p className="text-base text-[var(--text)]">{formatDate(candidate.birth_date)}</p>
               </div>
             </div>
             <div className="flex items-start gap-3 md:col-span-2">
-              <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
+              <MapPin className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Adresse actuelle</p>
-                <p className="text-base text-gray-900">{candidate.current_address}</p>
+                <p className="text-sm text-[var(--text-secondary)]">Adresse actuelle</p>
+                <p className="text-base text-[var(--text)]">{candidate.current_address}</p>
               </div>
             </div>
           </div>
@@ -443,15 +443,15 @@ function CandidateDetail() {
           <Card
             title={`Informations personnelles - ${candidate.application_type === 'couple' ? 'Conjoint(e)' : 'Candidat 2'}`}
             padding
-            className="bg-pink-50"
+            className="bg-pink-50 dark:bg-pink-900/20"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {candidate.applicant2_first_name && (
                 <div className="flex items-start gap-3">
                   <User className="w-5 h-5 text-pink-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Nom complet</p>
-                    <p className="text-base text-gray-900">
+                    <p className="text-sm text-[var(--text-secondary)]">Nom complet</p>
+                    <p className="text-base text-[var(--text)]">
                       {candidate.applicant2_first_name} {candidate.applicant2_last_name}
                     </p>
                   </div>
@@ -461,8 +461,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-pink-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-base text-gray-900">{candidate.applicant2_email}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Email</p>
+                    <p className="text-base text-[var(--text)]">{candidate.applicant2_email}</p>
                   </div>
                 </div>
               )}
@@ -470,8 +470,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-pink-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Téléphone</p>
-                    <p className="text-base text-gray-900">{candidate.applicant2_phone}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Téléphone</p>
+                    <p className="text-base text-[var(--text)]">{candidate.applicant2_phone}</p>
                   </div>
                 </div>
               )}
@@ -479,8 +479,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <Calendar className="w-5 h-5 text-pink-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Date de naissance</p>
-                    <p className="text-base text-gray-900">{formatDate(candidate.applicant2_birth_date)}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Date de naissance</p>
+                    <p className="text-base text-[var(--text)]">{formatDate(candidate.applicant2_birth_date)}</p>
                   </div>
                 </div>
               )}
@@ -493,15 +493,15 @@ function CandidateDetail() {
           <Card
             title="Informations personnelles - Candidat 3"
             padding
-            className="bg-purple-50"
+            className="bg-[var(--color-purple)]/5 dark:bg-[var(--color-purple)]/10"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {candidate.applicant3_first_name && (
                 <div className="flex items-start gap-3">
-                  <User className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <User className="w-5 h-5 text-[var(--color-purple)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Nom complet</p>
-                    <p className="text-base text-gray-900">
+                    <p className="text-sm text-[var(--text-secondary)]">Nom complet</p>
+                    <p className="text-base text-[var(--text)]">
                       {candidate.applicant3_first_name} {candidate.applicant3_last_name}
                     </p>
                   </div>
@@ -509,10 +509,10 @@ function CandidateDetail() {
               )}
               {candidate.applicant3_email && (
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <Mail className="w-5 h-5 text-[var(--color-purple)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-base text-gray-900">{candidate.applicant3_email}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Email</p>
+                    <p className="text-base text-[var(--text)]">{candidate.applicant3_email}</p>
                   </div>
                 </div>
               )}
@@ -525,15 +525,15 @@ function CandidateDetail() {
           <Card
             title="Informations personnelles - Candidat 4"
             padding
-            className="bg-purple-50"
+            className="bg-[var(--color-purple)]/5 dark:bg-[var(--color-purple)]/10"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {candidate.applicant4_first_name && (
                 <div className="flex items-start gap-3">
-                  <User className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <User className="w-5 h-5 text-[var(--color-purple)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Nom complet</p>
-                    <p className="text-base text-gray-900">
+                    <p className="text-sm text-[var(--text-secondary)]">Nom complet</p>
+                    <p className="text-base text-[var(--text)]">
                       {candidate.applicant4_first_name} {candidate.applicant4_last_name}
                     </p>
                   </div>
@@ -541,10 +541,10 @@ function CandidateDetail() {
               )}
               {candidate.applicant4_email && (
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-purple-400 mt-0.5" />
+                  <Mail className="w-5 h-5 text-[var(--color-purple)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-base text-gray-900">{candidate.applicant4_email}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Email</p>
+                    <p className="text-base text-[var(--text)]">{candidate.applicant4_email}</p>
                   </div>
                 </div>
               )}
@@ -556,47 +556,47 @@ function CandidateDetail() {
         <Card title="Situation professionnelle" padding>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-start gap-3">
-              <Briefcase className="w-5 h-5 text-gray-400 mt-0.5" />
+              <Briefcase className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">Statut</p>
-                <p className="text-base text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">Statut</p>
+                <p className="text-base text-[var(--text)]">
                   {getEmploymentStatusLabel(candidate.professional_status)}
                 </p>
               </div>
             </div>
             {candidate.employer_name && (
               <div className="flex items-start gap-3">
-                <Building className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Building className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Employeur</p>
-                  <p className="text-base text-gray-900">{candidate.employer_name}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">Employeur</p>
+                  <p className="text-base text-[var(--text)]">{candidate.employer_name}</p>
                 </div>
               </div>
             )}
             {candidate.job_title && (
               <div className="flex items-start gap-3">
-                <Briefcase className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Briefcase className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Poste</p>
-                  <p className="text-base text-gray-900">{candidate.job_title}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">Poste</p>
+                  <p className="text-base text-[var(--text)]">{candidate.job_title}</p>
                 </div>
               </div>
             )}
             {candidate.contract_type && (
               <div className="flex items-start gap-3">
-                <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
+                <FileText className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Type de contrat</p>
-                  <p className="text-base text-gray-900">{candidate.contract_type}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">Type de contrat</p>
+                  <p className="text-base text-[var(--text)]">{candidate.contract_type}</p>
                 </div>
               </div>
             )}
             {candidate.employment_start_date && (
               <div className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Calendar className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Ancienneté</p>
-                  <p className="text-base text-gray-900">
+                  <p className="text-sm text-[var(--text-secondary)]">Ancienneté</p>
+                  <p className="text-base text-[var(--text)]">
                     Depuis le {formatDate(candidate.employment_start_date)}
                   </p>
                 </div>
@@ -614,24 +614,24 @@ function CandidateDetail() {
         >
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-start gap-3">
-              <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
+              <Euro className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
               <div>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-[var(--text-secondary)]">
                   {candidate.application_type && candidate.application_type !== 'individual'
                     ? 'Candidat 1 - Salaire mensuel'
                     : 'Salaire mensuel'}
                 </p>
-                <p className="text-base font-medium text-gray-900">
+                <p className="text-base font-medium text-[var(--text)]">
                   {formatCurrency(candidate.monthly_income)}
                 </p>
               </div>
             </div>
             {candidate.other_income > 0 && (
               <div className="flex items-start gap-3">
-                <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
+                <Euro className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Candidat 1 - Autres revenus</p>
-                  <p className="text-base font-medium text-gray-900">
+                  <p className="text-sm text-[var(--text-secondary)]">Candidat 1 - Autres revenus</p>
+                  <p className="text-base font-medium text-[var(--text)]">
                     {formatCurrency(candidate.other_income)}
                   </p>
                 </div>
@@ -645,8 +645,8 @@ function CandidateDetail() {
                   <div className="flex items-start gap-3">
                     <Euro className="w-5 h-5 text-pink-400 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500">Candidat 2 - Salaire mensuel</p>
-                      <p className="text-base font-medium text-gray-900">
+                      <p className="text-sm text-[var(--text-secondary)]">Candidat 2 - Salaire mensuel</p>
+                      <p className="text-base font-medium text-[var(--text)]">
                         {formatCurrency(candidate.applicant2_monthly_income)}
                       </p>
                     </div>
@@ -656,8 +656,8 @@ function CandidateDetail() {
                   <div className="flex items-start gap-3">
                     <Euro className="w-5 h-5 text-pink-400 mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500">Candidat 2 - Autres revenus</p>
-                      <p className="text-base font-medium text-gray-900">
+                      <p className="text-sm text-[var(--text-secondary)]">Candidat 2 - Autres revenus</p>
+                      <p className="text-base font-medium text-[var(--text)]">
                         {formatCurrency(candidate.applicant2_other_income)}
                       </p>
                     </div>
@@ -671,10 +671,10 @@ function CandidateDetail() {
               <>
                 {candidate.applicant3_monthly_income > 0 && (
                   <div className="flex items-start gap-3">
-                    <Euro className="w-5 h-5 text-purple-400 mt-0.5" />
+                    <Euro className="w-5 h-5 text-[var(--color-purple)] mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500">Candidat 3 - Salaire mensuel</p>
-                      <p className="text-base font-medium text-gray-900">
+                      <p className="text-sm text-[var(--text-secondary)]">Candidat 3 - Salaire mensuel</p>
+                      <p className="text-base font-medium text-[var(--text)]">
                         {formatCurrency(candidate.applicant3_monthly_income)}
                       </p>
                     </div>
@@ -688,10 +688,10 @@ function CandidateDetail() {
               <>
                 {candidate.applicant4_monthly_income > 0 && (
                   <div className="flex items-start gap-3">
-                    <Euro className="w-5 h-5 text-purple-400 mt-0.5" />
+                    <Euro className="w-5 h-5 text-[var(--color-purple)] mt-0.5" />
                     <div>
-                      <p className="text-sm text-gray-500">Candidat 4 - Salaire mensuel</p>
-                      <p className="text-base font-medium text-gray-900">
+                      <p className="text-sm text-[var(--text-secondary)]">Candidat 4 - Salaire mensuel</p>
+                      <p className="text-base font-medium text-[var(--text)]">
                         {formatCurrency(candidate.applicant4_monthly_income)}
                       </p>
                     </div>
@@ -701,30 +701,30 @@ function CandidateDetail() {
             )}
 
             {/* Total cumulé */}
-            <div className={`flex items-start gap-3 md:col-span-3 p-4 rounded-lg ${
-              candidate.application_type === 'couple' ? 'bg-pink-50' :
-              candidate.application_type === 'colocation' ? 'bg-purple-50' :
-              'bg-blue-50'
+            <div className={`flex items-start gap-3 md:col-span-3 p-4 rounded-xl ${
+              candidate.application_type === 'couple' ? 'bg-pink-50 dark:bg-pink-900/20' :
+              candidate.application_type === 'colocation' ? 'bg-[var(--color-purple)]/5 dark:bg-[var(--color-purple)]/10' :
+              'bg-[var(--color-electric-blue)]/5 dark:bg-[var(--color-electric-blue)]/10'
             }`}>
               <TrendingUp className={`w-6 h-6 mt-0.5 ${
-                candidate.application_type === 'couple' ? 'text-pink-600' :
-                candidate.application_type === 'colocation' ? 'text-purple-600' :
-                'text-blue-600'
+                candidate.application_type === 'couple' ? 'text-pink-600 dark:text-pink-400' :
+                candidate.application_type === 'colocation' ? 'text-[var(--color-purple)]' :
+                'text-[var(--color-electric-blue)]'
               }`} />
               <div>
-                <p className="text-sm font-medium text-gray-700">
+                <p className="text-sm font-medium text-[var(--text)]">
                   {candidate.application_type && candidate.application_type !== 'individual'
                     ? 'Total cumulé (tous candidats)'
                     : 'Total revenus'}
                 </p>
-                <p className={`text-2xl font-bold ${
-                  candidate.application_type === 'couple' ? 'text-pink-600' :
-                  candidate.application_type === 'colocation' ? 'text-purple-600' :
-                  'text-green-600'
+                <p className={`text-2xl font-display font-bold ${
+                  candidate.application_type === 'couple' ? 'text-pink-600 dark:text-pink-400' :
+                  candidate.application_type === 'colocation' ? 'text-[var(--color-purple)]' :
+                  'text-emerald-600 dark:text-emerald-400'
                 }`}>
                   {formatCurrency(totalIncome)}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Ratio avec le loyer: <span className="font-semibold">{incomeRatio}x</span>
                 </p>
               </div>
@@ -740,47 +740,47 @@ function CandidateDetail() {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex items-start gap-3">
-                <User className="w-5 h-5 text-gray-400 mt-0.5" />
+                <User className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                 <div>
-                  <p className="text-sm text-gray-500">Nom complet</p>
-                  <p className="text-base text-gray-900">
+                  <p className="text-sm text-[var(--text-secondary)]">Nom complet</p>
+                  <p className="text-base text-[var(--text)]">
                     {candidate.guarantor_first_name} {candidate.guarantor_last_name}
                   </p>
                 </div>
               </div>
               {candidate.guarantor_relationship && (
                 <div className="flex items-start gap-3">
-                  <User className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <User className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Lien avec le candidat</p>
-                    <p className="text-base text-gray-900">{candidate.guarantor_relationship}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Lien avec le candidat</p>
+                    <p className="text-base text-[var(--text)]">{candidate.guarantor_relationship}</p>
                   </div>
                 </div>
               )}
               {candidate.guarantor_email && (
                 <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <Mail className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-base text-gray-900">{candidate.guarantor_email}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Email</p>
+                    <p className="text-base text-[var(--text)]">{candidate.guarantor_email}</p>
                   </div>
                 </div>
               )}
               {candidate.guarantor_phone && (
                 <div className="flex items-start gap-3">
-                  <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <Phone className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Téléphone</p>
-                    <p className="text-base text-gray-900">{candidate.guarantor_phone}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Téléphone</p>
+                    <p className="text-base text-[var(--text)]">{candidate.guarantor_phone}</p>
                   </div>
                 </div>
               )}
               {candidate.guarantor_monthly_income > 0 && (
                 <div className="flex items-start gap-3">
-                  <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <Euro className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Revenus mensuels</p>
-                    <p className="text-base font-medium text-gray-900">
+                    <p className="text-sm text-[var(--text-secondary)]">Revenus mensuels</p>
+                    <p className="text-base font-medium text-[var(--text)]">
                       {formatCurrency(candidate.guarantor_monthly_income)}
                     </p>
                   </div>
@@ -792,14 +792,14 @@ function CandidateDetail() {
 
         {/* Garant 2 */}
         {candidate.has_guarantor2 && (
-          <Card title="Informations du garant 2" padding className="bg-teal-50">
+          <Card title="Informations du garant 2" padding className="bg-teal-50 dark:bg-teal-900/20">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {candidate.guarantor2_first_name && (
                 <div className="flex items-start gap-3">
                   <User className="w-5 h-5 text-teal-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Nom complet</p>
-                    <p className="text-base text-gray-900">
+                    <p className="text-sm text-[var(--text-secondary)]">Nom complet</p>
+                    <p className="text-base text-[var(--text)]">
                       {candidate.guarantor2_first_name} {candidate.guarantor2_last_name}
                     </p>
                   </div>
@@ -809,8 +809,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <User className="w-5 h-5 text-teal-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Lien avec le candidat</p>
-                    <p className="text-base text-gray-900">{candidate.guarantor2_relationship}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Lien avec le candidat</p>
+                    <p className="text-base text-[var(--text)]">{candidate.guarantor2_relationship}</p>
                   </div>
                 </div>
               )}
@@ -818,8 +818,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <Mail className="w-5 h-5 text-teal-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-base text-gray-900">{candidate.guarantor2_email}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Email</p>
+                    <p className="text-base text-[var(--text)]">{candidate.guarantor2_email}</p>
                   </div>
                 </div>
               )}
@@ -827,8 +827,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <Phone className="w-5 h-5 text-teal-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Téléphone</p>
-                    <p className="text-base text-gray-900">{candidate.guarantor2_phone}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">Téléphone</p>
+                    <p className="text-base text-[var(--text)]">{candidate.guarantor2_phone}</p>
                   </div>
                 </div>
               )}
@@ -836,8 +836,8 @@ function CandidateDetail() {
                 <div className="flex items-start gap-3">
                   <Euro className="w-5 h-5 text-teal-400 mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Revenus mensuels</p>
-                    <p className="text-base font-medium text-gray-900">
+                    <p className="text-sm text-[var(--text-secondary)]">Revenus mensuels</p>
+                    <p className="text-base font-medium text-[var(--text)]">
                       {formatCurrency(candidate.guarantor2_monthly_income)}
                     </p>
                   </div>
@@ -856,30 +856,30 @@ function CandidateDetail() {
             return null
           })()}
           {!candidate?.documents || candidate.documents.length === 0 ? (
-            <p className="text-gray-500 text-center py-4">Aucun document uploadé</p>
+            <p className="text-[var(--text-secondary)] text-center py-4">Aucun document uploadé</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {candidate.documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition"
+                  className="border border-[var(--border)] rounded-xl p-4 hover:border-[var(--color-electric-blue)] transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <FileText className="w-8 h-8 text-blue-500" />
+                    <FileText className="w-8 h-8 text-[var(--color-electric-blue)]" />
                     <a
                       href={getDocumentUrl(doc.file_path)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700"
+                      className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                     >
                       <Download className="w-5 h-5" />
                     </a>
                   </div>
-                  <p className="text-sm font-medium text-gray-900 mb-1">
+                  <p className="text-sm font-medium text-[var(--text)] mb-1">
                     {getDocumentTypeLabel(doc.document_type)}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">{doc.file_name}</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-[var(--text-secondary)] truncate">{doc.file_name}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
                     {formatDate(doc.uploaded_at)} • {(doc.file_size / 1024 / 1024).toFixed(2)} Mo
                   </p>
                 </div>
@@ -890,10 +890,10 @@ function CandidateDetail() {
 
         {/* Modal de refus */}
         {showRejectModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Refuser la candidature</h3>
-              <p className="text-sm text-gray-500 mb-4">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-[var(--surface)] rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+              <h3 className="text-lg font-display font-bold text-[var(--text)] mb-4">Refuser la candidature</h3>
+              <p className="text-sm text-[var(--text-secondary)] mb-4">
                 Veuillez indiquer la raison du refus (cette information sera visible par le
                 candidat).
               </p>
@@ -901,7 +901,7 @@ function CandidateDetail() {
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-vivid-coral)]"
                 placeholder="Raison du refus..."
               />
               <div className="flex gap-3 mt-4">
@@ -914,7 +914,7 @@ function CandidateDetail() {
                   Confirmer le refus
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   onClick={() => {
                     setShowRejectModal(false)
                     setRejectionReason('')

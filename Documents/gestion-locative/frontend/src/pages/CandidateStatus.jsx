@@ -177,11 +177,11 @@ function CandidateStatus() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-[var(--background)] py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Suivi de candidature</h1>
-          <p className="text-gray-600">
+          <h1 className="text-3xl font-display font-bold text-[var(--text)] mb-2">Suivi de candidature</h1>
+          <p className="text-[var(--text-secondary)]">
             Consultez l'état de votre candidature et vos documents
           </p>
         </div>
@@ -193,10 +193,10 @@ function CandidateStatus() {
               <div className="flex gap-4">
                 <button
                   onClick={() => setSearchType('email')}
-                  className={`flex-1 py-3 px-4 rounded-lg border-2 transition ${
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
                     searchType === 'email'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                      ? 'border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)]'
+                      : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]'
                   }`}
                 >
                   <Mail className="w-5 h-5 mx-auto mb-1" />
@@ -204,10 +204,10 @@ function CandidateStatus() {
                 </button>
                 <button
                   onClick={() => setSearchType('token')}
-                  className={`flex-1 py-3 px-4 rounded-lg border-2 transition ${
+                  className={`flex-1 py-3 px-4 rounded-xl border-2 transition-colors ${
                     searchType === 'token'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                      ? 'border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)]/10 text-[var(--color-electric-blue)]'
+                      : 'border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--text-muted)]'
                   }`}
                 >
                   <Key className="w-5 h-5 mx-auto mb-1" />
@@ -216,7 +216,7 @@ function CandidateStatus() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text)] mb-2">
                   {searchType === 'email' ? 'Votre email' : 'Numéro de suivi'}
                 </label>
                 <input
@@ -229,7 +229,7 @@ function CandidateStatus() {
                       ? 'votre@email.com'
                       : 'cand-xxxxxxxxxxxxx'
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                 />
               </div>
 
@@ -268,15 +268,15 @@ function CandidateStatus() {
               {candidates.map((c) => (
                 <div
                   key={c.id}
-                  className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 cursor-pointer transition"
+                  className="border border-[var(--border)] rounded-xl p-4 hover:border-[var(--color-electric-blue)]/50 cursor-pointer transition-colors"
                   onClick={() => handleSelectCandidate(c)}
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-[var(--text)]">
                         {c.lots?.name} - {c.lots?.properties_new?.name}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-[var(--text-muted)]">
                         Candidature du {formatDate(c.created_at)}
                       </p>
                     </div>
@@ -294,7 +294,7 @@ function CandidateStatus() {
             {/* En-tête */}
             <Card padding>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Votre candidature</h2>
+                <h2 className="text-xl font-display font-bold text-[var(--text)]">Votre candidature</h2>
                 <Button
                   variant="outline"
                   size="sm"
@@ -309,15 +309,15 @@ function CandidateStatus() {
                 </Button>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-4 mb-4">
+              <div className="bg-[var(--surface-elevated)] rounded-xl p-4 mb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500">Statut</p>
+                    <p className="text-sm text-[var(--text-muted)]">Statut</p>
                     <div className="mt-1">{getStatusBadge(candidate.status)}</div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-gray-500">Numéro de suivi</p>
-                    <p className="text-sm font-mono font-medium text-gray-900 mt-1">
+                    <p className="text-sm text-[var(--text-muted)]">Numéro de suivi</p>
+                    <p className="text-sm font-mono font-medium text-[var(--text)] mt-1">
                       {candidate.access_token}
                     </p>
                   </div>
@@ -355,36 +355,36 @@ function CandidateStatus() {
             <Card title="Lot concerné" padding>
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <Building className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <Building className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Lot</p>
-                    <p className="text-base font-medium text-gray-900">
+                    <p className="text-sm text-[var(--text-muted)]">Lot</p>
+                    <p className="text-base font-medium text-[var(--text)]">
                       {candidate.lots?.name || 'Non renseigné'}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-[var(--text-muted)]">
                       {candidate.lots?.properties_new?.name || 'Propriété non renseignée'}
                     </p>
                     {candidate.lots?.properties_new?.address && (
-                      <p className="text-sm text-gray-400 mt-1">
+                      <p className="text-sm text-[var(--text-muted)] mt-1">
                         {candidate.lots.properties_new.address}, {candidate.lots.properties_new.city}
                       </p>
                     )}
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Euro className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <Euro className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Loyer</p>
-                    <p className="text-base font-medium text-gray-900">
+                    <p className="text-sm text-[var(--text-muted)]">Loyer</p>
+                    <p className="text-base font-medium text-[var(--text)]">
                       {formatCurrency(candidate.lots?.rent_amount)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <Calendar className="w-5 h-5 text-gray-400 mt-0.5" />
+                  <Calendar className="w-5 h-5 text-[var(--text-muted)] mt-0.5" />
                   <div>
-                    <p className="text-sm text-gray-500">Date de candidature</p>
-                    <p className="text-base text-gray-900">{formatDate(candidate.created_at)}</p>
+                    <p className="text-sm text-[var(--text-muted)]">Date de candidature</p>
+                    <p className="text-base text-[var(--text)]">{formatDate(candidate.created_at)}</p>
                   </div>
                 </div>
               </div>
@@ -393,30 +393,30 @@ function CandidateStatus() {
             {/* Documents */}
             <Card title="Vos documents" padding>
               {documents.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Aucun document uploadé</p>
+                <p className="text-[var(--text-muted)] text-center py-4">Aucun document uploadé</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                   {documents.map((doc) => (
                     <div
                       key={doc.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition"
+                      className="border border-[var(--border)] rounded-xl p-4 hover:border-[var(--color-electric-blue)]/50 transition-colors"
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <FileText className="w-8 h-8 text-blue-500" />
+                        <FileText className="w-8 h-8 text-[var(--color-electric-blue)]" />
                         <a
                           href={getDocumentUrl(doc.file_path)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue)]/80 transition-colors"
                         >
                           <Download className="w-5 h-5" />
                         </a>
                       </div>
-                      <p className="text-sm font-medium text-gray-900 mb-1">
+                      <p className="text-sm font-medium text-[var(--text)] mb-1">
                         {getDocumentTypeLabel(doc.document_type)}
                       </p>
-                      <p className="text-xs text-gray-500 truncate">{doc.file_name}</p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-[var(--text-muted)] truncate">{doc.file_name}</p>
+                      <p className="text-xs text-[var(--text-muted)] mt-1">
                         {formatDate(doc.uploaded_at)} •{' '}
                         {(doc.file_size / 1024 / 1024).toFixed(2)} Mo
                       </p>
@@ -426,8 +426,8 @@ function CandidateStatus() {
               )}
 
               {candidate.status !== 'rejected' && (
-                <div className="border-t pt-6">
-                  <h3 className="text-sm font-medium text-gray-900 mb-4">
+                <div className="border-t border-[var(--border)] pt-6">
+                  <h3 className="text-sm font-medium text-[var(--text)] mb-4">
                     Ajouter un document
                   </h3>
                   <div className="flex gap-3">
@@ -436,11 +436,11 @@ function CandidateStatus() {
                       accept=".pdf,.jpg,.jpeg,.png"
                       onChange={(e) => handleUploadDocument(e, 'other')}
                       disabled={uploading}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                     {uploading && <Loading variant="spinner" size="sm" />}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-[var(--text-muted)] mt-2">
                     Formats acceptés : PDF, JPEG, PNG (max 10 Mo)
                   </p>
                 </div>

@@ -1,31 +1,35 @@
 import { memo } from 'react'
 import PropTypes from 'prop-types'
 
-// Constantes extraites pour éviter recréation à chaque render
+// Bold Geometric variants
 const VARIANTS = {
   info: {
-    container: 'bg-blue-50 border-blue-500',
-    icon: 'text-blue-500',
-    title: 'text-blue-800',
-    text: 'text-blue-700'
+    container: 'bg-[var(--color-electric-blue)]/5 border-[var(--color-electric-blue)]/30',
+    iconBg: 'bg-[var(--color-electric-blue)]/10',
+    icon: 'text-[var(--color-electric-blue)]',
+    title: 'text-[var(--text)]',
+    text: 'text-[var(--text-secondary)]'
   },
   success: {
-    container: 'bg-emerald-50 border-emerald-500',
-    icon: 'text-emerald-500',
-    title: 'text-emerald-800',
-    text: 'text-emerald-700'
+    container: 'bg-emerald-500/5 border-emerald-500/30',
+    iconBg: 'bg-emerald-500/10',
+    icon: 'text-emerald-600 dark:text-emerald-400',
+    title: 'text-[var(--text)]',
+    text: 'text-[var(--text-secondary)]'
   },
   warning: {
-    container: 'bg-amber-50 border-amber-500',
-    icon: 'text-amber-500',
-    title: 'text-amber-800',
-    text: 'text-amber-700'
+    container: 'bg-amber-500/5 border-amber-500/30',
+    iconBg: 'bg-amber-500/10',
+    icon: 'text-amber-600 dark:text-amber-400',
+    title: 'text-[var(--text)]',
+    text: 'text-[var(--text-secondary)]'
   },
   error: {
-    container: 'bg-red-50 border-red-500',
-    icon: 'text-red-500',
-    title: 'text-red-800',
-    text: 'text-red-700'
+    container: 'bg-[var(--color-vivid-coral)]/5 border-[var(--color-vivid-coral)]/30',
+    iconBg: 'bg-[var(--color-vivid-coral)]/10',
+    icon: 'text-[var(--color-vivid-coral)]',
+    title: 'text-[var(--text)]',
+    text: 'text-[var(--text-secondary)]'
   }
 }
 
@@ -52,31 +56,58 @@ const ICONS = {
   )
 }
 
-const Alert = memo(function Alert({ children, variant = 'info', title, onClose, className = '' }) {
+const Alert = memo(function Alert({
+  children,
+  variant = 'info',
+  title,
+  onClose,
+  className = '',
+  actions
+}) {
   const styles = VARIANTS[variant]
 
   return (
-    <div className={`border-l-4 p-4 rounded ${styles.container} ${className}`}>
-      <div className="flex items-start">
-        <div className={`flex-shrink-0 ${styles.icon}`}>
-          {ICONS[variant]}
+    <div
+      className={`
+        border rounded-xl p-4
+        ${styles.container}
+        ${className}
+      `}
+      role="alert"
+    >
+      <div className="flex items-start gap-3">
+        <div className={`flex-shrink-0 p-2 rounded-lg ${styles.iconBg}`}>
+          <span className={styles.icon}>
+            {ICONS[variant]}
+          </span>
         </div>
-        <div className="ml-3 flex-1">
+        <div className="flex-1 min-w-0">
           {title && (
-            <h3 className={`text-sm font-semibold ${styles.title}`}>
+            <h3 className={`text-sm font-semibold font-display ${styles.title}`}>
               {title}
             </h3>
           )}
           <div className={`${title ? 'mt-1' : ''} text-sm ${styles.text}`}>
             {children}
           </div>
+          {actions && (
+            <div className="mt-3 flex gap-2">
+              {actions}
+            </div>
+          )}
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className={`ml-3 flex-shrink-0 ${styles.icon} hover:opacity-75`}
+            className={`
+              flex-shrink-0 p-1 rounded-lg
+              transition-colors
+              hover:bg-[var(--surface-hover)]
+              ${styles.icon}
+            `}
+            aria-label="Fermer"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -91,7 +122,8 @@ Alert.propTypes = {
   variant: PropTypes.oneOf(['info', 'success', 'warning', 'error']),
   title: PropTypes.string,
   onClose: PropTypes.func,
-  className: PropTypes.string
+  className: PropTypes.string,
+  actions: PropTypes.node
 }
 
 export default Alert

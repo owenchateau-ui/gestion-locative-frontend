@@ -11,6 +11,7 @@ import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
 import ExportButton from '../components/ui/ExportButton'
+import Alert from '../components/ui/Alert'
 import { FileText } from 'lucide-react'
 
 function Leases() {
@@ -56,7 +57,7 @@ function Leases() {
             last_name,
             group_id,
             is_main_tenant,
-            tenant_groups(id, name, group_type)
+            tenant_groups!group_id(id, name, group_type)
           )
         `)
         .eq('lot.properties_new.entities.user_id', userData.id)
@@ -130,10 +131,10 @@ function Leases() {
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
             <div className="space-y-2">
-              <div className="animate-pulse bg-gray-200 rounded h-8 w-40" />
-              <div className="animate-pulse bg-gray-200 rounded h-4 w-20" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-8 w-40" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-4 w-20" />
             </div>
-            <div className="animate-pulse bg-gray-200 rounded h-10 w-36" />
+            <div className="animate-pulse bg-[var(--border)] rounded-xl h-10 w-36" />
           </div>
           {/* Table skeleton */}
           <Card padding={false}>
@@ -149,8 +150,8 @@ function Leases() {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Mes baux</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-2xl font-display font-bold text-[var(--text)]">Mes baux</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
               {leases.length} bail{leases.length > 1 ? 'x' : ''}
             </p>
           </div>
@@ -173,9 +174,7 @@ function Leases() {
         </div>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
+          <Alert variant="error">{error}</Alert>
         )}
 
         {leases.length === 0 ? (
@@ -191,49 +190,49 @@ function Leases() {
         ) : (
           <Card padding={false}>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Bien / Lot
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Locataire
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Période
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Loyer total
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {leases.map((lease) => (
-                    <tr key={lease.id} className="hover:bg-gray-50">
+                    <tr key={lease.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {lease.lot.properties_new.name}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[var(--text-muted)]">
                           {lease.lot.name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {lease.tenant.tenant_groups?.name || `${lease.tenant.first_name} ${lease.tenant.last_name}`}
                         </div>
                         {lease.tenant.tenant_groups && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             {lease.tenant.tenant_groups.group_type === 'couple' && '👫 Couple'}
                             {lease.tenant.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
                             {lease.tenant.tenant_groups.group_type === 'individual' && '👤 Individuel'}
@@ -241,23 +240,23 @@ function Leases() {
                         )}
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           Du {formatDate(lease.start_date)}
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[var(--text-muted)]">
                           Au {formatDate(lease.end_date)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[var(--text)]">
                           {(parseFloat(lease.rent_amount) + parseFloat(lease.charges_amount)).toFixed(2)} €
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-[var(--text-muted)]">
                           Loyer: {parseFloat(lease.rent_amount).toFixed(2)} € + Charges: {parseFloat(lease.charges_amount).toFixed(2)} €
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {getLeaseTypeLabel(lease.lease_type)}
                         </div>
                       </td>
@@ -267,18 +266,18 @@ function Leases() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                         <button
                           onClick={() => navigate(`/leases/${lease.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleDelete(lease.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-[var(--color-vivid-coral)] hover:text-[var(--color-coral-dark)] transition-colors"
                         >
                           Supprimer
                         </button>
                         <button
-                          className="text-emerald-600 hover:text-emerald-900"
+                          className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
                           onClick={() => info('Génération PDF à venir')}
                         >
                           PDF

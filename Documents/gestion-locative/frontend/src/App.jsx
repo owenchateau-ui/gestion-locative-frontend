@@ -3,6 +3,7 @@ import { Suspense, lazy } from 'react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { EntityProvider } from './context/EntityContext'
 import { ToastProvider } from './context/ToastContext'
+import { ThemeProvider } from './context/ThemeContext'
 import ErrorBoundary from './components/ErrorBoundary'
 import Loading from './components/ui/Loading'
 import ToastContainer from './components/ui/ToastContainer'
@@ -38,6 +39,16 @@ const Candidates = lazy(() => import('./pages/Candidates'))
 const CandidateDetail = lazy(() => import('./pages/CandidateDetail'))
 const Profile = lazy(() => import('./pages/Profile'))
 const ComingSoon = lazy(() => import('./pages/ComingSoon'))
+
+// Nouvelles pages Phase 3
+const Documents = lazy(() => import('./pages/Documents'))
+const DocumentTemplates = lazy(() => import('./pages/DocumentTemplates'))
+const Inventories = lazy(() => import('./pages/Inventories'))
+const InventoryForm = lazy(() => import('./pages/InventoryForm'))
+const InventoryDetail = lazy(() => import('./pages/InventoryDetail'))
+const Diagnostics = lazy(() => import('./pages/Diagnostics'))
+const DiagnosticForm = lazy(() => import('./pages/DiagnosticForm'))
+const ChargeReconciliation = lazy(() => import('./pages/ChargeReconciliation'))
 
 // Composant pour protéger les routes
 function PrivateRoute({ children }) {
@@ -288,57 +299,97 @@ function AppRoutes() {
         }
       />
 
-      {/* Routes "Coming Soon" - Fonctionnalités à venir */}
+      {/* Routes Diagnostics */}
       <Route
         path="/diagnostics"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <Diagnostics />
           </PrivateRoute>
         }
       />
       <Route
-        path="/inspections"
+        path="/diagnostics/new"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <DiagnosticForm />
           </PrivateRoute>
         }
       />
       <Route
-        path="/receipts"
+        path="/diagnostics/:id/edit"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <DiagnosticForm />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Routes États des lieux */}
+      <Route
+        path="/inventories"
+        element={
+          <PrivateRoute>
+            <Inventories />
           </PrivateRoute>
         }
       />
       <Route
-        path="/charges"
+        path="/inventories/new"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <InventoryForm />
           </PrivateRoute>
         }
       />
       <Route
-        path="/accounting"
+        path="/inventories/:id"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <InventoryDetail />
           </PrivateRoute>
         }
       />
+      <Route
+        path="/inventories/:id/edit"
+        element={
+          <PrivateRoute>
+            <InventoryForm />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Routes Documents */}
       <Route
         path="/documents"
         element={
           <PrivateRoute>
-            <ComingSoon />
+            <Documents />
           </PrivateRoute>
         }
       />
       <Route
         path="/templates"
+        element={
+          <PrivateRoute>
+            <DocumentTemplates />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Routes Charges */}
+      <Route
+        path="/charges"
+        element={
+          <PrivateRoute>
+            <ChargeReconciliation />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Routes "Coming Soon" - Fonctionnalités à venir */}
+      <Route
+        path="/accounting"
         element={
           <PrivateRoute>
             <ComingSoon />
@@ -434,14 +485,16 @@ function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <AuthProvider>
-          <EntityProvider>
-            <ToastProvider>
-              <AppRoutes />
-              <ToastContainer />
-            </ToastProvider>
-          </EntityProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <EntityProvider>
+              <ToastProvider>
+                <AppRoutes />
+                <ToastContainer />
+              </ToastProvider>
+            </EntityProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </ErrorBoundary>
   )

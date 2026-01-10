@@ -9,6 +9,7 @@ import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import StatCard from '../components/ui/StatCard'
+import Alert from '../components/ui/Alert'
 import { useToast } from '../context/ToastContext'
 import {
   Building2,
@@ -175,7 +176,7 @@ function EntityDetail() {
     return (
       <DashboardLayout title="Détail entité">
         <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+          <div className="text-xl text-[var(--text-muted)]">Chargement...</div>
         </div>
       </DashboardLayout>
     )
@@ -185,8 +186,8 @@ function EntityDetail() {
     return (
       <DashboardLayout title="Entité introuvable">
         <Card className="text-center py-12">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Entité introuvable</h3>
-          <p className="text-gray-600 mb-6">
+          <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-2">Entité introuvable</h3>
+          <p className="text-[var(--text-secondary)] mb-6">
             L'entité demandée n'existe pas ou a été supprimée.
           </p>
           <Button onClick={() => navigate('/entities')}>
@@ -214,35 +215,35 @@ function EntityDetail() {
           <Card title="Informations de l'entité">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p className="text-sm font-medium text-gray-500">Type d'entité</p>
-                <p className="text-lg font-semibold text-gray-900">{getEntityTypeLabel(entity.entity_type)}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Type d'entité</p>
+                <p className="text-lg font-display font-semibold text-[var(--text)]">{getEntityTypeLabel(entity.entity_type)}</p>
               </div>
 
               {entity.siren && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">SIREN</p>
-                  <p className="text-lg font-semibold text-gray-900">{entity.siren}</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">SIREN</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">{entity.siren}</p>
                 </div>
               )}
 
               {entity.siret && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">SIRET</p>
-                  <p className="text-lg font-semibold text-gray-900">{entity.siret}</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">SIRET</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">{entity.siret}</p>
                 </div>
               )}
 
               {entity.vat_number && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">N° TVA</p>
-                  <p className="text-lg font-semibold text-gray-900">{entity.vat_number}</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">N° TVA</p>
+                  <p className="text-lg font-display font-semibold text-[var(--text)]">{entity.vat_number}</p>
                 </div>
               )}
 
               {entity.address && (
                 <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-500">Adresse</p>
-                  <p className="text-gray-900">
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Adresse</p>
+                  <p className="text-[var(--text)]">
                     {entity.address}
                     {entity.city && entity.postal_code && (
                       <><br />{entity.postal_code} {entity.city}</>
@@ -253,15 +254,15 @@ function EntityDetail() {
 
               {entity.email && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Email</p>
-                  <p className="text-gray-900">{entity.email}</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Email</p>
+                  <p className="text-[var(--text)]">{entity.email}</p>
                 </div>
               )}
 
               {entity.phone && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Téléphone</p>
-                  <p className="text-gray-900">{entity.phone}</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)]">Téléphone</p>
+                  <p className="text-[var(--text)]">{entity.phone}</p>
                 </div>
               )}
 
@@ -313,7 +314,7 @@ function EntityDetail() {
         <div className="space-y-4">
           {properties.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">Aucune propriété dans cette entité</p>
+              <p className="text-[var(--text-secondary)] mb-4">Aucune propriété dans cette entité</p>
               <Button onClick={() => navigate(`/properties/new?entity=${id}`)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Ajouter la première propriété
@@ -323,19 +324,19 @@ function EntityDetail() {
             properties.map(property => (
               <Card
                 key={property.id}
-                className="hover:shadow-md transition-shadow cursor-pointer"
+                className="hover:shadow-md transition-all cursor-pointer"
                 onClick={() => navigate(`/properties/${property.id}`)}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{property.name}</h3>
+                      <h3 className="text-lg font-display font-semibold text-[var(--text)]">{property.name}</h3>
                       <Badge variant="info">{getPropertyCategoryLabel(property.category)}</Badge>
                     </div>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-[var(--text-secondary)]">
                       {property.address}, {property.postal_code} {property.city}
                     </p>
-                    <div className="mt-3 flex gap-4 text-sm text-gray-500">
+                    <div className="mt-3 flex gap-4 text-sm text-[var(--text-muted)]">
                       <span>{property.lotsCount} lot{property.lotsCount > 1 ? 's' : ''}</span>
                     </div>
                   </div>
@@ -365,18 +366,18 @@ function EntityDetail() {
           <Card title="Performance financière">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <p className="text-sm font-medium text-gray-500">Revenus mensuels</p>
-                <p className="text-3xl font-bold text-emerald-600">
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Revenus mensuels</p>
+                <p className="text-3xl font-display font-bold text-emerald-600 dark:text-emerald-400">
                   {stats.monthlyRevenue.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </p>
-                <p className="text-sm text-gray-500 mt-1">Loyers + charges des lots occupés</p>
+                <p className="text-sm text-[var(--text-muted)] mt-1">Loyers + charges des lots occupés</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">Revenus annuels estimés</p>
-                <p className="text-3xl font-bold text-blue-600">
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Revenus annuels estimés</p>
+                <p className="text-3xl font-display font-bold text-[var(--color-electric-blue)]">
                   {(stats.monthlyRevenue * 12).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €
                 </p>
-                <p className="text-sm text-gray-500 mt-1">Projection sur 12 mois</p>
+                <p className="text-sm text-[var(--text-muted)] mt-1">Projection sur 12 mois</p>
               </div>
             </div>
           </Card>
@@ -384,30 +385,30 @@ function EntityDetail() {
           <Card title="Taux d'occupation">
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-[var(--text-secondary)]">
                   {stats.occupiedLots} / {stats.lots} lots occupés
                 </span>
-                <span className="text-2xl font-bold text-gray-900">{occupancyRate.toFixed(1)} %</span>
+                <span className="text-2xl font-display font-bold text-[var(--text)]">{occupancyRate.toFixed(1)} %</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-4">
+              <div className="w-full bg-[var(--surface-elevated)] rounded-full h-4">
                 <div
                   className="bg-emerald-500 h-4 rounded-full transition-all"
                   style={{ width: `${occupancyRate}%` }}
                 />
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t">
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-[var(--border)]">
               <div className="text-center">
-                <p className="text-2xl font-bold text-emerald-600">{stats.occupiedLots}</p>
-                <p className="text-sm text-gray-500">Occupés</p>
+                <p className="text-2xl font-display font-bold text-emerald-600 dark:text-emerald-400">{stats.occupiedLots}</p>
+                <p className="text-sm text-[var(--text-muted)]">Occupés</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-orange-600">{stats.lots - stats.occupiedLots}</p>
-                <p className="text-sm text-gray-500">Vacants</p>
+                <p className="text-2xl font-display font-bold text-[var(--color-vivid-coral)]">{stats.lots - stats.occupiedLots}</p>
+                <p className="text-sm text-[var(--text-muted)]">Vacants</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-blue-600">{stats.lots}</p>
-                <p className="text-sm text-gray-500">Total</p>
+                <p className="text-2xl font-display font-bold text-[var(--color-electric-blue)]">{stats.lots}</p>
+                <p className="text-sm text-[var(--text-muted)]">Total</p>
               </div>
             </div>
           </Card>
@@ -416,24 +417,24 @@ function EntityDetail() {
             <Card title="Patrimoine">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Propriétés</span>
-                  <span className="text-2xl font-bold text-gray-900">{stats.properties}</span>
+                  <span className="text-[var(--text-secondary)]">Propriétés</span>
+                  <span className="text-2xl font-display font-bold text-[var(--text)]">{stats.properties}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Lots</span>
-                  <span className="text-2xl font-bold text-gray-900">{stats.lots}</span>
+                  <span className="text-[var(--text-secondary)]">Lots</span>
+                  <span className="text-2xl font-display font-bold text-[var(--text)]">{stats.lots}</span>
                 </div>
               </div>
             </Card>
             <Card title="Locataires">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Groupes de locataires</span>
-                  <span className="text-2xl font-bold text-gray-900">{stats.tenantsCount}</span>
+                  <span className="text-[var(--text-secondary)]">Groupes de locataires</span>
+                  <span className="text-2xl font-display font-bold text-[var(--text)]">{stats.tenantsCount}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Baux actifs</span>
-                  <span className="text-2xl font-bold text-gray-900">{stats.occupiedLots}</span>
+                  <span className="text-[var(--text-secondary)]">Baux actifs</span>
+                  <span className="text-2xl font-display font-bold text-[var(--text)]">{stats.occupiedLots}</span>
                 </div>
               </div>
             </Card>
@@ -471,9 +472,9 @@ function EntityDetail() {
       </div>
 
       {error && (
-        <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+        <Alert variant="error" className="mb-6">
           {error}
-        </div>
+        </Alert>
       )}
 
       {/* Statistiques en haut */}

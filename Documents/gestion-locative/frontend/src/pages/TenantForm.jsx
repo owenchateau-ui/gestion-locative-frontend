@@ -262,7 +262,7 @@ function TenantForm() {
             label="Entité propriétaire"
             placeholder="Sélectionner l'entité juridique..."
           />
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-[var(--text-muted)] mt-2">
             L'entité juridique à laquelle sera rattaché ce locataire (SCI, SARL, nom propre, etc.)
           </p>
         </Card>
@@ -273,57 +273,57 @@ function TenantForm() {
             <button
               type="button"
               onClick={() => handleGroupChange('group_type', 'individual')}
-              className={`p-6 border-2 rounded-lg transition ${
+              className={`p-6 border-2 rounded-xl transition-all ${
                 groupData.group_type === 'individual'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-[var(--color-electric-blue)] bg-[var(--color-electric-blue)]/10'
+                  : 'border-[var(--border)] hover:border-[var(--color-electric-blue)]/50'
               }`}
             >
-              <User className="w-8 h-8 mx-auto mb-3 text-blue-500" />
-              <p className="font-medium text-gray-900">Individuel</p>
-              <p className="text-sm text-gray-500 mt-1">Une seule personne</p>
+              <User className="w-8 h-8 mx-auto mb-3 text-[var(--color-electric-blue)]" />
+              <p className="font-display font-medium text-[var(--text)]">Individuel</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">Une seule personne</p>
             </button>
 
             <button
               type="button"
               onClick={() => handleGroupChange('group_type', 'couple')}
-              className={`p-6 border-2 rounded-lg transition ${
+              className={`p-6 border-2 rounded-xl transition-all ${
                 groupData.group_type === 'couple'
-                  ? 'border-pink-500 bg-pink-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-[var(--color-vivid-coral)] bg-[var(--color-vivid-coral)]/10'
+                  : 'border-[var(--border)] hover:border-[var(--color-vivid-coral)]/50'
               }`}
             >
-              <Heart className="w-8 h-8 mx-auto mb-3 text-pink-500" />
-              <p className="font-medium text-gray-900">Couple</p>
-              <p className="text-sm text-gray-500 mt-1">Deux conjoints</p>
+              <Heart className="w-8 h-8 mx-auto mb-3 text-[var(--color-vivid-coral)]" />
+              <p className="font-display font-medium text-[var(--text)]">Couple</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">Deux conjoints</p>
             </button>
 
             <button
               type="button"
               onClick={() => handleGroupChange('group_type', 'colocation')}
-              className={`p-6 border-2 rounded-lg transition ${
+              className={`p-6 border-2 rounded-xl transition-all ${
                 groupData.group_type === 'colocation'
-                  ? 'border-purple-500 bg-purple-50'
-                  : 'border-gray-200 hover:border-gray-300'
+                  ? 'border-[var(--color-purple)] bg-[var(--color-purple)]/10'
+                  : 'border-[var(--border)] hover:border-[var(--color-purple)]/50'
               }`}
             >
-              <Users className="w-8 h-8 mx-auto mb-3 text-purple-500" />
-              <p className="font-medium text-gray-900">Colocation</p>
-              <p className="text-sm text-gray-500 mt-1">Plusieurs locataires</p>
+              <Users className="w-8 h-8 mx-auto mb-3 text-[var(--color-purple)]" />
+              <p className="font-display font-medium text-[var(--text)]">Colocation</p>
+              <p className="text-sm text-[var(--text-muted)] mt-1">Plusieurs locataires</p>
             </button>
           </div>
 
           {/* Statut couple */}
           {groupData.group_type === 'couple' && (
             <div className="mt-6">
-              <label htmlFor="tenant-couple-status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="tenant-couple-status" className="block text-sm font-medium text-[var(--text)] mb-2">
                 Statut du couple
               </label>
               <select
                 id="tenant-couple-status"
                 value={groupData.couple_status || ''}
                 onChange={(e) => handleGroupChange('couple_status', e.target.value || null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
               >
                 <option value="">Sélectionner...</option>
                 <option value="married">Mariés</option>
@@ -335,7 +335,7 @@ function TenantForm() {
 
           {/* Nom du groupe */}
           <div className="mt-6">
-            <label htmlFor="tenant-group-name" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="tenant-group-name" className="block text-sm font-medium text-[var(--text)] mb-2">
               Nom du groupe *
             </label>
             <input
@@ -345,9 +345,9 @@ function TenantForm() {
               onChange={(e) => handleGroupChange('name', e.target.value)}
               placeholder="Ex: Jean Dupont & Marie Martin"
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
             />
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               Ce nom sera généré automatiquement à partir des noms des locataires
             </p>
           </div>
@@ -363,10 +363,10 @@ function TenantForm() {
             <div className="space-y-6">
               {/* Informations personnelles */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">Informations personnelles</h4>
+                <h4 className="text-sm font-display font-medium text-[var(--text)] mb-4">Informations personnelles</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-first_name`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-first_name`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Prénom *
                     </label>
                     <input
@@ -375,12 +375,12 @@ function TenantForm() {
                       value={tenant.first_name}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'first_name', e.target.value)}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-last_name`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-last_name`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Nom *
                     </label>
                     <input
@@ -389,12 +389,12 @@ function TenantForm() {
                       value={tenant.last_name}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'last_name', e.target.value)}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-email`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-email`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Email *
                     </label>
                     <input
@@ -403,12 +403,12 @@ function TenantForm() {
                       value={tenant.email}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'email', e.target.value)}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-phone`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-phone`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Téléphone
                     </label>
                     <input
@@ -416,12 +416,12 @@ function TenantForm() {
                       type="tel"
                       value={tenant.phone}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'phone', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-birth_date`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-birth_date`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Date de naissance
                     </label>
                     <input
@@ -429,12 +429,12 @@ function TenantForm() {
                       type="date"
                       value={tenant.birth_date}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'birth_date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-birth_place`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-birth_place`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Lieu de naissance
                     </label>
                     <input
@@ -442,20 +442,20 @@ function TenantForm() {
                       type="text"
                       value={tenant.birth_place}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'birth_place', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   {!tenant.is_main_tenant && (
                     <div>
-                      <label htmlFor={`tenant-${tenant.tempId}-relationship`} className="block text-sm font-medium text-gray-700 mb-1">
+                      <label htmlFor={`tenant-${tenant.tempId}-relationship`} className="block text-sm font-medium text-[var(--text)] mb-1">
                         Relation avec le locataire principal
                       </label>
                       <select
                         id={`tenant-${tenant.tempId}-relationship`}
                         value={tenant.relationship || ''}
                         onChange={(e) => handleTenantChange(tenant.tempId, 'relationship', e.target.value || null)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       >
                         <option value="">Sélectionner...</option>
                         {Object.entries(RELATIONSHIPS).map(([key, rel]) => (
@@ -469,17 +469,17 @@ function TenantForm() {
 
               {/* Situation professionnelle */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">Situation professionnelle</h4>
+                <h4 className="text-sm font-display font-medium text-[var(--text)] mb-4">Situation professionnelle</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-professional_status`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-professional_status`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Statut professionnel
                     </label>
                     <select
                       id={`tenant-${tenant.tempId}-professional_status`}
                       value={tenant.professional_status}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'professional_status', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     >
                       <option value="">Sélectionner...</option>
                       {Object.entries(PROFESSIONAL_STATUS).map(([key, status]) => (
@@ -489,7 +489,7 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-employer_name`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-employer_name`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Employeur
                     </label>
                     <input
@@ -497,12 +497,12 @@ function TenantForm() {
                       type="text"
                       value={tenant.employer_name}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'employer_name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-job_title`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-job_title`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Poste
                     </label>
                     <input
@@ -510,19 +510,19 @@ function TenantForm() {
                       type="text"
                       value={tenant.job_title}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'job_title', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-contract_type`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-contract_type`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Type de contrat
                     </label>
                     <select
                       id={`tenant-${tenant.tempId}-contract_type`}
                       value={tenant.contract_type}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'contract_type', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     >
                       <option value="">Sélectionner...</option>
                       {Object.entries(CONTRACT_TYPES).map(([key, type]) => (
@@ -532,7 +532,7 @@ function TenantForm() {
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-employment_start_date`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-employment_start_date`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Date de début
                     </label>
                     <input
@@ -540,7 +540,7 @@ function TenantForm() {
                       type="date"
                       value={tenant.employment_start_date}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'employment_start_date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
                 </div>
@@ -548,10 +548,10 @@ function TenantForm() {
 
               {/* Revenus */}
               <div>
-                <h4 className="text-sm font-medium text-gray-700 mb-4">Revenus mensuels nets</h4>
+                <h4 className="text-sm font-display font-medium text-[var(--text)] mb-4">Revenus mensuels nets</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-monthly_income`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-monthly_income`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Salaire net mensuel (€)
                     </label>
                     <input
@@ -561,12 +561,12 @@ function TenantForm() {
                       min="0"
                       value={tenant.monthly_income}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'monthly_income', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor={`tenant-${tenant.tempId}-other_income`} className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor={`tenant-${tenant.tempId}-other_income`} className="block text-sm font-medium text-[var(--text)] mb-1">
                       Autres revenus (€)
                     </label>
                     <input
@@ -576,9 +576,9 @@ function TenantForm() {
                       min="0"
                       value={tenant.other_income}
                       onChange={(e) => handleTenantChange(tenant.tempId, 'other_income', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
                       Pensions, allocations, revenus locatifs, etc.
                     </p>
                   </div>
@@ -587,7 +587,7 @@ function TenantForm() {
 
               {/* Actions */}
               {tenants.length > 1 && (
-                <div className="border-t pt-4">
+                <div className="border-t border-[var(--border)] pt-4">
                   <Button
                     type="button"
                     variant="danger"

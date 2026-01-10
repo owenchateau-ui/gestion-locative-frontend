@@ -40,22 +40,22 @@ const FormProgress = memo(function FormProgress({ currentStep }) {
               }`}
             >
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
                   currentStep >= step.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-400'
+                    ? 'bg-[var(--color-electric-blue)] text-white shadow-lg shadow-[var(--color-electric-blue)]/30'
+                    : 'bg-[var(--surface-elevated)] text-[var(--text-muted)] border border-[var(--border)]'
                 }`}
               >
                 <Icon className="w-5 h-5" />
               </div>
-              <span className="text-xs text-gray-600 mt-2 text-center hidden md:block">
+              <span className="text-xs text-[var(--text-secondary)] mt-2 text-center hidden md:block font-medium">
                 {step.title}
               </span>
             </div>
             {index < STEPS.length - 1 && (
               <div
-                className={`h-1 flex-1 mx-2 ${
-                  currentStep > step.id ? 'bg-blue-600' : 'bg-gray-200'
+                className={`h-1 flex-1 mx-2 rounded-full transition-colors ${
+                  currentStep > step.id ? 'bg-[var(--color-electric-blue)]' : 'bg-[var(--surface-elevated)]'
                 }`}
               />
             )}

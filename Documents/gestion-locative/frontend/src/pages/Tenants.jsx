@@ -151,8 +151,8 @@ function Tenants() {
         <div className="space-y-6">
           {/* Skeleton pour les filtres */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-            <div className="animate-pulse bg-gray-200 rounded-lg h-10 w-64" />
-            <div className="animate-pulse bg-gray-200 rounded-lg h-10 w-32" />
+            <div className="animate-pulse bg-[var(--border)] rounded-xl h-10 w-64" />
+            <div className="animate-pulse bg-[var(--border)] rounded-xl h-10 w-32" />
           </div>
           {/* Skeleton pour les cartes */}
           <Skeleton type="list-card" count={6} />
@@ -168,13 +168,13 @@ function Tenants() {
       <div className="mb-6 space-y-4">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher un groupe..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
             />
           </div>
           <div className="flex gap-3">
@@ -204,7 +204,7 @@ function Tenants() {
           <select
             value={groupTypeFilter}
             onChange={(e) => setGroupTypeFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
           >
             <option value="all">Tous les types</option>
             <option value="individual">Individuel</option>
@@ -215,7 +215,7 @@ function Tenants() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
           >
             <option value="all">Tous les statuts</option>
             <option value="with_lease">Avec bail</option>
@@ -289,11 +289,11 @@ function Tenants() {
                   {/* En-tête */}
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
-                      <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-[var(--color-electric-blue)]/10 flex items-center justify-center flex-shrink-0">
                         {getGroupIcon(group.group_type)}
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-gray-900 mb-1">
+                        <h3 className="font-display font-semibold text-[var(--text)] mb-1">
                           {group.name || `Groupe ${group.id.substring(0, 8)}`}
                         </h3>
                         <div className="flex flex-wrap items-center gap-2">
@@ -313,24 +313,24 @@ function Tenants() {
                   </div>
 
                   {/* Locataires */}
-                  <div className="border-t pt-3">
-                    <p className="text-xs text-gray-500 mb-2">
+                  <div className="border-t border-[var(--border)] pt-3">
+                    <p className="text-xs text-[var(--text-muted)] mb-2">
                       {group.tenants?.length === 1 ? '1 locataire' : `${group.tenants?.length} locataires`}
                     </p>
                     <div className="space-y-2">
                       {group.tenants?.slice(0, 2).map((tenant) => (
                         <div key={tenant.id} className="flex items-center gap-2 text-sm">
-                          <User className="w-4 h-4 text-gray-400" />
-                          <span className="text-gray-900 font-medium">
+                          <User className="w-4 h-4 text-[var(--text-muted)]" />
+                          <span className="text-[var(--text)] font-medium">
                             {tenant.first_name} {tenant.last_name}
                           </span>
                           {tenant.is_main_tenant && (
-                            <span className="text-xs text-blue-600">(Principal)</span>
+                            <span className="text-xs text-[var(--color-electric-blue)]">(Principal)</span>
                           )}
                         </div>
                       ))}
                       {group.tenants?.length > 2 && (
-                        <p className="text-xs text-gray-500 ml-6">
+                        <p className="text-xs text-[var(--text-muted)] ml-6">
                           +{group.tenants.length - 2} autre{group.tenants.length - 2 > 1 ? 's' : ''}
                         </p>
                       )}
@@ -339,10 +339,10 @@ function Tenants() {
 
                   {/* Bail */}
                   {lease && (
-                    <div className="border-t pt-3">
+                    <div className="border-t border-[var(--border)] pt-3">
                       <div className="flex items-center gap-2 mb-2">
-                        <Home className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm font-medium text-gray-700">
+                        <Home className="w-4 h-4 text-[var(--text-muted)]" />
+                        <span className="text-sm font-medium text-[var(--text-secondary)]">
                           {lease.lot?.name}
                         </span>
                         <Badge variant={lease.status === 'active' ? 'success' : 'default'} className="text-xs">
@@ -350,8 +350,8 @@ function Tenants() {
                         </Badge>
                       </div>
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600">Loyer mensuel</span>
-                        <span className="font-medium text-gray-900">
+                        <span className="text-[var(--text-secondary)]">Loyer mensuel</span>
+                        <span className="font-medium text-[var(--text)]">
                           {formatCurrency(totalRent)}
                         </span>
                       </div>
@@ -360,21 +360,21 @@ function Tenants() {
 
                   {/* Revenus et solvabilité */}
                   {totalIncome > 0 && (
-                    <div className="border-t pt-3">
+                    <div className="border-t border-[var(--border)] pt-3">
                       <div className="flex items-center justify-between text-sm mb-1">
-                        <span className="text-gray-600">Revenus totaux</span>
-                        <span className="font-medium text-gray-900">
+                        <span className="text-[var(--text-secondary)]">Revenus totaux</span>
+                        <span className="font-medium text-[var(--text)]">
                           {formatCurrency(totalIncome)}
                         </span>
                       </div>
                       {effortRate > 0 && (
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-600">Taux d'effort</span>
+                          <span className="text-[var(--text-secondary)]">Taux d'effort</span>
                           <span className={`font-medium ${
-                            effortRate <= 33 ? 'text-green-600' :
-                            effortRate <= 40 ? 'text-blue-600' :
-                            effortRate <= 50 ? 'text-orange-600' :
-                            'text-red-600'
+                            effortRate <= 33 ? 'text-emerald-600 dark:text-emerald-400' :
+                            effortRate <= 40 ? 'text-[var(--color-electric-blue)]' :
+                            effortRate <= 50 ? 'text-amber-600 dark:text-amber-400' :
+                            'text-[var(--color-vivid-coral)]'
                           }`}>
                             {effortRate.toFixed(1)}%
                           </span>
@@ -384,7 +384,7 @@ function Tenants() {
                   )}
 
                   {/* Actions */}
-                  <div className="border-t pt-3 flex gap-2">
+                  <div className="border-t border-[var(--border)] pt-3 flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -422,24 +422,24 @@ function Tenants() {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card padding>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-[var(--color-electric-blue)]/10 rounded-full flex items-center justify-center">
+                <Users className="w-5 h-5 text-[var(--color-electric-blue)]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total groupes</p>
-                <p className="text-2xl font-bold text-gray-900">{tenantGroups.length}</p>
+                <p className="text-sm text-[var(--text-secondary)]">Total groupes</p>
+                <p className="text-2xl font-display font-bold text-[var(--text)]">{tenantGroups.length}</p>
               </div>
             </div>
           </Card>
 
           <Card padding>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 bg-[var(--color-purple)]/10 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-[var(--color-purple)]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total locataires</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">Total locataires</p>
+                <p className="text-2xl font-display font-bold text-[var(--text)]">
                   {tenantGroups.reduce((sum, g) => sum + (g.tenants?.length || 0), 0)}
                 </p>
               </div>
@@ -448,12 +448,12 @@ function Tenants() {
 
           <Card padding>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <Home className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center">
+                <Home className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Baux actifs</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">Baux actifs</p>
+                <p className="text-2xl font-display font-bold text-[var(--text)]">
                   {tenantGroups.filter(g => g.lease?.status === 'active').length}
                 </p>
               </div>
@@ -483,13 +483,13 @@ const renderAllTenantsList = () => {
       {/* Barre de recherche */}
       <div className="mb-6">
         <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Rechercher un locataire..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
           />
         </div>
       </div>
@@ -520,14 +520,14 @@ const renderAllTenantsList = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-start gap-4 flex-1">
                     {/* Avatar */}
-                    <div className="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center flex-shrink-0 font-semibold text-lg">
+                    <div className="w-12 h-12 rounded-full bg-[var(--color-electric-blue)] text-white flex items-center justify-center flex-shrink-0 font-display font-semibold text-lg">
                       {tenant.first_name?.[0]}{tenant.last_name?.[0]}
                     </div>
 
                     {/* Informations */}
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg text-gray-900">
+                        <h3 className="font-display font-semibold text-lg text-[var(--text)]">
                           {tenant.first_name} {tenant.last_name}
                         </h3>
                         {tenant.is_main_tenant && (
@@ -540,16 +540,16 @@ const renderAllTenantsList = () => {
                         <div className="flex items-center gap-2">
                           {getGroupIcon(tenant.groupType)}
                           <div>
-                            <span className="text-gray-500">Groupe : </span>
-                            <span className="text-gray-900">{tenant.groupName}</span>
+                            <span className="text-[var(--text-muted)]">Groupe : </span>
+                            <span className="text-[var(--text)]">{tenant.groupName}</span>
                           </div>
                         </div>
 
                         {/* Email */}
                         {tenant.email && (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <span className="text-gray-500">Email : </span>
-                            <a href={`mailto:${tenant.email}`} className="text-blue-600 hover:underline">
+                          <div className="flex items-center gap-2 text-[var(--text-secondary)]">
+                            <span className="text-[var(--text-muted)]">Email : </span>
+                            <a href={`mailto:${tenant.email}`} className="text-[var(--color-electric-blue)] hover:underline">
                               {tenant.email}
                             </a>
                           </div>
@@ -558,8 +558,8 @@ const renderAllTenantsList = () => {
                         {/* Revenus */}
                         {income > 0 && (
                           <div className="flex items-center gap-2">
-                            <span className="text-gray-500">Revenus : </span>
-                            <span className="font-medium text-gray-900">
+                            <span className="text-[var(--text-muted)]">Revenus : </span>
+                            <span className="font-medium text-[var(--text)]">
                               {formatCurrency(income)}
                             </span>
                           </div>
@@ -568,8 +568,8 @@ const renderAllTenantsList = () => {
                         {/* Bail */}
                         {tenant.lease && (
                           <div className="flex items-center gap-2">
-                            <Home className="w-4 h-4 text-gray-400" />
-                            <span className="text-gray-900">{tenant.lease.lot?.name}</span>
+                            <Home className="w-4 h-4 text-[var(--text-muted)]" />
+                            <span className="text-[var(--text)]">{tenant.lease.lot?.name}</span>
                             <Badge variant={tenant.lease.status === 'active' ? 'success' : 'default'} className="text-xs">
                               {tenant.lease.status === 'active' ? 'Actif' : tenant.lease.status}
                             </Badge>
@@ -602,24 +602,24 @@ const renderAllTenantsList = () => {
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card padding>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                <User className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 bg-[var(--color-purple)]/10 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-[var(--color-purple)]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Total locataires</p>
-                <p className="text-2xl font-bold text-gray-900">{allTenants.length}</p>
+                <p className="text-sm text-[var(--text-secondary)]">Total locataires</p>
+                <p className="text-2xl font-display font-bold text-[var(--text)]">{allTenants.length}</p>
               </div>
             </div>
           </Card>
 
           <Card padding>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-[var(--color-electric-blue)]/10 rounded-full flex items-center justify-center">
+                <Users className="w-5 h-5 text-[var(--color-electric-blue)]" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Locataires principaux</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">Locataires principaux</p>
+                <p className="text-2xl font-display font-bold text-[var(--text)]">
                   {allTenants.filter(t => t.is_main_tenant).length}
                 </p>
               </div>
@@ -628,12 +628,12 @@ const renderAllTenantsList = () => {
 
           <Card padding>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <Home className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-emerald-500/10 rounded-full flex items-center justify-center">
+                <Home className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Avec bail actif</p>
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-sm text-[var(--text-secondary)]">Avec bail actif</p>
+                <p className="text-2xl font-display font-bold text-[var(--text)]">
                   {allTenants.filter(t => t.lease?.status === 'active').length}
                 </p>
               </div>

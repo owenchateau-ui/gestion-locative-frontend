@@ -160,36 +160,36 @@ function TenantDetail() {
         <Card title="Informations du groupe" className="lg:col-span-2">
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <Users className="w-5 h-5 text-gray-400 mt-1" />
+              <Users className="w-5 h-5 text-[var(--text-muted)] mt-1" />
               <div>
-                <div className="text-sm text-gray-500">Type de groupe</div>
-                <div className="font-medium">{GROUP_TYPE_LABELS[group.group_type]}</div>
+                <div className="text-sm text-[var(--text-secondary)]">Type de groupe</div>
+                <div className="font-medium text-[var(--text)]">{GROUP_TYPE_LABELS[group.group_type]}</div>
               </div>
             </div>
 
             {group.group_type === 'couple' && group.couple_status && (
               <div className="flex items-start gap-3">
-                <Heart className="w-5 h-5 text-gray-400 mt-1" />
+                <Heart className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Statut du couple</div>
-                  <div className="font-medium">{COUPLE_STATUS_LABELS[group.couple_status]}</div>
+                  <div className="text-sm text-[var(--text-secondary)]">Statut du couple</div>
+                  <div className="font-medium text-[var(--text)]">{COUPLE_STATUS_LABELS[group.couple_status]}</div>
                 </div>
               </div>
             )}
 
             <div className="flex items-start gap-3">
-              <Euro className="w-5 h-5 text-gray-400 mt-1" />
+              <Euro className="w-5 h-5 text-[var(--text-muted)] mt-1" />
               <div>
-                <div className="text-sm text-gray-500">Revenus mensuels totaux</div>
-                <div className="font-medium text-lg">{totalIncome.toLocaleString('fr-FR')} €</div>
+                <div className="text-sm text-[var(--text-secondary)]">Revenus mensuels totaux</div>
+                <div className="font-medium text-lg text-[var(--text)]">{totalIncome.toLocaleString('fr-FR')} €</div>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-1" />
+              <Calendar className="w-5 h-5 text-[var(--text-muted)] mt-1" />
               <div>
-                <div className="text-sm text-gray-500">Date de création</div>
-                <div className="font-medium">
+                <div className="text-sm text-[var(--text-secondary)]">Date de création</div>
+                <div className="font-medium text-[var(--text)]">
                   {new Date(group.created_at).toLocaleDateString('fr-FR')}
                 </div>
               </div>
@@ -202,12 +202,12 @@ function TenantDetail() {
           <Card title="Bail actif">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <Home className="w-5 h-5 text-gray-400 mt-1" />
+                <Home className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Lot</div>
-                  <div className="font-medium">{group.lease.lot?.name}</div>
+                  <div className="text-sm text-[var(--text-secondary)]">Lot</div>
+                  <div className="font-medium text-[var(--text)]">{group.lease.lot?.name}</div>
                   {group.lease.lot?.property && (
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[var(--text-muted)]">
                       {group.lease.lot.property.name}
                     </div>
                   )}
@@ -215,25 +215,25 @@ function TenantDetail() {
               </div>
 
               <div className="flex items-start gap-3">
-                <Euro className="w-5 h-5 text-gray-400 mt-1" />
+                <Euro className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div className="w-full">
-                  <div className="text-sm text-gray-500 mb-2">Montants mensuels</div>
+                  <div className="text-sm text-[var(--text-secondary)] mb-2">Montants mensuels</div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Loyer + Charges :</span>
-                      <span className="font-medium">
+                      <span className="text-[var(--text-secondary)]">Loyer + Charges :</span>
+                      <span className="font-medium text-[var(--text)]">
                         {(group.lease.rent_amount + group.lease.charges_amount).toLocaleString('fr-FR')} €
                       </span>
                     </div>
                     {group.housing_assistance > 0 && (
                       <>
-                        <div className="flex justify-between text-sm text-green-600">
+                        <div className="flex justify-between text-sm text-emerald-600 dark:text-emerald-400">
                           <span>Aides (CAF/APL) :</span>
                           <span className="font-medium">- {group.housing_assistance.toLocaleString('fr-FR')} €</span>
                         </div>
-                        <div className="flex justify-between pt-2 border-t border-green-200 bg-green-50 px-2 py-1 rounded">
-                          <span className="font-semibold text-green-700">Loyer net :</span>
-                          <span className="font-semibold text-green-700">
+                        <div className="flex justify-between pt-2 border-t border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-xl">
+                          <span className="font-semibold text-emerald-700 dark:text-emerald-300">Loyer net :</span>
+                          <span className="font-semibold text-emerald-700 dark:text-emerald-300">
                             {((group.lease.rent_amount + group.lease.charges_amount) - group.housing_assistance).toLocaleString('fr-FR')} €
                           </span>
                         </div>
@@ -244,10 +244,10 @@ function TenantDetail() {
               </div>
 
               <div className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-gray-400 mt-1" />
+                <Calendar className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Période</div>
-                  <div className="font-medium">
+                  <div className="text-sm text-[var(--text-secondary)]">Période</div>
+                  <div className="font-medium text-[var(--text)]">
                     {new Date(group.lease.start_date).toLocaleDateString('fr-FR')} -{' '}
                     {new Date(group.lease.end_date).toLocaleDateString('fr-FR')}
                   </div>
@@ -255,20 +255,20 @@ function TenantDetail() {
               </div>
 
               {totalIncome > 0 && (
-                <div className="pt-3 border-t">
-                  <div className="text-sm text-gray-500">Taux d'effort</div>
+                <div className="pt-3 border-t border-[var(--border)]">
+                  <div className="text-sm text-[var(--text-secondary)]">Taux d'effort</div>
                   <div className="font-medium">
                     {group.housing_assistance > 0 ? (
                       <>
-                        <div className="text-gray-400 line-through text-sm">
+                        <div className="text-[var(--text-muted)] line-through text-sm">
                           Avant aides : {((group.lease.rent_amount / totalIncome) * 100).toFixed(1)} %
                         </div>
-                        <div className="text-lg text-green-600">
+                        <div className="text-lg text-emerald-600 dark:text-emerald-400">
                           Après aides : {((((group.lease.rent_amount + group.lease.charges_amount) - group.housing_assistance) / totalIncome) * 100).toFixed(1)} %
                         </div>
                       </>
                     ) : (
-                      <div>{((group.lease.rent_amount / totalIncome) * 100).toFixed(1)} %</div>
+                      <div className="text-[var(--text)]">{((group.lease.rent_amount / totalIncome) * 100).toFixed(1)} %</div>
                     )}
                   </div>
                 </div>
@@ -299,24 +299,26 @@ function TenantDetail() {
           {group.tenants?.map((tenant, index) => (
             <div
               key={tenant.id}
-              className={`p-4 rounded-lg border ${
-                tenant.is_main_tenant ? 'border-blue-200 bg-blue-50' : 'border-gray-200'
+              className={`p-4 rounded-xl border transition-colors ${
+                tenant.is_main_tenant
+                  ? 'border-[var(--color-electric-blue)]/30 bg-[var(--color-electric-blue)]/5 dark:bg-[var(--color-electric-blue)]/10'
+                  : 'border-[var(--border)]'
               }`}
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-semibold">
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-electric-blue)] text-white flex items-center justify-center font-display font-semibold">
                     {tenant.first_name?.[0]}{tenant.last_name?.[0]}
                   </div>
                   <div>
-                    <div className="font-semibold text-lg">
+                    <div className="font-display font-semibold text-lg text-[var(--text)]">
                       {tenant.first_name} {tenant.last_name}
                     </div>
                     {tenant.is_main_tenant && (
                       <Badge variant="info">Locataire principal</Badge>
                     )}
                     {!tenant.is_main_tenant && tenant.relationship && (
-                      <div className="text-sm text-gray-500">{tenant.relationship}</div>
+                      <div className="text-sm text-[var(--text-muted)]">{tenant.relationship}</div>
                     )}
                   </div>
                 </div>
@@ -325,14 +327,14 @@ function TenantDetail() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Informations personnelles */}
                 <div className="space-y-3">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">
+                  <div className="text-sm font-display font-semibold text-[var(--text-secondary)] mb-2">
                     Informations personnelles
                   </div>
 
                   {tenant.email && (
                     <div className="flex items-center gap-2 text-sm">
-                      <Mail className="w-4 h-4 text-gray-400" />
-                      <a href={`mailto:${tenant.email}`} className="text-blue-600 hover:underline">
+                      <Mail className="w-4 h-4 text-[var(--text-muted)]" />
+                      <a href={`mailto:${tenant.email}`} className="text-[var(--color-electric-blue)] hover:underline transition-colors">
                         {tenant.email}
                       </a>
                     </div>
@@ -340,16 +342,16 @@ function TenantDetail() {
 
                   {tenant.phone && (
                     <div className="flex items-center gap-2 text-sm">
-                      <Phone className="w-4 h-4 text-gray-400" />
-                      <a href={`tel:${tenant.phone}`} className="text-blue-600 hover:underline">
+                      <Phone className="w-4 h-4 text-[var(--text-muted)]" />
+                      <a href={`tel:${tenant.phone}`} className="text-[var(--color-electric-blue)] hover:underline transition-colors">
                         {tenant.phone}
                       </a>
                     </div>
                   )}
 
                   {tenant.birth_date && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                      <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
                       <span>
                         Né(e) le {new Date(tenant.birth_date).toLocaleDateString('fr-FR')}
                       </span>
@@ -357,8 +359,8 @@ function TenantDetail() {
                   )}
 
                   {tenant.birth_place && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                      <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
                       <span>à {tenant.birth_place}</span>
                     </div>
                   )}
@@ -366,39 +368,39 @@ function TenantDetail() {
 
                 {/* Situation professionnelle */}
                 <div className="space-y-3">
-                  <div className="text-sm font-semibold text-gray-700 mb-2">
+                  <div className="text-sm font-display font-semibold text-[var(--text-secondary)] mb-2">
                     Situation professionnelle
                   </div>
 
                   {tenant.professional_status && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Briefcase className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                      <Briefcase className="w-4 h-4 text-[var(--text-muted)]" />
                       <span>{tenant.professional_status}</span>
                     </div>
                   )}
 
                   {tenant.employer_name && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Building2 className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                      <Building2 className="w-4 h-4 text-[var(--text-muted)]" />
                       <span>{tenant.employer_name}</span>
                     </div>
                   )}
 
                   {tenant.job_title && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-[var(--text-secondary)]">
                       Poste : {tenant.job_title}
                     </div>
                   )}
 
                   {tenant.contract_type && (
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-[var(--text-secondary)]">
                       Type : {tenant.contract_type}
                     </div>
                   )}
 
                   {tenant.employment_start_date && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Calendar className="w-4 h-4 text-gray-400" />
+                    <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                      <Calendar className="w-4 h-4 text-[var(--text-muted)]" />
                       <span>
                         Depuis le {new Date(tenant.employment_start_date).toLocaleDateString('fr-FR')}
                       </span>
@@ -406,20 +408,20 @@ function TenantDetail() {
                   )}
 
                   {(tenant.monthly_income > 0 || tenant.other_income > 0) && (
-                    <div className="pt-2 border-t">
-                      <div className="flex items-center gap-2 text-sm font-medium">
-                        <Euro className="w-4 h-4 text-gray-400" />
+                    <div className="pt-2 border-t border-[var(--border)]">
+                      <div className="flex items-center gap-2 text-sm font-medium text-[var(--text)]">
+                        <Euro className="w-4 h-4 text-[var(--text-muted)]" />
                         <span>
                           Revenus : {(tenant.monthly_income + tenant.other_income).toLocaleString('fr-FR')} €/mois
                         </span>
                       </div>
                       {tenant.monthly_income > 0 && (
-                        <div className="text-xs text-gray-500 ml-6">
+                        <div className="text-xs text-[var(--text-muted)] ml-6">
                           Salaire : {tenant.monthly_income.toLocaleString('fr-FR')} €
                         </div>
                       )}
                       {tenant.other_income > 0 && (
-                        <div className="text-xs text-gray-500 ml-6">
+                        <div className="text-xs text-[var(--text-muted)] ml-6">
                           Autres : {tenant.other_income.toLocaleString('fr-FR')} €
                         </div>
                       )}

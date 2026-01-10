@@ -8,8 +8,10 @@ import StatCard from '../components/ui/StatCard'
 import Alert from '../components/ui/Alert'
 import Card from '../components/ui/Card'
 import Badge from '../components/ui/Badge'
+import Skeleton from '../components/ui/Skeleton'
 import { getLeasesPendingIndexation, getIRLIndices } from '../services/irlService'
 import { formatDateFR, getCurrentQuarter } from '../utils/irlUtils'
+import { Building2, Users, Home, Wallet, AlertCircle, Plus, FileText, CreditCard, TrendingUp } from 'lucide-react'
 
 function Dashboard() {
   const { user } = useAuth()
@@ -301,8 +303,18 @@ function Dashboard() {
   if (loading) {
     return (
       <DashboardLayout title="Tableau de bord">
-        <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+        <div className="space-y-6">
+          {/* Loading stat cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} type="card" />
+            ))}
+          </div>
+          {/* Loading cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Skeleton type="card" />
+            <Skeleton type="card" />
+          </div>
         </div>
       </DashboardLayout>
     )
@@ -313,21 +325,26 @@ function Dashboard() {
     ? `Tableau de bord - ${selectedEntityData.name}`
     : 'Tableau de bord'
 
+  const occupancyRate = stats.lots > 0 ? Math.round((stats.occupiedLots / stats.lots) * 100) : 0
+
   return (
     <DashboardLayout title={dashboardTitle}>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Alertes */}
         {(alerts.expiringLeases.length > 0 || alerts.latePayments.length > 0 || alerts.pendingIndexations.length > 0) && (
           <div className="space-y-4">
             {/* Baux arrivant à échéance */}
             {alerts.expiringLeases.length > 0 && (
-              <Alert variant="warning" title={`${alerts.expiringLeases.length} bail${alerts.expiringLeases.length > 1 ? 'x' : ''} arrive${alerts.expiringLeases.length > 1 ? 'nt' : ''} à échéance dans les 30 prochains jours`}>
-                <ul className="mt-2 space-y-1">
+              <Alert variant="warning" title={`${alerts.expiringLeases.length} bail${alerts.expiringLeases.length > 1 ? 'x' : ''} arrive${alerts.expiringLeases.length > 1 ? 'nt' : ''} à échéance`}>
+                <ul className="mt-2 space-y-1.5">
                   {alerts.expiringLeases.map(lease => (
                     <li key={lease.id}>
-                      <Link to="/leases" className="hover:underline font-medium">
-                        {lease.lot.properties_new.name} - {lease.lot.name} - {lease.tenant.first_name} {lease.tenant.last_name}
-                        {' '}(échéance : {new Date(lease.end_date).toLocaleDateString('fr-FR')})
+                      <Link to="/leases" className="text-[var(--text)] hover:text-[var(--color-electric-blue)] transition-colors font-medium">
+                        {lease.lot.properties_new.name} - {lease.lot.name}
+                        <span className="font-normal text-[var(--text-secondary)]"> · {lease.tenant.first_name} {lease.tenant.last_name}</span>
+                        <Badge variant="warning" size="sm" className="ml-2">
+                          {new Date(lease.end_date).toLocaleDateString('fr-FR')}
+                        </Badge>
                       </Link>
                     </li>
                   ))}
@@ -338,12 +355,15 @@ function Dashboard() {
             {/* Paiements en retard */}
             {alerts.latePayments.length > 0 && (
               <Alert variant="error" title={`${alerts.latePayments.length} paiement${alerts.latePayments.length > 1 ? 's' : ''} en retard`}>
-                <ul className="mt-2 space-y-1">
+                <ul className="mt-2 space-y-1.5">
                   {alerts.latePayments.map(payment => (
                     <li key={payment.id}>
-                      <Link to="/payments" className="hover:underline font-medium">
-                        {payment.lease.lot.properties_new.name} - {payment.lease.lot.name} - {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}
-                        {' '}({payment.amount.toFixed(2)} € - dû le {new Date(payment.due_date).toLocaleDateString('fr-FR')})
+                      <Link to="/payments" className="text-[var(--text)] hover:text-[var(--color-electric-blue)] transition-colors font-medium">
+                        {payment.lease.lot.properties_new.name} - {payment.lease.lot.name}
+                        <span className="font-normal text-[var(--text-secondary)]"> · {payment.lease.tenant.first_name} {payment.lease.tenant.last_name}</span>
+                        <Badge variant="danger" size="sm" className="ml-2">
+                          {payment.amount.toFixed(2)} €
+                        </Badge>
                       </Link>
                     </li>
                   ))}
@@ -353,35 +373,33 @@ function Dashboard() {
 
             {/* Indexations à venir */}
             {alerts.pendingIndexations.length > 0 && (
-              <Alert variant="info" title={`${alerts.pendingIndexations.length} indexation${alerts.pendingIndexations.length > 1 ? 's' : ''} de loyer à prévoir dans les 30 prochains jours`}>
+              <Alert variant="info" title={`${alerts.pendingIndexations.length} indexation${alerts.pendingIndexations.length > 1 ? 's' : ''} à prévoir`}>
                 <ul className="mt-2 space-y-2">
-                  {alerts.pendingIndexations.map(lease => (
-                    <li key={lease.id} className="p-3 bg-white rounded-lg border border-blue-100">
-                      <Link to="/indexation" className="block hover:bg-blue-50 transition-colors">
-                        <div className="font-medium text-gray-900">
+                  {alerts.pendingIndexations.slice(0, 3).map(lease => (
+                    <li key={lease.id} className="p-3 bg-[var(--surface)] rounded-xl border border-[var(--border)]">
+                      <Link to="/indexation" className="block hover:opacity-80 transition-opacity">
+                        <div className="font-medium text-[var(--text)]">
                           {lease.lot.properties_new.name} - {lease.lot.name}
                         </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          Locataire : {lease.tenant.first_name} {lease.tenant.last_name}
-                        </div>
-                        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                          <span>
-                            📅 Anniversaire : <span className="font-medium text-blue-700">{formatDateFR(lease.anniversaryDate)}</span>
+                        <div className="flex items-center gap-4 mt-2 text-sm">
+                          <span className="text-[var(--text-secondary)]">
+                            {formatDateFR(lease.anniversaryDate)}
                           </span>
-                          <span>
-                            💰 Nouveau loyer : <span className="font-semibold text-emerald-600">{lease.indexationCalculation.newRent.toFixed(2)} €</span>
-                            {' '}(+{lease.indexationCalculation.increasePercentage.toFixed(2)}%)
-                          </span>
+                          <Badge variant="success" size="sm">
+                            +{lease.indexationCalculation.increasePercentage.toFixed(2)}%
+                          </Badge>
                         </div>
                       </Link>
                     </li>
                   ))}
                 </ul>
-                <div className="mt-3">
-                  <Link to="/indexation" className="text-sm font-medium text-blue-700 hover:text-blue-800">
-                    Gérer les indexations →
-                  </Link>
-                </div>
+                {alerts.pendingIndexations.length > 3 && (
+                  <div className="mt-3">
+                    <Link to="/indexation" className="text-sm font-medium text-[var(--color-electric-blue)] hover:underline">
+                      Voir les {alerts.pendingIndexations.length - 3} autres indexations →
+                    </Link>
+                  </div>
+                )}
               </Alert>
             )}
           </div>
@@ -391,16 +409,16 @@ function Dashboard() {
         {missingCurrentIRL && (() => {
           const currentQ = getCurrentQuarter()
           return (
-            <Alert variant="info" title="📊 Nouvel IRL disponible">
-              <div className="flex items-center justify-between">
+            <Alert variant="info" title="Nouvel IRL disponible">
+              <div className="flex items-center justify-between flex-wrap gap-4">
                 <p className="text-sm">
-                  L'IRL du <strong>T{currentQ.quarter} {currentQ.year}</strong> n'est pas encore enregistré dans la base.
+                  L'IRL du <strong>T{currentQ.quarter} {currentQ.year}</strong> n'est pas encore enregistré.
                 </p>
                 <Link
                   to="/indexation"
-                  className="ml-4 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-[var(--color-electric-blue)] text-white text-sm font-medium font-display rounded-xl hover:brightness-110 transition-all"
                 >
-                  Mettre à jour →
+                  Mettre à jour
                 </Link>
               </div>
             </Alert>
@@ -408,18 +426,14 @@ function Dashboard() {
         })()}
 
         {/* Statistiques principales */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6">
           <StatCard
-            title="Biens"
+            title="Propriétés"
             value={stats.properties}
-            subtitle="Voir tous les biens →"
+            subtitle="Voir toutes →"
             variant="blue"
             href="/properties"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            }
+            icon={<Building2 className="w-6 h-6" />}
           />
 
           <StatCard
@@ -428,79 +442,72 @@ function Dashboard() {
             subtitle={`${stats.occupiedLots} occupé${stats.occupiedLots > 1 ? 's' : ''}`}
             variant="purple"
             href="/lots"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-            }
+            icon={<Home className="w-6 h-6" />}
           />
 
           <StatCard
             title="Locataires"
             value={stats.tenants}
-            subtitle="Gérer les locataires →"
+            subtitle="Gérer →"
             variant="emerald"
             href="/tenants"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            }
+            icon={<Users className="w-6 h-6" />}
           />
 
           <StatCard
-            title="Loyers ce mois"
-            value={`${stats.monthlyRent.toFixed(2)} €`}
-            subtitle="Voir les paiements →"
-            variant="indigo"
+            title="Revenus mensuels"
+            value={`${stats.monthlyRent.toLocaleString('fr-FR')} €`}
+            subtitle="Voir paiements →"
+            variant="lime"
             href="/payments"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            }
+            icon={<Wallet className="w-6 h-6" />}
           />
 
           <StatCard
             title="Impayés"
-            value={`${stats.latePayments.toFixed(2)} €`}
-            subtitle="Gérer les impayés →"
-            variant="red"
+            value={`${stats.latePayments.toLocaleString('fr-FR')} €`}
+            subtitle="Gérer →"
+            variant="coral"
             href="/payments"
-            icon={
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
+            icon={<AlertCircle className="w-6 h-6" />}
           />
         </div>
 
         {/* Répartition par entité (visible uniquement si "Toutes les entités") */}
         {!selectedEntity && entityBreakdown.length > 0 && (
-          <Card title="Répartition par entité" subtitle="Vue d'ensemble de vos entités">
+          <Card
+            title="Répartition par entité"
+            subtitle="Vue d'ensemble de vos entités"
+            variant="elevated"
+          >
             <div className="space-y-3">
               {entityBreakdown.map((item) => (
-                <div
+                <Link
                   key={item.entity.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  to={`/entities/${item.entity.id}`}
+                  className="flex items-center justify-between p-4 bg-[var(--surface)] rounded-xl border border-[var(--border)] hover:border-[var(--border-strong)] hover:-translate-y-0.5 hover:shadow-card transition-all duration-200"
                 >
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-center gap-4">
                     <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.entity.color }}
-                    />
+                      className="w-10 h-10 rounded-xl flex items-center justify-center"
+                      style={{ backgroundColor: `${item.entity.color}20`, color: item.entity.color }}
+                    >
+                      <Building2 className="w-5 h-5" />
+                    </div>
                     <div>
-                      <p className="font-medium text-gray-900">{item.entity.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-display font-semibold text-[var(--text)]">{item.entity.name}</p>
+                      <p className="text-sm text-[var(--text-muted)]">
                         {item.propertiesCount} bien{item.propertiesCount > 1 ? 's' : ''} · {item.lotsCount} lot{item.lotsCount > 1 ? 's' : ''}
                       </p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-semibold text-blue-600">{item.revenue.toFixed(2)} €</p>
-                    <p className="text-xs text-gray-500">Revenus mensuels</p>
+                    <p className="text-xl font-display font-bold text-[var(--color-electric-blue)]">
+                      {item.revenue.toLocaleString('fr-FR')} €
+                    </p>
+                    <p className="text-xs text-[var(--text-muted)]">/ mois</p>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </Card>
@@ -509,66 +516,76 @@ function Dashboard() {
         {/* Sections supplémentaires */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Vue d'ensemble */}
-          <Card title="Vue d'ensemble" subtitle="Résumé de votre activité">
+          <Card title="Vue d'ensemble" subtitle="Résumé de votre activité" variant="default">
             <div className="space-y-4">
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-sm text-gray-600">Baux actifs</span>
-                <span className="text-lg font-semibold text-gray-900">{stats.activeLeases}</span>
+              <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
+                <span className="text-sm text-[var(--text-secondary)]">Baux actifs</span>
+                <span className="text-xl font-display font-bold text-[var(--text)]">{stats.activeLeases}</span>
               </div>
-              <div className="flex justify-between items-center py-3 border-b border-gray-100">
-                <span className="text-sm text-gray-600">Taux d'occupation</span>
-                <span className="text-lg font-semibold text-emerald-600">
-                  {stats.lots > 0 ? Math.round((stats.occupiedLots / stats.lots) * 100) : 0}%
-                </span>
+              <div className="flex justify-between items-center py-3 border-b border-[var(--border)]">
+                <span className="text-sm text-[var(--text-secondary)]">Taux d'occupation</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-24 h-2 bg-[var(--border)] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all duration-500"
+                      style={{ width: `${occupancyRate}%` }}
+                    />
+                  </div>
+                  <span className="text-xl font-display font-bold text-emerald-600 dark:text-emerald-400">
+                    {occupancyRate}%
+                  </span>
+                </div>
               </div>
               <div className="flex justify-between items-center py-3">
-                <span className="text-sm text-gray-600">Revenus mensuels</span>
-                <span className="text-lg font-semibold text-blue-600">{stats.monthlyRent.toFixed(2)} €</span>
+                <span className="text-sm text-[var(--text-secondary)]">Revenus mensuels</span>
+                <span className="text-xl font-display font-bold text-[var(--color-electric-blue)]">
+                  {stats.monthlyRent.toLocaleString('fr-FR')} €
+                </span>
               </div>
             </div>
           </Card>
 
           {/* Actions rapides */}
-          <Card title="Actions rapides" subtitle="Raccourcis vers les fonctionnalités principales">
+          <Card title="Actions rapides" subtitle="Raccourcis vers les fonctionnalités principales" variant="default">
             <div className="grid grid-cols-2 gap-3">
               <Link
                 to="/properties/new"
-                className="flex flex-col items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+                className="group flex flex-col items-center justify-center p-5 bg-[var(--color-electric-blue)]/5 hover:bg-[var(--color-electric-blue)]/10 border border-[var(--color-electric-blue)]/20 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card"
               >
-                <svg className="w-8 h-8 text-blue-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                <span className="text-sm font-medium text-blue-900">Ajouter un bien</span>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-electric-blue)] to-[#0066FF] flex items-center justify-center mb-3 shadow-glow-blue group-hover:scale-110 transition-transform">
+                  <Plus className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-sm font-display font-semibold text-[var(--text)]">Ajouter un bien</span>
               </Link>
 
               <Link
                 to="/tenants/new"
-                className="flex flex-col items-center justify-center p-4 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
+                className="group flex flex-col items-center justify-center p-5 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card"
               >
-                <svg className="w-8 h-8 text-emerald-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-                <span className="text-sm font-medium text-emerald-900">Ajouter un locataire</span>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(16,185,129,0.3)] group-hover:scale-110 transition-transform">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-sm font-display font-semibold text-[var(--text)]">Ajouter un locataire</span>
               </Link>
 
               <Link
                 to="/leases/new"
-                className="flex flex-col items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+                className="group flex flex-col items-center justify-center p-5 bg-[var(--color-purple)]/5 hover:bg-[var(--color-purple)]/10 border border-[var(--color-purple)]/20 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card"
               >
-                <svg className="w-8 h-8 text-purple-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <span className="text-sm font-medium text-purple-900">Créer un bail</span>
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[var(--color-purple)] to-[#A78BFA] flex items-center justify-center mb-3 shadow-glow-purple group-hover:scale-110 transition-transform">
+                  <FileText className="w-6 h-6 text-white" />
+                </div>
+                <span className="text-sm font-display font-semibold text-[var(--text)]">Créer un bail</span>
               </Link>
 
               <Link
                 to="/payments/new"
-                className="flex flex-col items-center justify-center p-4 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors"
+                className="group flex flex-col items-center justify-center p-5 bg-[var(--color-lime)]/5 hover:bg-[var(--color-lime)]/10 border border-[var(--color-lime)]/30 rounded-xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-card"
               >
-                <svg className="w-8 h-8 text-indigo-600 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-sm font-medium text-indigo-900">Enregistrer un paiement</span>
+                <div className="w-12 h-12 rounded-xl bg-[var(--color-lime)] flex items-center justify-center mb-3 shadow-glow-lime group-hover:scale-110 transition-transform">
+                  <CreditCard className="w-6 h-6 text-[#0A0A0F]" />
+                </div>
+                <span className="text-sm font-display font-semibold text-[var(--text)]">Enregistrer paiement</span>
               </Link>
             </div>
           </Card>

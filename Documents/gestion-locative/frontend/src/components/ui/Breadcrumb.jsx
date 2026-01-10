@@ -9,7 +9,7 @@ function Breadcrumb({ items }) {
       {/* Home icon */}
       <Link
         to="/dashboard"
-        className="text-gray-500 hover:text-gray-700 transition-colors"
+        className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
         aria-label="Accueil"
       >
         <Home className="w-4 h-4" />
@@ -20,16 +20,16 @@ function Breadcrumb({ items }) {
 
         return (
           <div key={index} className="flex items-center space-x-2">
-            <ChevronRight className="w-4 h-4 text-gray-400" />
+            <ChevronRight className="w-4 h-4 text-[var(--text-muted)]" />
 
             {isLast ? (
-              <span className="font-medium text-gray-900">
+              <span className="font-medium font-display text-[var(--text)]">
                 {item.label}
               </span>
             ) : (
               <Link
                 to={item.href}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               >
                 {item.label}
               </Link>

@@ -72,7 +72,7 @@ function LeaseDetail() {
             phone,
             group_id,
             is_main_tenant,
-            tenant_groups(
+            tenant_groups!group_id(
               id,
               name,
               group_type,
@@ -195,55 +195,55 @@ function LeaseDetail() {
         <Card title="Informations du bail" className="lg:col-span-2">
           <div className="space-y-4">
             <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-gray-400 mt-1" />
+              <FileText className="w-5 h-5 text-[var(--text-muted)] mt-1" />
               <div>
-                <div className="text-sm text-gray-500">Statut</div>
+                <div className="text-sm text-[var(--text-secondary)]">Statut</div>
                 {getStatusBadge(lease.status)}
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Calendar className="w-5 h-5 text-gray-400 mt-1" />
+              <Calendar className="w-5 h-5 text-[var(--text-muted)] mt-1" />
               <div>
-                <div className="text-sm text-gray-500">Période</div>
-                <div className="font-medium">
+                <div className="text-sm text-[var(--text-secondary)]">Période</div>
+                <div className="font-medium text-[var(--text)]">
                   Du {new Date(lease.start_date).toLocaleDateString('fr-FR')} au{' '}
                   {new Date(lease.end_date).toLocaleDateString('fr-FR')}
                 </div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-[var(--text-muted)]">
                   Durée : {Math.round((new Date(lease.end_date) - new Date(lease.start_date)) / (1000 * 60 * 60 * 24 * 30))} mois
                 </div>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Euro className="w-5 h-5 text-gray-400 mt-1" />
+              <Euro className="w-5 h-5 text-[var(--text-muted)] mt-1" />
               <div className="w-full">
-                <div className="text-sm text-gray-500 mb-2">Loyer mensuel</div>
+                <div className="text-sm text-[var(--text-secondary)] mb-2">Loyer mensuel</div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Loyer :</span>
-                    <span className="font-medium">{lease.rent_amount.toFixed(2)} €</span>
+                    <span className="text-[var(--text-secondary)]">Loyer :</span>
+                    <span className="font-medium text-[var(--text)]">{lease.rent_amount.toFixed(2)} €</span>
                   </div>
                   {lease.charges_amount > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Charges :</span>
-                      <span className="font-medium">{lease.charges_amount.toFixed(2)} €</span>
+                      <span className="text-[var(--text-secondary)]">Charges :</span>
+                      <span className="font-medium text-[var(--text)]">{lease.charges_amount.toFixed(2)} €</span>
                     </div>
                   )}
-                  <div className="flex justify-between pt-2 border-t">
-                    <span className="font-semibold">Total loyer :</span>
-                    <span className="font-semibold text-lg">{totalRent.toFixed(2)} €</span>
+                  <div className="flex justify-between pt-2 border-t border-[var(--border)]">
+                    <span className="font-semibold text-[var(--text)]">Total loyer :</span>
+                    <span className="font-semibold text-lg text-[var(--text)]">{totalRent.toFixed(2)} €</span>
                   </div>
                   {housingAssistance > 0 && (
                     <>
-                      <div className="flex justify-between text-green-600">
+                      <div className="flex justify-between text-emerald-600 dark:text-emerald-400">
                         <span>Aides au logement (CAF/APL) :</span>
                         <span className="font-medium">- {housingAssistance.toFixed(2)} €</span>
                       </div>
-                      <div className="flex justify-between pt-2 border-t border-green-200 bg-green-50 px-3 py-2 rounded">
-                        <span className="font-semibold text-green-700">Loyer net à payer :</span>
-                        <span className="font-semibold text-lg text-green-700">{netRent.toFixed(2)} €</span>
+                      <div className="flex justify-between pt-2 border-t border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-3 py-2 rounded-xl">
+                        <span className="font-semibold text-emerald-700 dark:text-emerald-300">Loyer net à payer :</span>
+                        <span className="font-semibold text-lg text-emerald-700 dark:text-emerald-300">{netRent.toFixed(2)} €</span>
                       </div>
                     </>
                   )}
@@ -253,18 +253,18 @@ function LeaseDetail() {
 
             {lease.deposit_amount && (
               <div className="flex items-start gap-3">
-                <Euro className="w-5 h-5 text-gray-400 mt-1" />
+                <Euro className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Dépôt de garantie</div>
-                  <div className="font-medium">{lease.deposit_amount.toFixed(2)} €</div>
+                  <div className="text-sm text-[var(--text-secondary)]">Dépôt de garantie</div>
+                  <div className="font-medium text-[var(--text)]">{lease.deposit_amount.toFixed(2)} €</div>
                 </div>
               </div>
             )}
 
             {lease.notes && (
-              <div className="pt-4 border-t">
-                <div className="text-sm text-gray-500 mb-1">Notes</div>
-                <div className="text-gray-900">{lease.notes}</div>
+              <div className="pt-4 border-t border-[var(--border)]">
+                <div className="text-sm text-[var(--text-secondary)] mb-1">Notes</div>
+                <div className="text-[var(--text)]">{lease.notes}</div>
               </div>
             )}
           </div>
@@ -275,26 +275,26 @@ function LeaseDetail() {
           <Card title="Lot loué">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <Home className="w-5 h-5 text-gray-400 mt-1" />
+                <Home className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Lot</div>
-                  <div className="font-medium">{lease.lot.name}</div>
+                  <div className="text-sm text-[var(--text-secondary)]">Lot</div>
+                  <div className="font-medium text-[var(--text)]">{lease.lot.name}</div>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Building2 className="w-5 h-5 text-gray-400 mt-1" />
+                <Building2 className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Propriété</div>
-                  <div className="font-medium">{lease.lot.properties_new.name}</div>
+                  <div className="text-sm text-[var(--text-secondary)]">Propriété</div>
+                  <div className="font-medium text-[var(--text)]">{lease.lot.properties_new.name}</div>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-gray-400 mt-1" />
+                <MapPin className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">Adresse</div>
-                  <div className="text-sm">
+                  <div className="text-sm text-[var(--text-secondary)]">Adresse</div>
+                  <div className="text-sm text-[var(--text)]">
                     {lease.lot.properties_new.address}
                     <br />
                     {lease.lot.properties_new.postal_code} {lease.lot.properties_new.city}
@@ -317,17 +317,17 @@ function LeaseDetail() {
           <Card title="Locataire">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <Users className="w-5 h-5 text-gray-400 mt-1" />
+                <Users className="w-5 h-5 text-[var(--text-muted)] mt-1" />
                 <div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-[var(--text-secondary)]">
                     {lease.tenant.tenant_groups ? 'Groupe' : 'Locataire'}
                   </div>
-                  <div className="font-medium">
+                  <div className="font-medium text-[var(--text)]">
                     {lease.tenant.tenant_groups?.name ||
                      `${lease.tenant.first_name} ${lease.tenant.last_name}`}
                   </div>
                   {lease.tenant.tenant_groups && (
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-[var(--text-muted)] mt-1">
                       {lease.tenant.tenant_groups.group_type === 'couple' && '👫 Couple'}
                       {lease.tenant.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
                       {lease.tenant.tenant_groups.group_type === 'individual' && '👤 Individuel'}
@@ -341,20 +341,20 @@ function LeaseDetail() {
               </div>
 
               {lease.tenant.tenant_groups && (
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-[var(--text-secondary)]">
                   Locataire principal : {lease.tenant.first_name} {lease.tenant.last_name}
                 </div>
               )}
 
               <div className="text-sm">
-                <div className="text-gray-500">Email</div>
-                <div>{lease.tenant.email}</div>
+                <div className="text-[var(--text-secondary)]">Email</div>
+                <div className="text-[var(--text)]">{lease.tenant.email}</div>
               </div>
 
               {lease.tenant.phone && (
                 <div className="text-sm">
-                  <div className="text-gray-500">Téléphone</div>
-                  <div>{lease.tenant.phone}</div>
+                  <div className="text-[var(--text-secondary)]">Téléphone</div>
+                  <div className="text-[var(--text)]">{lease.tenant.phone}</div>
                 </div>
               )}
 
@@ -376,7 +376,7 @@ function LeaseDetail() {
       {/* Paiements */}
       <Card title="Paiements" className="mt-6">
         <div className="flex items-center justify-between">
-          <p className="text-gray-600">
+          <p className="text-[var(--text-secondary)]">
             Consultez l'historique des paiements pour ce bail
           </p>
           <Button

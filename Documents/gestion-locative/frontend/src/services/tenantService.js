@@ -32,7 +32,7 @@ export const getTenantWithDetails = async (id) => {
     .from('tenants')
     .select(`
       *,
-      tenant_groups (*),
+      tenant_groups!group_id (*),
       guarantees (*),
       tenant_documents (*)
     `)

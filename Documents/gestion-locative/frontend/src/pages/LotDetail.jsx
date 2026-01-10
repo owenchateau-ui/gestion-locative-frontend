@@ -9,6 +9,7 @@ import Button from '../components/ui/Button'
 import Badge from '../components/ui/Badge'
 import Card from '../components/ui/Card'
 import StatCard from '../components/ui/StatCard'
+import Alert from '../components/ui/Alert'
 import InvitationLinkModal from '../components/candidates/InvitationLinkModal'
 import { getCandidatesByLot } from '../services/candidateService'
 
@@ -72,7 +73,7 @@ function LotDetail() {
               phone,
               group_id,
               is_main_tenant,
-              tenant_groups(id, name, group_type)
+              tenant_groups!group_id(id, name, group_type)
             )
           `)
           .eq('lot_id', lotData.id)
@@ -94,7 +95,7 @@ function LotDetail() {
             first_name,
             last_name,
             group_id,
-            tenant_groups(id, name, group_type)
+            tenant_groups!group_id(id, name, group_type)
           )
         `)
         .eq('lot_id', lotData.id)
@@ -180,14 +181,14 @@ function LotDetail() {
       F: 'bg-red-500',
       G: 'bg-red-700'
     }
-    return colors[rating] || 'bg-gray-500'
+    return colors[rating] || 'bg-[var(--text-muted)]'
   }
 
   if (loading) {
     return (
       <DashboardLayout title="Détail lot">
         <div className="flex items-center justify-center h-64">
-          <div className="text-xl text-gray-500">Chargement...</div>
+          <div className="text-xl text-[var(--text-secondary)]">Chargement...</div>
         </div>
       </DashboardLayout>
     )
@@ -197,8 +198,8 @@ function LotDetail() {
     return (
       <DashboardLayout title="Lot introuvable">
         <Card className="text-center py-12">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Lot introuvable</h3>
-          <p className="text-gray-600 mb-6">
+          <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-2">Lot introuvable</h3>
+          <p className="text-[var(--text-secondary)] mb-6">
             Le lot demandé n'existe pas ou a été supprimé.
           </p>
           <Button onClick={() => navigate('/lots')}>
@@ -228,22 +229,22 @@ function LotDetail() {
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-gray-900">{lot.name}</h2>
+                <h2 className="text-2xl font-display font-bold text-[var(--text)]">{lot.name}</h2>
                 <Badge variant="info">{getLotTypeLabel(lot.lot_type)}</Badge>
                 {getStatusBadge(lot.status)}
               </div>
               {lot.reference && (
-                <p className="text-sm text-gray-600 mb-2">
+                <p className="text-sm text-[var(--text-secondary)] mb-2">
                   Référence : {lot.reference}
                 </p>
               )}
-              <p className="text-gray-600">
+              <p className="text-[var(--text-secondary)]">
                 {lot.properties_new.name}
                 <br />
                 {lot.properties_new.address}, {lot.properties_new.postal_code} {lot.properties_new.city}
               </p>
               {lot.floor !== null && (
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-[var(--text-muted)] mt-2">
                   Étage : {lot.floor === 0 ? 'Rez-de-chaussée' : `${lot.floor}${lot.floor === 1 ? 'er' : 'ème'}`}
                   {lot.door_number && ` - Porte ${lot.door_number}`}
                 </p>
@@ -261,9 +262,7 @@ function LotDetail() {
         </Card>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
+          <Alert variant="error">{error}</Alert>
         )}
 
         {/* Statistiques */}
@@ -322,38 +321,38 @@ function LotDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {lot.surface_area && (
               <div>
-                <p className="text-sm font-medium text-gray-500">Surface</p>
-                <p className="text-lg font-semibold text-gray-900">{lot.surface_area} m²</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Surface</p>
+                <p className="text-lg font-semibold text-[var(--text)]">{lot.surface_area} m²</p>
               </div>
             )}
             {lot.nb_rooms && (
               <div>
-                <p className="text-sm font-medium text-gray-500">Nombre de pièces</p>
-                <p className="text-lg font-semibold text-gray-900">{lot.nb_rooms}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Nombre de pièces</p>
+                <p className="text-lg font-semibold text-[var(--text)]">{lot.nb_rooms}</p>
               </div>
             )}
             {lot.nb_bedrooms && (
               <div>
-                <p className="text-sm font-medium text-gray-500">Nombre de chambres</p>
-                <p className="text-lg font-semibold text-gray-900">{lot.nb_bedrooms}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Nombre de chambres</p>
+                <p className="text-lg font-semibold text-[var(--text)]">{lot.nb_bedrooms}</p>
               </div>
             )}
             {lot.nb_bathrooms && (
               <div>
-                <p className="text-sm font-medium text-gray-500">Salles de bain</p>
-                <p className="text-lg font-semibold text-gray-900">{lot.nb_bathrooms}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Salles de bain</p>
+                <p className="text-lg font-semibold text-[var(--text)]">{lot.nb_bathrooms}</p>
               </div>
             )}
             {lot.heating_type && (
               <div>
-                <p className="text-sm font-medium text-gray-500">Chauffage</p>
-                <p className="text-lg font-semibold text-gray-900">{lot.heating_type}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Chauffage</p>
+                <p className="text-lg font-semibold text-[var(--text)]">{lot.heating_type}</p>
               </div>
             )}
             {lot.deposit_amount && (
               <div>
-                <p className="text-sm font-medium text-gray-500">Dépôt de garantie</p>
-                <p className="text-lg font-semibold text-gray-900">{lot.deposit_amount.toFixed(2)} €</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)]">Dépôt de garantie</p>
+                <p className="text-lg font-semibold text-[var(--text)]">{lot.deposit_amount.toFixed(2)} €</p>
               </div>
             )}
           </div>
@@ -363,7 +362,7 @@ function LotDetail() {
         <Card title="Équipements">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {lot.furnished && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -371,7 +370,7 @@ function LotDetail() {
               </div>
             )}
             {lot.has_parking && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -379,7 +378,7 @@ function LotDetail() {
               </div>
             )}
             {lot.has_cellar && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -387,7 +386,7 @@ function LotDetail() {
               </div>
             )}
             {lot.has_balcony && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -395,7 +394,7 @@ function LotDetail() {
               </div>
             )}
             {lot.has_terrace && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -403,7 +402,7 @@ function LotDetail() {
               </div>
             )}
             {lot.has_garden && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -411,7 +410,7 @@ function LotDetail() {
               </div>
             )}
             {lot.has_elevator && (
-              <div className="flex items-center text-sm">
+              <div className="flex items-center text-sm text-[var(--text)]">
                 <svg className="w-5 h-5 text-emerald-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -427,17 +426,17 @@ function LotDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {lot.dpe_rating && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-2">DPE (Diagnostic de Performance Énergétique)</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)] mb-2">DPE (Diagnostic de Performance Énergétique)</p>
                   <div className="flex items-center space-x-3">
-                    <div className={`${getDPEColor(lot.dpe_rating)} text-white font-bold text-2xl w-12 h-12 rounded flex items-center justify-center`}>
+                    <div className={`${getDPEColor(lot.dpe_rating)} text-white font-bold text-2xl w-12 h-12 rounded-xl flex items-center justify-center`}>
                       {lot.dpe_rating}
                     </div>
                     {lot.dpe_value && (
-                      <span className="text-lg text-gray-900">{lot.dpe_value} kWh/m²/an</span>
+                      <span className="text-lg text-[var(--text)]">{lot.dpe_value} kWh/m²/an</span>
                     )}
                   </div>
                   {lot.dpe_date && (
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-[var(--text-muted)] mt-2">
                       Date du diagnostic : {new Date(lot.dpe_date).toLocaleDateString('fr-FR')}
                     </p>
                   )}
@@ -445,13 +444,13 @@ function LotDetail() {
               )}
               {lot.ges_rating && (
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-2">GES (Gaz à Effet de Serre)</p>
+                  <p className="text-sm font-medium text-[var(--text-secondary)] mb-2">GES (Gaz à Effet de Serre)</p>
                   <div className="flex items-center space-x-3">
-                    <div className={`${getDPEColor(lot.ges_rating)} text-white font-bold text-2xl w-12 h-12 rounded flex items-center justify-center`}>
+                    <div className={`${getDPEColor(lot.ges_rating)} text-white font-bold text-2xl w-12 h-12 rounded-xl flex items-center justify-center`}>
                       {lot.ges_rating}
                     </div>
                     {lot.ges_value && (
-                      <span className="text-lg text-gray-900">{lot.ges_value} kg CO2/m²/an</span>
+                      <span className="text-lg text-[var(--text)]">{lot.ges_value} kg CO2/m²/an</span>
                     )}
                   </div>
                 </div>
@@ -470,23 +469,23 @@ function LotDetail() {
                  '👤 Individuel'}` :
               'Locataire actuel'}
           >
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-[var(--color-electric-blue)]/10 p-4 rounded-xl">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="font-semibold text-lg text-gray-900">
+                  <p className="font-display font-semibold text-lg text-[var(--text)]">
                     {activeLease.tenants.tenant_groups?.name ||
                      `${activeLease.tenants.first_name} ${activeLease.tenants.last_name}`}
                   </p>
                   {activeLease.tenants.tenant_groups && (
-                    <p className="text-sm text-gray-600 mb-2">
+                    <p className="text-sm text-[var(--text-secondary)] mb-2">
                       Locataire principal : {activeLease.tenants.first_name} {activeLease.tenants.last_name}
                     </p>
                   )}
-                  <p className="text-sm text-gray-600">{activeLease.tenants.email}</p>
+                  <p className="text-sm text-[var(--text-secondary)]">{activeLease.tenants.email}</p>
                   {activeLease.tenants.phone && (
-                    <p className="text-sm text-gray-600">{activeLease.tenants.phone}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">{activeLease.tenants.phone}</p>
                   )}
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-sm text-[var(--text-muted)] mt-2">
                     Début du bail : {new Date(activeLease.start_date).toLocaleDateString('fr-FR')}
                   </p>
                 </div>
@@ -517,7 +516,7 @@ function LotDetail() {
         {lot.status === 'vacant' && (
           <Card>
             <div className="text-center py-6">
-              <p className="text-gray-600 mb-4">Ce lot est actuellement vacant</p>
+              <p className="text-[var(--text-secondary)] mb-4">Ce lot est actuellement vacant</p>
               <div className="flex gap-3 justify-center">
                 <Button onClick={() => navigate(`/leases/new?lot=${id}`)}>
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -546,15 +545,15 @@ function LotDetail() {
               {candidates.slice(0, 5).map((candidate) => (
                 <div
                   key={candidate.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center justify-between p-4 bg-[var(--surface-elevated)] rounded-xl hover:bg-[var(--surface-hover)] cursor-pointer transition-colors"
                   onClick={() => navigate(`/candidates/${candidate.id}`)}
                 >
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-[var(--text)]">
                       {candidate.first_name} {candidate.last_name}
                     </p>
-                    <p className="text-sm text-gray-600">{candidate.email}</p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-sm text-[var(--text-secondary)]">{candidate.email}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
                       Candidature du {new Date(candidate.created_at).toLocaleDateString('fr-FR')}
                     </p>
                   </div>
@@ -622,22 +621,22 @@ function LotDetail() {
               {pastLeases.map((lease) => (
                 <div
                   key={lease.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                  className="flex items-center justify-between p-4 bg-[var(--surface-elevated)] rounded-xl hover:bg-[var(--surface-hover)] cursor-pointer transition-colors"
                   onClick={() => navigate(`/leases/${lease.id}`)}
                 >
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-[var(--text)]">
                       {lease.tenants.tenant_groups?.name ||
                        `${lease.tenants.first_name} ${lease.tenants.last_name}`}
                     </p>
                     {lease.tenants.tenant_groups && (
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-[var(--text-muted)]">
                         {lease.tenants.tenant_groups.group_type === 'couple' && '👫 Couple'}
                         {lease.tenants.tenant_groups.group_type === 'colocation' && '👥 Colocation'}
                         {lease.tenants.tenant_groups.group_type === 'individual' && '👤 Individuel'}
                       </p>
                     )}
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-[var(--text-secondary)]">
                       {new Date(lease.start_date).toLocaleDateString('fr-FR')} - {lease.end_date ? new Date(lease.end_date).toLocaleDateString('fr-FR') : 'En cours'}
                     </p>
                   </div>
@@ -655,14 +654,14 @@ function LotDetail() {
           <Card title="Informations additionnelles">
             {lot.description && (
               <div className="mb-4">
-                <p className="text-sm font-medium text-gray-500 mb-1">Description</p>
-                <p className="text-gray-900">{lot.description}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">Description</p>
+                <p className="text-[var(--text)]">{lot.description}</p>
               </div>
             )}
             {lot.notes && (
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Notes privées</p>
-                <p className="text-gray-900">{lot.notes}</p>
+                <p className="text-sm font-medium text-[var(--text-secondary)] mb-1">Notes privées</p>
+                <p className="text-[var(--text)]">{lot.notes}</p>
               </div>
             )}
           </Card>

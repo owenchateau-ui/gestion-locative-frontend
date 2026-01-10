@@ -11,6 +11,7 @@ import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
 import ExportButton from '../components/ui/ExportButton'
+import Alert from '../components/ui/Alert'
 
 function Entities() {
   const [entities, setEntities] = useState([])
@@ -142,10 +143,10 @@ function Entities() {
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
             <div className="space-y-2">
-              <div className="animate-pulse bg-gray-200 rounded h-8 w-48" />
-              <div className="animate-pulse bg-gray-200 rounded h-4 w-24" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-8 w-48" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-4 w-24" />
             </div>
-            <div className="animate-pulse bg-gray-200 rounded h-10 w-36" />
+            <div className="animate-pulse bg-[var(--border)] rounded-xl h-10 w-36" />
           </div>
           {/* Table skeleton */}
           <Card padding={false}>
@@ -162,8 +163,8 @@ function Entities() {
         {/* Header avec actions */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Mes entités juridiques</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-2xl font-display font-bold text-[var(--text)]">Mes entités juridiques</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
               {entities.length} entité{entities.length > 1 ? 's' : ''}
             </p>
           </div>
@@ -183,9 +184,7 @@ function Entities() {
         </div>
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
+          <Alert variant="error">{error}</Alert>
         )}
 
         {entities.length === 0 ? (
@@ -201,35 +200,35 @@ function Entities() {
         ) : (
           <Card padding={false}>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Nom
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       SIREN
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Ville
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Propriétés
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Revenus mensuels
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {entities.map((entity) => (
-                    <tr key={entity.id} className="hover:bg-gray-50">
+                    <tr key={entity.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           <div
@@ -237,11 +236,11 @@ function Entities() {
                             style={{ backgroundColor: entity.color }}
                           />
                           <div>
-                            <div className="text-sm font-medium text-gray-900">
+                            <div className="text-sm font-medium text-[var(--text)]">
                               {entity.name}
                             </div>
                             {entity.default_entity && (
-                              <div className="text-xs text-blue-600">
+                              <div className="text-xs text-[var(--color-electric-blue)]">
                                 Entité par défaut
                               </div>
                             )}
@@ -252,41 +251,41 @@ function Entities() {
                         {getEntityTypeBadge(entity.entity_type)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {entity.siren || '-'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
+                        <div className="text-sm text-[var(--text)]">
                           {entity.city || '-'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[var(--text)]">
                           {entity.propertiesCount}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-emerald-600">
+                        <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                           {entity.monthlyRevenue.toFixed(2)} €
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                         <button
                           onClick={() => navigate(`/entities/${entity.id}`)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-[var(--color-purple)] hover:text-[var(--color-purple-light)] transition-colors"
                         >
                           Voir
                         </button>
                         <button
                           onClick={() => navigate(`/entities/${entity.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleDelete(entity.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-[var(--color-vivid-coral)] hover:text-[var(--color-coral-dark)] transition-colors"
                         >
                           Supprimer
                         </button>

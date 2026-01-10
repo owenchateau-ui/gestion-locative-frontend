@@ -159,7 +159,7 @@ export const getAllTenantGroups = async (entityId = null) => {
     .select(`
       *,
       housing_assistance,
-      tenants (
+      tenants!group_id (
         id,
         first_name,
         last_name,

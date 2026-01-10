@@ -241,8 +241,8 @@ function LotForm() {
     return (
       <DashboardLayout title="Ajouter un lot">
         <Card className="text-center py-12">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Aucune propriété</h3>
-          <p className="text-gray-600 mb-6">
+          <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-2">Aucune propriété</h3>
+          <p className="text-[var(--text-secondary)] mb-6">
             Vous devez d'abord créer une propriété avant d'ajouter un lot
           </p>
           <Button onClick={() => navigate('/properties/new')}>
@@ -258,17 +258,17 @@ function LotForm() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-2xl font-display font-bold text-[var(--text)]">
             {isEditMode ? 'Modifier le lot' : 'Ajouter un lot (unité locative)'}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">
+          <p className="text-sm text-[var(--text-secondary)] mt-1">
             Renseignez les informations du lot (appartement, parking, cave...)
           </p>
         </div>
 
         <Card>
           {error && (
-            <div className="bg-red-100 text-red-700 p-4 rounded-lg mb-6">
+            <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-4 rounded-xl mb-6">
               {error}
             </div>
           )}
@@ -276,12 +276,12 @@ function LotForm() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Informations générales */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations générales</h3>
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations générales</h3>
 
               <div className="space-y-6">
                 {/* Propriété */}
                 <div>
-                  <label htmlFor="lot-property_id" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lot-property_id" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Propriété *
                   </label>
                   <select
@@ -289,7 +289,7 @@ function LotForm() {
                     name="property_id"
                     value={formData.property_id}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     required
                   >
                     <option value="">Sélectionnez une propriété</option>
@@ -304,7 +304,7 @@ function LotForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Nom */}
                   <div>
-                    <label htmlFor="lot-name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-name" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Nom du lot *
                     </label>
                     <input
@@ -313,7 +313,7 @@ function LotForm() {
                       name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Ex: Appartement 101, Parking A12..."
                       required
                     />
@@ -321,7 +321,7 @@ function LotForm() {
 
                   {/* Référence */}
                   <div>
-                    <label htmlFor="lot-reference" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-reference" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Référence interne
                     </label>
                     <input
@@ -330,7 +330,7 @@ function LotForm() {
                       name="reference"
                       value={formData.reference}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Ex: A101, PKG-12..."
                     />
                   </div>
@@ -339,7 +339,7 @@ function LotForm() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Type */}
                   <div>
-                    <label htmlFor="lot-lot_type" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-lot_type" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Type de lot *
                     </label>
                     <select
@@ -347,7 +347,7 @@ function LotForm() {
                       name="lot_type"
                       value={formData.lot_type}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       required
                     >
                       {lotTypeOptions.map(option => (
@@ -360,7 +360,7 @@ function LotForm() {
 
                   {/* Statut */}
                   <div>
-                    <label htmlFor="lot-status" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-status" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Statut *
                     </label>
                     <select
@@ -368,7 +368,7 @@ function LotForm() {
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       required
                     >
                       {statusOptions.map(option => (
@@ -383,13 +383,13 @@ function LotForm() {
             </div>
 
             {/* Localisation */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Localisation dans la propriété</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Localisation dans la propriété</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="lot-floor" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-floor" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Étage
                     </label>
                     <input
@@ -398,13 +398,13 @@ function LotForm() {
                       name="floor"
                       value={formData.floor}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="0 pour RDC, -1 pour sous-sol..."
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="lot-door_number" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-door_number" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Numéro de porte
                     </label>
                     <input
@@ -413,7 +413,7 @@ function LotForm() {
                       name="door_number"
                       value={formData.door_number}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Ex: 12, A, 1A..."
                     />
                   </div>
@@ -422,13 +422,13 @@ function LotForm() {
             </div>
 
             {/* Caractéristiques */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Caractéristiques</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Caractéristiques</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label htmlFor="lot-surface_area" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-surface_area" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Surface (m²)
                     </label>
                     <input
@@ -437,7 +437,7 @@ function LotForm() {
                       name="surface_area"
                       value={formData.surface_area}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="45.5"
                       step="0.01"
                       min="0"
@@ -445,7 +445,7 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label htmlFor="lot-nb_rooms" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-nb_rooms" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Nombre de pièces
                     </label>
                     <input
@@ -454,14 +454,14 @@ function LotForm() {
                       name="nb_rooms"
                       value={formData.nb_rooms}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="2"
                       min="0"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="lot-nb_bedrooms" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-nb_bedrooms" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Nombre de chambres
                     </label>
                     <input
@@ -470,7 +470,7 @@ function LotForm() {
                       name="nb_bedrooms"
                       value={formData.nb_bedrooms}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="1"
                       min="0"
                     />
@@ -479,7 +479,7 @@ function LotForm() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="lot-nb_bathrooms" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-nb_bathrooms" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Nombre de salles de bain
                     </label>
                     <input
@@ -488,14 +488,14 @@ function LotForm() {
                       name="nb_bathrooms"
                       value={formData.nb_bathrooms}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="1"
                       min="0"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="lot-heating_type" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-heating_type" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Type de chauffage
                     </label>
                     <input
@@ -504,7 +504,7 @@ function LotForm() {
                       name="heating_type"
                       value={formData.heating_type}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Ex: Individuel gaz, Collectif..."
                     />
                   </div>
@@ -513,13 +513,13 @@ function LotForm() {
             </div>
 
             {/* Informations financières */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations financières</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations financières</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label htmlFor="lot-rent_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-rent_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Loyer hors charges (€) *
                     </label>
                     <input
@@ -528,7 +528,7 @@ function LotForm() {
                       name="rent_amount"
                       value={formData.rent_amount}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="950.00"
                       step="0.01"
                       min="0"
@@ -537,7 +537,7 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label htmlFor="lot-charges_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-charges_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Charges mensuelles (€)
                     </label>
                     <input
@@ -546,7 +546,7 @@ function LotForm() {
                       name="charges_amount"
                       value={formData.charges_amount}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="80.00"
                       step="0.01"
                       min="0"
@@ -554,7 +554,7 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label htmlFor="lot-deposit_amount" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-deposit_amount" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Dépôt de garantie (€)
                     </label>
                     <input
@@ -563,7 +563,7 @@ function LotForm() {
                       name="deposit_amount"
                       value={formData.deposit_amount}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="950.00"
                       step="0.01"
                       min="0"
@@ -574,104 +574,104 @@ function LotForm() {
             </div>
 
             {/* Équipements */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Équipements</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Équipements</h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label htmlFor="lot-furnished" className="flex items-center">
+                <label htmlFor="lot-furnished" className="flex items-center cursor-pointer">
                   <input
                     id="lot-furnished"
                     type="checkbox"
                     name="furnished"
                     checked={formData.furnished}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Meublé</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Meublé</span>
                 </label>
 
-                <label htmlFor="lot-has_parking" className="flex items-center">
+                <label htmlFor="lot-has_parking" className="flex items-center cursor-pointer">
                   <input
                     id="lot-has_parking"
                     type="checkbox"
                     name="has_parking"
                     checked={formData.has_parking}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Parking inclus</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Parking inclus</span>
                 </label>
 
-                <label htmlFor="lot-has_cellar" className="flex items-center">
+                <label htmlFor="lot-has_cellar" className="flex items-center cursor-pointer">
                   <input
                     id="lot-has_cellar"
                     type="checkbox"
                     name="has_cellar"
                     checked={formData.has_cellar}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Cave incluse</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Cave incluse</span>
                 </label>
 
-                <label htmlFor="lot-has_balcony" className="flex items-center">
+                <label htmlFor="lot-has_balcony" className="flex items-center cursor-pointer">
                   <input
                     id="lot-has_balcony"
                     type="checkbox"
                     name="has_balcony"
                     checked={formData.has_balcony}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Balcon</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Balcon</span>
                 </label>
 
-                <label htmlFor="lot-has_terrace" className="flex items-center">
+                <label htmlFor="lot-has_terrace" className="flex items-center cursor-pointer">
                   <input
                     id="lot-has_terrace"
                     type="checkbox"
                     name="has_terrace"
                     checked={formData.has_terrace}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Terrasse</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Terrasse</span>
                 </label>
 
-                <label htmlFor="lot-has_garden" className="flex items-center">
+                <label htmlFor="lot-has_garden" className="flex items-center cursor-pointer">
                   <input
                     id="lot-has_garden"
                     type="checkbox"
                     name="has_garden"
                     checked={formData.has_garden}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Jardin</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Jardin</span>
                 </label>
 
-                <label htmlFor="lot-has_elevator" className="flex items-center">
+                <label htmlFor="lot-has_elevator" className="flex items-center cursor-pointer">
                   <input
                     id="lot-has_elevator"
                     type="checkbox"
                     name="has_elevator"
                     checked={formData.has_elevator}
                     onChange={handleChange}
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-[var(--color-electric-blue)] focus:ring-[var(--color-electric-blue)] border-[var(--border)] rounded"
                   />
-                  <span className="ml-2 text-sm text-gray-700">Ascenseur</span>
+                  <span className="ml-2 text-sm text-[var(--text)]">Ascenseur</span>
                 </label>
               </div>
             </div>
 
             {/* Diagnostics énergétiques (DPE) */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Diagnostics énergétiques (DPE)</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Diagnostics énergétiques (DPE)</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label htmlFor="lot-dpe_rating" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-dpe_rating" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Classe DPE
                     </label>
                     <select
@@ -679,7 +679,7 @@ function LotForm() {
                       name="dpe_rating"
                       value={formData.dpe_rating}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     >
                       <option value="">Non renseigné</option>
                       {dpeRatings.map(rating => (
@@ -689,7 +689,7 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label htmlFor="lot-dpe_value" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-dpe_value" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Valeur DPE (kWh/m²/an)
                     </label>
                     <input
@@ -698,14 +698,14 @@ function LotForm() {
                       name="dpe_value"
                       value={formData.dpe_value}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="150"
                       min="0"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="lot-dpe_date" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-dpe_date" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Date DPE
                     </label>
                     <input
@@ -714,14 +714,14 @@ function LotForm() {
                       name="dpe_date"
                       value={formData.dpe_date}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="lot-ges_rating" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-ges_rating" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Classe GES (Gaz à Effet de Serre)
                     </label>
                     <select
@@ -729,7 +729,7 @@ function LotForm() {
                       name="ges_rating"
                       value={formData.ges_rating}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     >
                       <option value="">Non renseigné</option>
                       {dpeRatings.map(rating => (
@@ -739,7 +739,7 @@ function LotForm() {
                   </div>
 
                   <div>
-                    <label htmlFor="lot-ges_value" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-ges_value" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Valeur GES (kg CO2/m²/an)
                     </label>
                     <input
@@ -748,7 +748,7 @@ function LotForm() {
                       name="ges_value"
                       value={formData.ges_value}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="30"
                       min="0"
                     />
@@ -758,13 +758,13 @@ function LotForm() {
             </div>
 
             {/* Informations copropriété */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations copropriété</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations copropriété</h3>
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="lot-coproperty_lot_number" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-coproperty_lot_number" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Numéro de lot en copropriété
                     </label>
                     <input
@@ -773,13 +773,13 @@ function LotForm() {
                       name="coproperty_lot_number"
                       value={formData.coproperty_lot_number}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Ex: 12, A-5..."
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="lot-coproperty_tantieme" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="lot-coproperty_tantieme" className="block text-sm font-medium text-[var(--text)] mb-2">
                       Tantièmes de copropriété
                     </label>
                     <input
@@ -788,7 +788,7 @@ function LotForm() {
                       name="coproperty_tantieme"
                       value={formData.coproperty_tantieme}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                       placeholder="Ex: 50 (en millièmes)"
                       min="0"
                     />
@@ -798,12 +798,12 @@ function LotForm() {
             </div>
 
             {/* Informations additionnelles */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Informations additionnelles</h3>
+            <div className="border-t border-[var(--border)] pt-6">
+              <h3 className="text-lg font-display font-semibold text-[var(--text)] mb-4">Informations additionnelles</h3>
 
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="lot-description" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lot-description" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Description
                   </label>
                   <textarea
@@ -811,14 +811,14 @@ function LotForm() {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     rows="3"
                     placeholder="Description du lot, points forts..."
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="lot-notes" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="lot-notes" className="block text-sm font-medium text-[var(--text)] mb-2">
                     Notes privées
                   </label>
                   <textarea
@@ -826,7 +826,7 @@ function LotForm() {
                     name="notes"
                     value={formData.notes}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-xl bg-[var(--surface)] text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-colors"
                     rows="3"
                     placeholder="Notes internes (non visibles par les locataires)..."
                   />

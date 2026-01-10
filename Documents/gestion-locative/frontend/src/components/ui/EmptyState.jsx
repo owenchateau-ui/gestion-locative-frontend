@@ -20,16 +20,16 @@ function EmptyState({
 }) {
   const variantStyles = {
     default: {
-      iconBg: 'bg-gray-100',
-      iconColor: 'text-gray-400'
+      iconBg: 'bg-[var(--surface-elevated)]',
+      iconColor: 'text-[var(--text-muted)]'
     },
     search: {
-      iconBg: 'bg-blue-50',
-      iconColor: 'text-blue-400'
+      iconBg: 'bg-[var(--color-electric-blue)]/10',
+      iconColor: 'text-[var(--color-electric-blue)]'
     },
     error: {
-      iconBg: 'bg-red-50',
-      iconColor: 'text-red-400'
+      iconBg: 'bg-red-50 dark:bg-red-900/20',
+      iconColor: 'text-red-500 dark:text-red-400'
     }
   }
 
@@ -43,12 +43,12 @@ function EmptyState({
         </div>
       )}
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+      <h3 className="text-lg font-semibold font-display text-[var(--text)] mb-2">
         {title}
       </h3>
 
       {description && (
-        <p className="text-gray-500 mb-6 max-w-md mx-auto">
+        <p className="text-[var(--text-secondary)] mb-6 max-w-md mx-auto">
           {description}
         </p>
       )}

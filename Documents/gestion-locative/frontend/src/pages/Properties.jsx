@@ -10,6 +10,7 @@ import Card from '../components/ui/Card'
 import Skeleton from '../components/ui/Skeleton'
 import EmptyState from '../components/ui/EmptyState'
 import ExportButton from '../components/ui/ExportButton'
+import Alert from '../components/ui/Alert'
 import { Building2 } from 'lucide-react'
 
 // Constantes extraites pour éviter recréation à chaque render
@@ -211,10 +212,10 @@ function Properties() {
           {/* Header skeleton */}
           <div className="flex justify-between items-center">
             <div className="space-y-2">
-              <div className="animate-pulse bg-gray-200 rounded h-8 w-48" />
-              <div className="animate-pulse bg-gray-200 rounded h-4 w-24" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-8 w-48" />
+              <div className="animate-pulse bg-[var(--border)] rounded-lg h-4 w-24" />
             </div>
-            <div className="animate-pulse bg-gray-200 rounded h-10 w-44" />
+            <div className="animate-pulse bg-[var(--border)] rounded-xl h-10 w-44" />
           </div>
           {/* Table skeleton */}
           <Card padding={false}>
@@ -231,8 +232,8 @@ function Properties() {
         {/* Header avec actions */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Mes propriétés</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-2xl font-display font-bold text-[var(--text)]">Mes propriétés</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
               {properties.length} propriété{properties.length > 1 ? 's' : ''}
             </p>
           </div>
@@ -255,13 +256,13 @@ function Properties() {
         {entities.length > 0 && (
           <Card>
             <div className="flex items-center space-x-4">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-display font-medium text-[var(--text)]">
                 Filtrer par entité :
               </label>
               <select
                 value={selectedEntity}
                 onChange={(e) => setSelectedEntity(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-2.5 bg-[var(--surface)] border border-[var(--border)] rounded-xl text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--color-electric-blue)] focus:border-transparent transition-all"
               >
                 <option value="all">Toutes les entités</option>
                 {entities.map((entity) => (
@@ -275,9 +276,7 @@ function Properties() {
         )}
 
         {error && (
-          <div className="bg-red-100 text-red-700 p-4 rounded-lg">
-            {error}
-          </div>
+          <Alert variant="error">{error}</Alert>
         )}
 
         {properties.length === 0 ? (
@@ -296,40 +295,40 @@ function Properties() {
         ) : (
           <Card padding={false}>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-[var(--border)]">
+                <thead className="bg-[var(--surface-elevated)]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Nom
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Entité
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Adresse
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Catégorie
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Lots
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Occupation
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Revenus
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-xs font-display font-semibold text-[var(--text-secondary)] uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[var(--surface)] divide-y divide-[var(--border)]">
                   {properties.map((property) => (
-                    <tr key={property.id} className="hover:bg-gray-50">
+                    <tr key={property.id} className="hover:bg-[var(--surface-hover)] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-[var(--text)]">
                           {property.name}
                         </div>
                       </td>
@@ -339,14 +338,14 @@ function Properties() {
                             className="w-3 h-3 rounded-full mr-2"
                             style={{ backgroundColor: property.entities.color }}
                           />
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-[var(--text)]">
                             {property.entities.name}
                           </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">{property.address}</div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-[var(--text)]">{property.address}</div>
+                        <div className="text-sm text-[var(--text-muted)]">
                           {property.postal_code} {property.city}
                         </div>
                       </td>
@@ -354,45 +353,45 @@ function Properties() {
                         {getCategoryBadge(property.category)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-gray-900">
+                        <div className="text-sm font-semibold text-[var(--text)]">
                           {property.lotsCount}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          <span className="font-semibold text-emerald-600">{property.occupiedLots}</span>
-                          <span className="text-gray-500">/{property.lotsCount}</span>
+                        <div className="text-sm text-[var(--text)]">
+                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">{property.occupiedLots}</span>
+                          <span className="text-[var(--text-muted)]">/{property.lotsCount}</span>
                         </div>
                         {property.lotsCount > 0 && (
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-[var(--text-muted)]">
                             {((property.occupiedLots / property.lotsCount) * 100).toFixed(0)}% occupé
                           </div>
                         )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-semibold text-emerald-600">
+                        <div className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
                           {property.monthlyRevenue.toFixed(2)} €
                         </div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-[var(--text-muted)]">
                           /mois
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                         <button
                           onClick={() => navigate(`/properties/${property.id}`)}
-                          className="text-indigo-600 hover:text-indigo-900"
+                          className="text-[var(--color-purple)] hover:text-[var(--color-purple-light)] transition-colors"
                         >
                           Voir
                         </button>
                         <button
                           onClick={() => navigate(`/properties/${property.id}/edit`)}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-[var(--color-electric-blue)] hover:text-[var(--color-electric-blue-dark)] transition-colors"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleDelete(property.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="text-[var(--color-vivid-coral)] hover:text-[var(--color-coral-dark)] transition-colors"
                         >
                           Supprimer
                         </button>
